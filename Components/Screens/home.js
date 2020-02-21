@@ -13,6 +13,12 @@ import { useNavigation } from '@react-navigation/native';
 import {NavigationContainer} from '@react-navigation/native';
 import AllMicroLots from './allMicroLots';
 import AllNanoLots from './allNanoLots';
+import { Provider } from "react-redux";
+import { createStore, applyMiddleware, compose } from "redux";
+import Reducer from "../../Store/reducer";
+import * as actionTypes from '../../Store/action';
+import { connect} from 'react-redux';
+
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
 const uiTheme = {
@@ -29,25 +35,22 @@ const uiTheme = {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+     
+    };
   }
 
-  
-
   render() {
- 
+    
+    
+    
     return (
-      <ThemeContext.Provider value={getTheme(uiTheme)}>
-        {/* <Toolbar /> */}
+      <ThemeContext.Provider value={getTheme(uiTheme)}> 
        
-        <View style={styles.container}>
-      
-          <HomeScreen {...this.props} />
-        
-        </View>
-       
-        <BottomNavigation {...this.props}/>
-       
+        <View style={styles.container}>      
+          <HomeScreen {...this.props} {...this.state}/>        
+        </View>       
+        <BottomNavigation {...this.props} {...this.state} />       
       </ThemeContext.Provider>
       
     );

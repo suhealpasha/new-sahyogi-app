@@ -21,6 +21,8 @@ import Origins from './origins';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import * as actionTypes from '../../Store/action'
+import { connect} from 'react-redux';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -32,11 +34,16 @@ class HomeScreen extends Component {
     };
   }
 
-  // static navigationOptions = {
-  //     title: 'HomeScreen',
+  // componentDidMount(){
+  //   if(!this.props.home){
+  //     this.props.onBottomTabClicked('home')
   //   }
 
+  // }
+ 
+
   render() {
+
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
@@ -51,12 +58,12 @@ class HomeScreen extends Component {
       },
       microLots: {
         width: '100%',
-        height: 220,
+        height: 460,
         padding: 5,
-      },
+        },
       nanoLots: {
         width: '100%',
-        height: 240,
+        height: 460,
         padding: 5,
       },
       origins: {
@@ -95,7 +102,7 @@ class HomeScreen extends Component {
                 <Text style={{color: 'rgb(0,216,0)'}}>View All>></Text>
               </TouchableOpacity>
             </View>
-            <MicroLots />
+            <MicroLots {...this.props}/>
           </View>
           <View style={styles.nanoLots}>
             <View
@@ -138,4 +145,10 @@ class HomeScreen extends Component {
   }
 }
 
-export default HomeScreen;
+// const mapDispatchToProps = dispatch =>{
+//   return{
+//     onBottomTabClicked:(value)=>dispatch({type:actionTypes.ACTIVE_ICON,payload:value})
+//     }
+
+// }
+export default  connect(null,mapDispatchToProps)(HomeScreen);

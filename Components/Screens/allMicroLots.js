@@ -2,20 +2,21 @@ import React, { Component } from 'react';
 import {StyleSheet,FlatList,View,Text, Image,ScrollView} from 'react-native';
 import { Card, CardTitle, CardContent, CardAction, CardButton, CardImage } from 'react-native-material-cards';
 import BottomNavigation from '../BottomNavigation/bottomNavigation';
+import ProductAction from '../utils/productAction';
 export default class AllMicroLots extends Component{
 
     render(){
         const items = [ 
-            {name : require('../../assets/Images/coffeeFarms/img1.png') ,key:'1'} ,
-            {name : require('../../assets/Images/coffeeFarms/img2.png') ,key:'2'} ,  
-            {name : require('../../assets/Images/coffeeFarms/img3.png') ,key:'3'} ,  
-            {name : require('../../assets/Images/coffeeFarms/img4.png') ,key:'4'} ,  
-            {name : require('../../assets/Images/coffeeFarms/img5.png') ,key:'5'} ,  
-            {name : require('../../assets/Images/coffeeFarms/img6.png') ,key:'6'} ,  
-            {name : require('../../assets/Images/coffeeFarms/img7.png') ,key:'7'} ,  
-            {name : require('../../assets/Images/coffeeFarms/img8.png') ,key:'8'} ,  
-            {name : require('../../assets/Images/coffeeFarms/img9.png') ,key:'9'} ,  
-            {name : require('../../assets/Images/coffeeFarms/img10.png') ,key:'10'} ,  
+            {name : require('../../assets/Images/coffeeFarms/img1.png') ,key:'1' ,origin:'EL SALVADOR',farm:'Las Delicias'} ,
+            {name : require('../../assets/Images/coffeeFarms/img2.png') ,key:'2' ,origin:'BOURBON',farm:'Sta Lucia' } ,  
+            {name : require('../../assets/Images/coffeeFarms/img3.png') ,key:'3' ,origin:'GEISHA',farm:'El Rosario'} ,  
+            {name : require('../../assets/Images/coffeeFarms/img4.png') ,key:'4',origin:'EL SALVADOR',farm:'Las Delicias'} ,  
+            {name : require('../../assets/Images/coffeeFarms/img5.png') ,key:'5',origin:'BOURBON',farm:'Sta Lucia' } ,  
+            {name : require('../../assets/Images/coffeeFarms/img6.png') ,key:'6',origin:'EL SALVADOR',farm:'Las Delicias'} ,  
+            {name : require('../../assets/Images/coffeeFarms/img7.png') ,key:'7',origin:'GEISHA',farm:'El Rosario'} ,  
+            {name : require('../../assets/Images/coffeeFarms/img8.png') ,key:'8',origin:'EL SALVADOR',farm:'Las Delicias'} ,  
+            {name : require('../../assets/Images/coffeeFarms/img9.png') ,key:'9',origin:'BOURBON',farm:'Sta Lucia'} ,  
+            {name : require('../../assets/Images/coffeeFarms/img10.png') ,key:'10',origin:'EL SALVADOR',farm:'Las Delicias'} ,  
            
         ];
         return(
@@ -31,17 +32,21 @@ export default class AllMicroLots extends Component{
         renderItem = {({item})=>{
  
         return(        
-            <Card>
-           <CardImage 
-          source= {item.name} 
-         style={{height:74}}
+            <Card style={{padding:5}}>
+            <CardImage 
+             source= {item.name} 
+             style={{height:74}}
+              />
+              <CardTitle           
+             subtitle={item.origin}  
+             color='red'   
              />
-             {/* <Image  style={{width: '45%',height:100}} source= {item.name} /> */}
-            </Card>
+              <CardContent text={item.farm} />
+             </Card>
         );
         }}
         />
-        <BottomNavigation {...this.props}/>
+        
         </View>
        
         );

@@ -14,7 +14,7 @@ import { connect} from 'react-redux';
       goTo = (arg1) =>{
       this.props.navigation.navigate(arg1); 
       const lowerArg1 = String(arg1).toLowerCase()
-      // this.props.onBottomTabClicked(lowerArg1)
+      this.props.onBottomTabClicked(lowerArg1)
         }
     render() {       
           

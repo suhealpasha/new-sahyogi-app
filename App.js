@@ -36,10 +36,11 @@ class App extends Component {
     this.state = {
       width: Dimensions.get('window').width,
       home:false,
-      searchText:'',
-      searchResult:[]
+      searchText:'',      
     };
   }
+
+
 
   goBack = ({navigation}) => {
     navigation.navigate('Home');
@@ -48,6 +49,12 @@ class App extends Component {
 
   searchActivate = () =>{
 
+  }
+
+  changeTitleText = ({navigation},param) => {    
+    navigation.navigate('Search', {
+      searchText: param
+    });
   }
 
   render() {
@@ -125,8 +132,10 @@ class App extends Component {
             />
             <Stack.Screen
               name="Search"
-              component={Search}
-              options={({navigation, route}) => ({                
+              component={Search}        
+                    
+              options={({navigation, route}) => ({     
+                           
                 headerTitle: null,
                 headerRightContainerStyle: styles.headerRightContainerStyle,
                 headerLeft: () => (
@@ -138,18 +147,21 @@ class App extends Component {
                   />
                   </TouchableOpacity>
                 ),
-
+              
                 headerRight: () => (
+                 
                   <TextInput
                     style={{height: 50, fontSize: 20}}
                     placeholder="Search"
                     autoFocus={true}
-                    onChangeText={text=>{this.setState({searchText:text})}}
+                    onChangeText={text=>this.changeTitleText({navigation},text)}
+                    
                   />
-                ),
-              })}
-             
-             
+                ),               
+              }             
+              )             
+            }          
+            initialParams={{ keyword:this.state.searchText }}
             />
              <Stack.Screen
               name="Product Description"

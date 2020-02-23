@@ -34,16 +34,10 @@ class HomeScreen extends Component {
     };
   }
 
-  // componentDidMount(){
-  //   if(!this.props.home){
-  //     this.props.onBottomTabClicked('home')
-  //   }
-
-  // }
- 
+  
 
   render() {
-
+    
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
@@ -145,10 +139,10 @@ class HomeScreen extends Component {
   }
 }
 
-// const mapDispatchToProps = dispatch =>{
-//   return{
-//     onBottomTabClicked:(value)=>dispatch({type:actionTypes.ACTIVE_ICON,payload:value})
-//     }
+const mapDispatchToProps = dispatch =>{
+  return{
+    onBottomTabClicked:(value)=>dispatch({type:actionTypes.ACTIVE_ICON,payload:value})
+    }
 
-// }
+}
 export default  connect(null,mapDispatchToProps)(HomeScreen);

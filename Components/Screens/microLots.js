@@ -20,7 +20,7 @@ export default class MicroLots extends Component{
         return(
         
          
-        <View style={{ flex: 1.0}}>
+        <View style={{ flex: 1.0}} >
           
         <FlatList data={items}
         columnWrapperStyle={{justifyContent:'space-between', }}
@@ -31,30 +31,33 @@ export default class MicroLots extends Component{
  
         return(   
            
-            <Card style={{padding:5}}>
-           <CardImage 
-            source= {item.name} 
-            style={{height:74}}
-             />
+            <Card style={{padding:5},{backgroundColor:'#ffffff'}}>
+               <CardImage 
+                    source= {item.name} 
+                 style={{height:74}}
+                    />
          
-             <CardTitle           
-            subtitle={item.origin}  
-            color='red'   
+             <CardTitle 
+                    style={{color:'red'}}         
+               subtitle={item.origin}  
+              
             />
-             <CardContent text={item.farm} />
-             <CardAction  style={{backgroundColor:'#DFDFDF'}}
+             <CardContent text={item.farm} style={{color:'red'}}/>
+             <CardAction  style={{backgroundColor:'#ffffff'}}
     separator={true} 
     inColumn={false}>
     <CardButton
       onPress={() => this.productDetails()}
 
       title="Details"
-      color="rgb(0,70,99)"
+      color="#000000"
     />
     <CardButton
       onPress={() => {}}
       title="Add to Cart"
       color="rgb(0,70,99)"
+      
+     
     />
   </CardAction>
             </Card>

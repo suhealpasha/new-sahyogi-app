@@ -55,34 +55,41 @@ class App extends Component {
       headerRightContainerStyle: {
         width: this.state.width,
         alignItems: 'center',
+       
       },
+   
+  
     });
 
     const store = createStore(Reducer);
 
     return (
-      <Provider store={store}>
-        <NavigationContainer>
+      <Provider store={store} >
+        <NavigationContainer > 
           <Stack.Navigator>
             <Stack.Screen
-              name="Home"
+            
+               name="Home"
               component={HomeScreen}
               options={({navigation, route}) => ({
                 headerTitle: 'Microfee',
+                headerStyle:{backgroundColor:'#00aa00'},
+                headerTintColor:'#ffffff',
+              
                 headerRight: () => (
-                  <View style={{flexDirection: 'row'}}>
+                  <View style={{flexDirection: 'row'}} >
                     <TouchableOpacity onPress={() => navigation.navigate('')}>
                       <Icon
                         name="notifications"
                         size={23}
-                        style={{padding: 10, color: 'grey'}}
+                        style={{padding: 10, color: '#ffffff'}}
                       />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => navigation.navigate('')}>
                       <Icon
                         name="shopping-cart"
                         size={23}
-                        style={{padding: 10, color: 'grey'}}
+                        style={{padding: 10, color: '#ffffff'}}
                       />
                     </TouchableOpacity>
                   </View>

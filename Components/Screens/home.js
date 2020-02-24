@@ -28,6 +28,7 @@ const uiTheme = {
   toolbar: {
     container: {
       height: 50,
+      
     },
   },
 };

@@ -47,8 +47,9 @@ class HomeScreen extends Component {
       },
       featuredItems: {
         width: '100%',
-        padding: 5,
-        height: 240,
+        padding: 0,
+        height: 260,       
+        
       },
       microLots: {
         width: '100%',
@@ -70,10 +71,12 @@ class HomeScreen extends Component {
        color:'#3e708f',
        borderRadius:10,
         fontSize:12,
+        fontFamily:'Gotham Black Regular'
       },
       microalign:{
         color:'#004561',
         textAlignVertical:'center',
+        fontFamily:'Gotham Black Regular'
       }
     });
 
@@ -88,7 +91,7 @@ class HomeScreen extends Component {
                 justifyContent: 'space-between',
                 padding: 10,
               }}>
-              <Text style={{color: '#004561'}}>Featured Items</Text>
+              <Text style={{color: '#004561',fontFamily:'Gotham Black Regular'}}>Featured Items</Text>
             </View>
             <FeaturedItems />
           </View>

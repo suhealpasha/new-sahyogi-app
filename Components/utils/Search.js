@@ -82,7 +82,7 @@ export default class Search extends Component{
     
 
             </View>
-            <BottomNavigation />
+            <BottomNavigation {...this.props} />
             </View>
             );
           

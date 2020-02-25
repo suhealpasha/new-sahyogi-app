@@ -78,10 +78,12 @@ class App extends Component {
             
                name="Home"
               component={HomeScreen}
-              options={({navigation, route}) => ({
-                headerTitle: 'Microfee',
+               options={({navigation, route}) => ({
+                headerTitle:  <Text style={{ textAlign: 'center', flex: 1,fontFamily:'Gotham Black Regular'}}>Microfee</Text>  ,
                 headerStyle:{backgroundColor:'#00aa00'},
                 headerTintColor:'#ffffff',
+              
+              
               
                 headerRight: () => (
                   <View style={{flexDirection: 'row'}} >

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {StyleSheet,FlatList,View,Text, Image,ScrollView , Button} from 'react-native';
 import { Card, CardTitle, CardContent, CardAction, CardButton, CardImage } from 'react-native-material-cards'
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 export default class MicroLots extends Component{
 
     productDetails = ()=>{
@@ -30,37 +30,32 @@ export default class MicroLots extends Component{
         renderItem = {({item})=>{
  
         return(   
-           
-            <Card style={{padding:5},{backgroundColor:'#ffffff'}>
+           <TouchableOpacity style={{width:180}}  onPress={() => this.productDetails() }>
+            <Card style={{backgroundColor:'#004561'}}>
                <CardImage 
                     source= {item.name} 
-                 style={{height:74}}
+                    style={{resizeMode: 'contain'}}
                     />
          
-             <CardTitle 
-                    style={{color:'red'}}         
-               subtitle={item.origin}  
-              
-            />
-             <CardContent text={item.farm} style={{color:'red'}}/>
-             <CardAction  style={{backgroundColor:'#ffffff'}}
-    separator={true} 
-    inColumn={false}>
-    <CardButton
-      onPress={() => this.productDetails()}
-
-      title="Details"
-      color="#000000"
-    />
-    <CardButton
-      onPress={() => {}}
-      title="Add to Cart"
-      color="rgb(0,70,99)"
-      
-     
-    />
-  </CardAction>
+             <CardTitle subtitle={item.origin}/>
+             <CardContent text={item.farm} />
+             {/* <CardAction  
+       separator={false} 
+       inColumn={false}>
+       <CardButton
+         onPress={() => this.productDetails()}   
+         title="Details"
+   
+         
+       />
+       <CardButton
+         onPress={() => {}}
+         title="Add to Cart"
+        
+       />
+     </CardAction> */}
             </Card>
+            </TouchableOpacity>
              
         );
         }}
@@ -90,7 +85,22 @@ const styles = StyleSheet.create({
     
       
     },
+    detailsButton:{
+               
+        backgroundColor:'orange',
+        paddingBottom:10,
+        paddingTop:10,
+        borderWidth: 1,
+        borderColor: '#fff'
+      },
+      detailsButtonText:{
+          color:'#fff',
+          textAlign:'center',
+          paddingLeft : 10,
+          paddingRight : 10
+      }
+}
    
-  });
+  );
 
   

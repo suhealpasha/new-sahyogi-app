@@ -22,34 +22,48 @@ import { connect} from 'react-redux';
             <BottomNavigation
             active={this.props.active}
             style={{
-              container: { height: 50},
+              container: { height: 50,backgroundColor:'#59df44'},
+              
             }}>
             <BottomNavigation.Action
               key="home"
               icon="home"
               label="Home"  
               onPress={()=>this.goTo('Home')}            
-           
+              style={{
+                icon: {color: this.props.active === "home" ? "#001e37" : "#3e708f"},
+                label:{color: this.props.active === "home" ? "#001e37" : "#3e708f",fontFamily:this.props.active === "home" ? 'Gotham Black Regular':'Gotham Black Regular'},
+              }}
             />
             <BottomNavigation.Action
               key="search"
               icon="search"
               label="Search"            
               onPress={()=>this.goTo('Search')}  
+              style={{
+                icon: {color: this.props.active === "search" ? "#001e37" : "#3e708f"},
+                label:{color: this.props.active === "search" ? "#001e37" : "#3e708f",fontFamily:this.props.active === "search" ? 'Gotham Black Regular':'Gotham Black Regular'},
+              }}
               {...this.props}  
             />
             <BottomNavigation.Action
               key="favourite"
               icon="favorite"
               label="Wish List"
-              
+              style={{
+                icon: {color: this.props.active === "favorite" ? "#001e37" : "#3e708f"},
+                label:{color: this.props.active === "favorite" ? "#001e37" : "#3e708f",fontFamily:this.props.active === "search" ? 'Gotham Black Regular':'Gotham Black Regular'},
+              }}
             />
   
             <BottomNavigation.Action
               key="SignIn"
               icon="person"
               label="Sign In"
-             
+              style={{
+                icon: {color: this.props.active === "signin" ? "#001e37" : "#3e708f"},
+                label:{color: this.props.active === "signin" ? "#001e37" : "#3e708f",fontFamily:this.props.active === "search" ? 'Gotham Black Regular':'Gotham Black Regular'},
+              }}
             />
           </BottomNavigation>
   )

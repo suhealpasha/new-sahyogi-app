@@ -31,7 +31,7 @@ export default class MicroLots extends Component{
  
         return(   
            
-            <Card style={{padding:5},{backgroundColor:'#ffffff'}}>
+            <Card style={{padding:5},{backgroundColor:'#ffffff'}>
                <CardImage 
                     source= {item.name} 
                  style={{height:74}}

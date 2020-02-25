@@ -43,7 +43,7 @@ class HomeScreen extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         width: '100%',
-        backgroundColor: 'rgb(0,70,99)',
+        backgroundColor: '#efebea',
       },
       featuredItems: {
         width: '100%',
@@ -52,19 +52,29 @@ class HomeScreen extends Component {
       },
       microLots: {
         width: '100%',
-        height: 460,
+        height: 500,
         padding: 5,
+      
         },
       nanoLots: {
         width: '100%',
-        height: 460,
-        padding: 5,
+        height: 500,
+        padding: 1,
       },
       origins: {
         width: '100%',
         height: 100,
         padding: 5,
+        },
+      viewall:{
+       color:'#3e708f',
+       borderRadius:10,
+        fontSize:12,
       },
+      microalign:{
+        color:'#004561',
+        textAlignVertical:'center',
+      }
     });
 
     return (
@@ -78,7 +88,7 @@ class HomeScreen extends Component {
                 justifyContent: 'space-between',
                 padding: 10,
               }}>
-              <Text style={{color: 'white'}}>Featured Items</Text>
+              <Text style={{color: '#004561'}}>Featured Items</Text>
             </View>
             <FeaturedItems />
           </View>
@@ -88,12 +98,14 @@ class HomeScreen extends Component {
                 display: 'flex',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                padding: 10,
+                padding: 5,
+                marginTop:10,
+                
               }}>
-              <Text style={{color: 'white'}}>MicroLots</Text>
+              <Text style={styles.microalign}>MicroLots</Text>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('All Microlots')}>
-                <Text style={{color: 'rgb(0,216,0)'}}>View All>></Text>
+                <Text  style={styles.viewall}>View All</Text>
               </TouchableOpacity>
             </View>
             <MicroLots {...this.props}/>
@@ -105,12 +117,13 @@ class HomeScreen extends Component {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 padding: 10,
+                
               }}>
-              <Text style={{color: 'white'}}>NanoLots</Text>
+              <Text style={{color: '#004561'}}>NanoLots</Text>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('All Nanolots')}>
-                <Text style={{color: 'rgb(0,216,0)'}}>View All>></Text>
-              </TouchableOpacity>
+                <Text style={styles.viewall}>View All</Text>
+              </TouchableOpacity> 
             </View>
             <NanoLots />
           </View>
@@ -122,11 +135,11 @@ class HomeScreen extends Component {
                 justifyContent: 'space-between',
                 padding: 10,
               }}>
-              <Text style={{color: 'white'}}>Origins</Text>
+              <Text style={{color: '#004561'}}>Origins</Text>
               <Text
-                style={{color: 'rgb(0,216,0)'}}
+                style={styles.viewall}
                 onPress={() => Linking.openURL('http://google.com')}>
-                View All>>
+                View All
               </Text>
             </View>
             <Origins />

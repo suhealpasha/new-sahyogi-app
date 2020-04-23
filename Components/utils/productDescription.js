@@ -1,25 +1,7 @@
 import React, {Component} from 'react';
-
-import {
-  StyleSheet,
-  FlatList,
-  View,
-  Text,
-  Image,
-  ScrollView,
-  Button,
-  Dimensions,
-} from 'react-native';
-import {
-  Card,
-  CardTitle,
-  CardContent,
-  CardAction,
-  CardButton,
-  CardImage,
-} from 'react-native-material-cards';
+import {StyleSheet,FlatList,View,Text,Image,ScrollView,Button,Dimensions} from 'react-native';
+import {Card,CardTitle,CardContent,CardAction,CardButton,CardImage} from 'react-native-material-cards';
 import {TouchableHighlight} from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 class ProductDescription extends Component {
   constructor(props) {
@@ -46,38 +28,32 @@ class ProductDescription extends Component {
     ];
 
     const styles = StyleSheet.create({     
-      productDescriptionContainer: {
-        width: this.state.width,
-        paddingLeft: 10,
-        paddingBottom: 10,
-        paddingTop: 10,
-        paddingRight: 10,
-        height: 200,
-        backgroundColor: 'white',
+      productDescriptionContainer: {    
+        paddingTop: 10,     
+        height: 140,      
       },
       productDetailsContainer: {
-        backgroundColor: 'rgb(0,70,99)',
         flexDirection: 'row',
         width: '100%',
+        height:130,
+
       },
       productDetailHeader: {
-        flexDirection: 'column',
-        padding: 5,
+        flexDirection: 'column',        
         width: 100,
       },
-      productDetailHeaderText: {
-        fontWeight: 'bold',
-        color: 'white',
+      productDetailHeaderText: {   
+       
+        fontFamily:'GothamBold',
         padding: 2,
         fontSize: 15,
       },
       productDetail: {
         flexDirection: 'column',
-        padding: 5,
       },
       productDetailText: {
-        fontSize: 15,
-        color: 'white',
+        fontSize: 15,   
+        fontFamily:'GothamMedium',
         padding: 2,
       },
     });
@@ -98,41 +74,32 @@ class ProductDescription extends Component {
                     <View style={styles.productDetailHeader}>
                       <Text style={styles.productDetailHeaderText}>Origin</Text>
                       <Text style={styles.productDetailHeaderText}>
-                        Variety
+                        Variety 
                       </Text>
                       <Text style={styles.productDetailHeaderText}>Farm</Text>
                       <Text style={styles.productDetailHeaderText}>
-                        Altitude
+                        Altitude 
                       </Text>
                       <Text style={styles.productDetailHeaderText}>Notes</Text>
-                      <Text style={styles.productDetailHeaderText}>
-                        Ratings
-                      </Text>
-                      <Text style={styles.productDetailHeaderText}>
+                       <Text style={styles.productDetailHeaderText}>
                         Process
                       </Text>
                     </View>
                     <View style={styles.productDetail}>
                       <Text style={styles.productDetailText}>
-                        {item.origin}
+                        : {item.origin}
                       </Text>
                       <Text style={styles.productDetailText}>
-                        {item.variety}
+                        : {item.variety}
                       </Text>
-                      <Text style={styles.productDetailText}>{item.farm}</Text>
+                      <Text style={styles.productDetailText}>: {item.farm}</Text>
                       <Text style={styles.productDetailText}>
-                        {item.altitude}
+                        : {item.altitude}
                       </Text>
-                      <Text style={styles.productDetailText}>{item.notes}</Text>
-                      <View style={{flexDirection:'row'}}>
-                      <Icon name='star' size={15} style={{color:'gold'}}/>
-                      <Icon name='star' size={15} style={{color:'gold'}}/>
-                      <Icon name='star' size={15} style={{color:'gold'}}/>
-                      <Icon name='star' size={15} style={{color:'gold'}}/>
-                      <Icon name='star' size={15} style={{color:'gold'}}/>
-                      </View>
+                      <Text style={styles.productDetailText}>: {item.notes}</Text>
+                      {/* */}
                       <Text style={styles.productDetailText}>
-                        {item.process}
+                        : {item.process}
                       </Text>
                     </View>
                   </View>

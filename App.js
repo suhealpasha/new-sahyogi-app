@@ -1,21 +1,9 @@
 import 'react-native-gesture-handler';
-import React, {Component} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  Button,
-  TouchableOpacity,
-  TextInput,
-  Dimensions,
-} from 'react-native';
+import React, {Component, useState, useEffect} from 'react';
+import {BackHandler,StyleSheet,Text,View,Button,TouchableOpacity,TextInput,Dimensions,AsyncStorage,Image,Animated} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import HomeScreen from './Components/Screens/home';
-import AllMicroLots from './Components/Screens/allMicroLots';
-import AllNanoLots from './Components/Screens/allNanoLots';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Search from './Components/utils/Search';
+import {COLOR, ThemeContext, getTheme} from 'react-native-material-ui';
 import {HeaderBackground} from 'react-navigation-stack';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
@@ -24,174 +12,132 @@ import {createStore, applyMiddleware, compose} from 'redux';
 import Reducer from './Store/reducer';
 import * as actionTypes from './Store/action';
 import {connect} from 'react-redux';
-import ProductDescriptionTemplate from './Components/Screens/productDescriptionTemplate';
+import ProductDescriptionTemplate from './Components/Screens/BuyerScreens/productDescriptionTemplate';
+import KeyboardShift from './Components/utils/keyboardShift';
+import {StatusBar} from 'react-native';
+import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import AuthRoutes from './Container/authRoutes';
+import BuyerRoutes from './Container/buyerRoutes';
+import SellerRoutes from './Container/sellerRoutes';
 
-const Tab = createMaterialTopTabNavigator();
-const Tab2 = createMaterialBottomTabNavigator();
-const Stack = createStackNavigator();
-
+const uiTheme = {
+  palette: {
+    primaryColor: COLOR.blue500,
+  },
+  toolbar: {
+    container: {
+      height: 50,
+    },
+  },
+};
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      width: Dimensions.get('window').width,
-      home:false,
-      searchText:'',      
+    this.state = {      
+      isLoggedIn:false,
+      sellerLoggedIn:false,
+      isSignedIn:false,
+      isVisible: true,
+      width: Dimensions.get('window').width,  
+      accessToken:null,  
     };
   }
 
-
-
-  goBack = ({navigation}) => {
-    navigation.navigate('Home');
-    this.setState({home:true})
+  
+  Hide_Splash_Screen = () => {
+    this.setState({
+      isVisible: false,
+    });
   };
 
-  searchActivate = () =>{
-
+  async componentDidMount() {
+    
+    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');    
+    // console.log(isLoggedIn)
+    if(isLoggedIn){
+      this.setState({isLoggedIn:true})
+      //  AsyncStorage.setItem('isLoggedIn', res.data.access_token);
+    }
+    
+    var that = this;
+    setTimeout(function() {
+      that.Hide_Splash_Screen();
+    }, 5000);
   }
 
-  changeTitleText = ({navigation},param) => {    
-    navigation.navigate('Search', {
-      searchText: param
-    });
+  onLogoutSession = () => {    
+   this.setState({isLoggedIn:false})
+   this.setState({isSignedIn:false})
+   this.setState({sellerLoggedIn:false})
   }
-
+ 
+  onsignIn = () =>{
+  this.setState({isSignedIn:true})
+  }
+ 
+  onsellersignIn = () =>{
+    this.setState({isSignedIn:true})
+    this.setState({sellerLoggedIn:true})
+    }
   render() {
+
+    
     const styles = StyleSheet.create({
       headerRightContainerStyle: {
-        width: this.state.width,
+        width: this.state.width - 20,
         alignItems: 'center',
-       
       },
-   
-  
+      MainContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingTop: Platform.OS === 'ios' ? 20 : 0,
+      },
+      SplashScreen_RootView: {
+        justifyContent: 'center',
+        flex: 1,
+
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+      },
+
+      SplashScreen_ChildView: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#efebea',
+        flex: 1,
+      },
     });
 
     const store = createStore(Reducer);
-
-    return (
-      <Provider store={store} >
-        <NavigationContainer > 
-          <Stack.Navigator>
-            <Stack.Screen
-            
-               name="Home"
-              component={HomeScreen}
-               options={({navigation, route}) => ({
-                headerTitle:  <Text style={{ textAlign: 'center', flex: 1,fontFamily:'Gotham Black Regular'}}>Microfee</Text>  ,
-                headerStyle:{backgroundColor:'#00aa00'},
-                headerTintColor:'#ffffff',
-              
-              
-              
-                headerRight: () => (
-                  <View style={{flexDirection: 'row'}} >
-                    <TouchableOpacity onPress={() => navigation.navigate('')}>
-                      <Icon
-                        name="notifications"
-                        size={23}
-                        style={{padding: 10, color: '#ffffff'}}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigation.navigate('')}>
-                      <Icon
-                        name="shopping-cart"
-                        size={23}
-                        style={{padding: 10, color: '#ffffff'}}
-                      />
-                    </TouchableOpacity>
-                  </View>
-                ),
-              })}
-              {...this.state}
-            />
-
-            <Stack.Screen
-              name="All Microlots"
-              component={AllMicroLots}
-              options={({navigation, route}) => ({
-                headerTitle: 'All Microlots',
-                headerRightContainerStyle: styles.headerRightContainerStyle,
-                headerLeft: () => (
-                  <TouchableOpacity  onPress={() => this.goBack({navigation})}>
-                  <Icon
-                    name="chevron-left"                   
-                    size={35}
-                    color="black"
-                  />
-                  </TouchableOpacity>)
-              })}
-            />
-            <Stack.Screen
-              name="All Nanolots"
-              component={AllNanoLots}
-              options={({navigation, route}) => ({
-                headerTitle: 'All Nanolots',
-                headerRightContainerStyle: styles.headerRightContainerStyle,
-                headerLeft: () => (
-                  <TouchableOpacity  onPress={() => this.goBack({navigation})}>
-                  <Icon
-                    name="chevron-left"                   
-                    size={35}
-                    color="black"
-                  />
-                  </TouchableOpacity>)
-              })}
-            />
-            <Stack.Screen
-              name="Search"
-              component={Search}        
-                    
-              options={({navigation, route}) => ({     
-                           
-                headerTitle: null,
-                headerRightContainerStyle: styles.headerRightContainerStyle,
-                headerLeft: () => (
-                  <TouchableOpacity  onPress={() => this.goBack({navigation})}>
-                  <Icon
-                    name="chevron-left"                   
-                    size={35}
-                    color="black"
-                  />
-                  </TouchableOpacity>
-                ),
-              
-                headerRight: () => (
-                 
-                  <TextInput
-                    style={{height: 50, fontSize: 20}}
-                    placeholder="Search"
-                    autoFocus={true}
-                    onChangeText={text=>this.changeTitleText({navigation},text)}
-                    
-                  />
-                ),               
-              }             
-              )             
-            }          
-            initialParams={{ keyword:this.state.searchText }}
-            />
-             <Stack.Screen
-              name="Product Description"
-              component={ProductDescriptionTemplate}
-              options={({navigation, route}) => ({
-                headerTitle: 'Product Details',
-                headerRightContainerStyle: styles.headerRightContainerStyle,
-                headerLeft: () => (
-                  <TouchableOpacity  onPress={() => this.goBack({navigation})}>
-                  <Icon
-                    name="chevron-left"                   
-                    size={35}
-                    color="black"
-                  />
-                  </TouchableOpacity>)
-              })}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </Provider>
+    
+    let Splash_Screen = (
+      <Animated.View style={styles.SplashScreen_RootView}>
+        <View style={styles.SplashScreen_ChildView}>
+          <Image
+            source={require('./assets/Images/logos/Logo_Microffee.png')}
+            style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+          />
+        </View>
+      </Animated.View>
     );
+    return (
+      <ThemeContext.Provider value={getTheme(uiTheme)}>
+      <Provider store={store}>
+        <StatusBar
+          barStyle="dark-content"
+          hidden={false}
+          backgroundColor="#007b00"
+          translucent={true}
+          barStyle="light-content"
+        />
+        {this.state.isLoggedIn || this.state.isSignedIn ? this.state.sellerLoggedIn ? <SellerRoutes  onLogoutSession = {this.onLogoutSession}  /> : <BuyerRoutes  onLogoutSession = {this.onLogoutSession} /> : <AuthRoutes {...this.state} onSignedIn = {this.onsignIn} onSellerSignedIn = {this.onsellersignIn}/>}
+       
+      </Provider>
+      {this.state.isVisible === true ? Splash_Screen : null}
+    </ThemeContext.Provider>
+    )
   }
 }
 export default App;

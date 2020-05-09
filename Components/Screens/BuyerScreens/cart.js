@@ -247,7 +247,7 @@ export default class Cart extends Component {
                         {item.ratings}{' '}
                         <Icon
                           name="star"
-                          size={13}
+                          size={12}
                           style={{
                             justifyContent: 'center',
                             textAlignVertical: 'center',
@@ -381,8 +381,8 @@ export default class Cart extends Component {
                       Address
                     </Text>
                     <Text style={styles.orderPlacementContainerText}>
-                      #268/5,Lakshmi Narayana layout,
-                      Hosur Road, Anekal Town,Bengaluru -562106.
+                      #268/5,xrz,street,
+                      pqr city, 123 state,US-560106.
                     </Text>
                   </View>
                   <View>

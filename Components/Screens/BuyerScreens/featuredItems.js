@@ -7,12 +7,16 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {SliderBox} from 'react-native-image-slider-box';
 import Swiper from 'react-native-swiper';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
 
-export default class FeaturedItems extends Component {
+ class FeaturedItems extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,6 +30,11 @@ export default class FeaturedItems extends Component {
   updateImageDetails = ( image ) => {
     this.setState({currentSelecteditem:image})
   };
+
+  productDetails=(args, args1)=>{
+    this.props.onDisplayVarietyName(args1);
+    this.props.navigation.navigate('Product Description', {productId: args});
+      }
   
    componentDidMount(){
    this.setState({featuredProductsData:this.props.featuredProductsData})
@@ -39,13 +48,11 @@ export default class FeaturedItems extends Component {
     })
    
     return (
+      <TouchableOpacity onPress ={()=>{this.productDetails(this.props.featuredProductsData[this.state.currentSelecteditem].product_Id,this.props.featuredProductsData[this.state.currentSelecteditem].verityname)}}>
       <View style={styles.container}>
         <SliderBox
           images={images}
-          sliderBoxHeight={200}
-          onCurrentImagePressed={index =>
-            console.warn(`image ${index} pressed`)
-          }
+          sliderBoxHeight={200}          
           currentImageEmitter={index => this.updateImageDetails(index)}
           dotColor="#3e708f"
           inactiveDotColor="#95A5A6"
@@ -68,7 +75,7 @@ export default class FeaturedItems extends Component {
                   { this.props.featuredProductsData && this.props.featuredProductsData.length? this.props.featuredProductsData[this.state.currentSelecteditem].avg_rating : null}{' '}
                   <Icon
                     name="star"
-                    size={13}
+                    size={12}
                     style={{
                       justifyContent: 'center',
                       textAlignVertical: 'center',
@@ -90,6 +97,7 @@ export default class FeaturedItems extends Component {
               </View>
       </View>
       </View>
+      </TouchableOpacity>
     );
   }
 }
@@ -125,7 +133,19 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     justifyContent: 'center',
     textAlignVertical: 'center',
-    fontSize: 13,
+    fontSize: 14,
     width: 45,
   },
 });
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onDisplayVarietyName: value =>
+      dispatch({type: actionTypes.DISPLAY_VARIETY_NAME, payload: value}),
+  };
+};
+
+export default connect(
+ null,
+  mapDispatchToProps,
+)(FeaturedItems);

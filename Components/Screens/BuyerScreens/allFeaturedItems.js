@@ -17,13 +17,15 @@ import {
   CardImage,
 } from 'react-native-material-cards';
 import BottomNavigation from '../../BottomNavigation/bottomNavigation';
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableHighlight, TouchableOpacity,TouchableNativeFeedback } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import * as api from '../../../assets/api/api';
 import Spinner from 'react-native-loading-spinner-overlay';
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
 
-export default class AllFeaturedItems extends Component {
+class AllFeaturedItems extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -80,6 +82,11 @@ export default class AllFeaturedItems extends Component {
     return true;
   }
 
+  productDetails=(args, args1)=>{
+    this.props.onDisplayVarietyName(args1);
+    this.props.navigation.navigate('Product Description', {productId: args});
+      }
+
 
   render() {  
     
@@ -105,7 +112,7 @@ export default class AllFeaturedItems extends Component {
                 {item.avg_rating}{' '}
                 <Icon
                   name="star"
-                  size={13}
+                  size={12}
                   style={{
                     justifyContent: 'center',
                     textAlignVertical: 'center',
@@ -117,7 +124,7 @@ export default class AllFeaturedItems extends Component {
               </View>
             );
             return (
-              <TouchableOpacity onPress={() => this.productDetails()}>
+              <TouchableNativeFeedback onPress={() => this.productDetails(item.product_Id,item.verityname)}>
                 <View style={styles.itemContainer}>
                   <View style={styles.thumbnailImageContainer}>
                     <Image
@@ -139,7 +146,7 @@ export default class AllFeaturedItems extends Component {
                    {ratingIcon}
                   </View>
                 </View>
-              </TouchableOpacity>
+              </TouchableNativeFeedback>
             );
           }}
         />
@@ -198,7 +205,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     justifyContent: 'center',
     textAlignVertical: 'center',
-    fontSize: 13,
+    fontSize: 14,
     width: 45,
     borderRadius:5
   },
@@ -206,3 +213,15 @@ const styles = StyleSheet.create({
     color: '#00aa00',
   },
 });
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onDisplayVarietyName: value =>
+      dispatch({type: actionTypes.DISPLAY_VARIETY_NAME, payload: value}),
+  };
+};
+
+export default connect(
+ null,
+  mapDispatchToProps,
+)(AllFeaturedItems);

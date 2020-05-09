@@ -200,7 +200,7 @@ commentUpdate = () =>{
                   {item.ratings}{' '}
                   <Icon
                     name="star"
-                    size={13}
+                    size={12}
                     style={{
                       justifyContent: 'center',
                       textAlignVertical: 'center',
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     justifyContent: 'center',
     textAlignVertical: 'center',
-    fontSize: 13,
+    fontSize: 14,
     width: 45,
     borderRadius: 5,
   },

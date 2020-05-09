@@ -53,7 +53,7 @@ export default class Notification extends Component {
                 {item.ratings}{' '}
                 <Icon
                   name="star"
-                  size={13}
+                  size={12}
                   style={{
                     justifyContent: 'center',
                     textAlignVertical: 'center',

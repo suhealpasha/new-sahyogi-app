@@ -31,6 +31,7 @@ import {connect} from 'react-redux';
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
 import * as api from '../../../assets/api/api';
+import Toast from 'react-native-simple-toast';
 
 class Wishlist extends Component {
   constructor(props) {
@@ -88,12 +89,65 @@ class Wishlist extends Component {
     return true;
   }
 
-  _deleteWishlist = e => {
-    console.log('Child');
+  _deleteWishlist = async param1 => {
+    let data;
+    data = JSON.stringify({
+      flag: false,
+      product_Id: param1,
+    });
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    await axios
+      .post(api.buyerWishlistAddOrRemoveAPI, data, {
+        headers: {
+          access_token: access_token,
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        if (res.status) {
+          this.setState({spinner: false});
+          Toast.show('Removed from wishlist');
+          this.fetchBuyerWishlist();
+        }
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
+  };
+
+  _deleteAllWishlist = async () => {
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+
+    await axios
+      .post(
+        api.buyerWishlistRemoveAll,
+        {},
+        {
+          headers: {
+            access_token: access_token,
+            accept: 'application/json',
+            'accept-language': 'en_US',
+            'content-type': 'application/x-www-form-urlencoded',
+          },
+        },
+      )
+      .then(res => {
+        if (res.status) {
+          this.setState({spinner: false});
+          Toast.show('Removed all from wishlist');
+          this.fetchBuyerWishlist();
+        }
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
   };
 
   render() {
-    console.log('))))))))))))))))', this.state.buyerWishlistData);
     return (
       <View style={styles.outerContainer}>
         <View style={styles.container}>
@@ -104,7 +158,12 @@ class Wishlist extends Component {
           />
 
           <FlatList
-            data={this.state.buyerWishlistData && this.state.buyerWishlistData.length ? this.state.buyerWishlistData : null}
+            data={
+              this.state.buyerWishlistData &&
+              this.state.buyerWishlistData.length
+                ? this.state.buyerWishlistData
+                : null
+            }
             numColumns={1}
             keyExtractor={items => {
               items.product_Id;
@@ -114,10 +173,10 @@ class Wishlist extends Component {
                 <View style={{flexDirection: 'row'}}>
                   <Text style={styles.ratingStyle}>
                     {'  '}
-                    {item.ratings}{' '}
+                    {item.avg_rating}{' '}
                     <Icon
                       name="star"
-                      size={13}
+                      size={12}
                       style={{
                         justifyContent: 'center',
                         textAlignVertical: 'center',
@@ -133,7 +192,7 @@ class Wishlist extends Component {
                       paddingLeft: 10,
                       paddingRight: 10,
                     }}>
-                    100:ratings
+                    {item.rating}: ratings
                   </Text>
                 </View>
               );
@@ -154,7 +213,7 @@ class Wishlist extends Component {
                     <View style={styles.itemDetailContainer}>
                       <View style={{flexDirection: 'row', paddingTop: 10}}>
                         <View style={{width: '50%'}}>
-                          <Text style={styles.itemTextOrigin}>
+                          <Text style={styles.itemTextVariety}>
                             {item.verityname}
                           </Text>
                         </View>
@@ -165,13 +224,13 @@ class Wishlist extends Component {
                               size={25}
                               color={'#95A5A6'}
                               onPress={() => {
-                                this._deleteWishlist();
+                                this._deleteWishlist(item.product_Id);
                               }}
                             />
                           </TouchableWithoutFeedback>
                         </View>
                       </View>
-                      <Text style={styles.itemTextFarm}>
+                      <Text style={styles.itemTextOrigin}>
                         {item.originsname}
                       </Text>
                       <Text style={styles.itemTextFarm}>{item.farm}</Text>
@@ -183,7 +242,9 @@ class Wishlist extends Component {
             }}
           />
 
-          <TouchableOpacity style={styles.clearAllButton}>
+          <TouchableOpacity
+            style={styles.clearAllButton}
+            onPress={this._deleteAllWishlist}>
             <Text
               style={{
                 textAlign: 'center',
@@ -230,10 +291,16 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 20,
   },
-  itemTextOrigin: {
+  itemTextVariety: {
     fontFamily: 'Gotham Black Regular',
     fontSize: 14,
     paddingTop: 5,
+  },
+  itemTextOrigin: {
+    fontSize: 12,
+    justifyContent: 'space-around',
+    fontFamily: 'GothamMedium',
+    color: '#95A5A6',
   },
   itemTextFarm: {
     fontSize: 12,
@@ -248,7 +315,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     justifyContent: 'center',
     textAlignVertical: 'center',
-    fontSize: 13,
+    fontSize: 14,
     width: 45,
   },
   clearAllButton: {

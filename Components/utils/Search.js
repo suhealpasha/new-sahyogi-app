@@ -1,105 +1,57 @@
 import React, {Component} from 'react';
-import {BackHandler,Image,View,Text,FlatList,Card,CardImage,StyleSheet,Dimensions,Item,ListItem,List,CardTitle,TouchableOpacity, ScrollView} from 'react-native';
+import {  AsyncStorage,BackHandler,Image,View,Text,FlatList,Card,CardImage,StyleSheet,Dimensions,Item,ListItem,List,CardTitle,TouchableOpacity, ScrollView} from 'react-native';
 import BottomNavigation from '../BottomNavigation/bottomNavigation';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as actionTypes from '../../Store/action';
-import { connect} from 'react-redux';
+import axios from 'axios';
+import * as api from '../../assets/api/api';
+import {connect} from 'react-redux';
 
 class Search extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      height: Dimensions.get('window').height,
-      items: [
-        {
-          name: require('../../assets/Images/coffeeFarms/img1.png'),
-          key: '1',
-          origin: 'EL SALVADOR',
-          farm: 'Las Delicias',
-          ratings: '4.0',
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img2.png'),
-          key: '2',
-          origin: 'BOURBON',
-          farm: 'Sta Lucia',
-          ratings: '2.0',
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img3.png'),
-          key: '3',
-          origin: 'GEISHA',
-          farm: 'El Rosario',
-          ratings: '4.0',
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img4.png'),
-          key: '4',
-          origin: 'EL SALVADOR',
-          farm: 'Las Delicias',
-          ratings: '3.5',
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img5.png'),
-          key: '5',
-          origin: 'BOURBON',
-          farm: 'Sta Lucia',
-          ratings: '1.1',
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img6.png'),
-          key: '6',
-          origin: 'EL SALVADOR',
-          farm: 'Las Delicias',
-          ratings: '5.0',
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img7.png'),
-          key: '7',
-          origin: 'GEISHA',
-          farm: 'El Rosario',
-          ratings: '4.0',
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img8.png'),
-          key: '8',
-          origin: 'EL SALVADOR',
-          farm: 'Las Delicias',
-          ratings: '1.5',
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img9.png'),
-          key: '9',
-          origin: 'BOURBON',
-          farm: 'Sta Lucia',
-          ratings: '2.2'
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img10.png'),
-          key: '10',
-          origin: 'EL SALVADOR',
-          farm: 'Las Delicias',
-          ratings: '4.0',
-        },
-        {
-          name: require('../../assets/Images/coffeeFarms/img6.png'),
-          key: '11',
-          origin: 'EL SALVADOR',
-          farm: 'Las Delicias',
-          ratings: '4.5',
-        },
-      ],
+      height: Dimensions.get('window').height, 
+      allProductsData:[],    
       data: [],
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
+    this.fetchProducts();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
+
+  fetchProducts = async () => {
+    this.setState({spinner:true})
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    await axios
+      .get(api.buyerAllProductAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {     
+        if (res.status) {
+          this.setState({
+            spinner:false,
+            allProductsData: res.data.data,
+          });
+        }
+      })
+      .catch(err => {
+        this.setState({spinner:false})
+        console.log(err);
+      });
+  };
+
 
   componentWillUnmount() {
     BackHandler.removeEventListener(
@@ -141,11 +93,20 @@ class Search extends Component {
       itemDetailContainer: {
         paddingLeft: 10,
         paddingRight: 10,
+        paddingTop:10,
+        paddingBottom:10
       },
-      itemTextOrigin: {
+      itemTextVariety: {
         fontFamily: 'Gotham Black Regular',
         fontSize: 14,
         paddingTop: 5,
+      },
+      itemTextOrigin: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#95A5A6',
+ 
       },
       itemTextFarm: {
         fontSize: 12,
@@ -160,7 +121,7 @@ class Search extends Component {
         lineHeight: 20,
         justifyContent: 'center',
         textAlignVertical: 'center',
-        fontSize: 13,
+        fontSize: 14,
         width: 45,
       },
       searchErrorText:{
@@ -172,11 +133,13 @@ class Search extends Component {
       }
     });
 
-    const newData = this.state.items.filter(item => {
-      const itemDataOrigin = item.origin.toUpperCase();
+    const newData = this.state.allProductsData.filter(item => {
+      const itemDataOrigin = item.originsname.toUpperCase();
+      const itemDataVariety = item.verityname.toUpperCase();
+      const itemDataFarm =  item.farm.toUpperCase();
       if (this.props.route.params.searchText) {
         const textData = this.props.route.params.searchText.toUpperCase();
-        return itemDataOrigin.indexOf(textData) > -1;
+        return itemDataOrigin.indexOf(textData) > -1 || itemDataVariety.indexOf(textData) > -1 ||  itemDataFarm.indexOf(textData) > -1;
       }
     });
 
@@ -196,25 +159,28 @@ class Search extends Component {
                 <View style={styles.itemContainer}>
                   <View style={styles.thumbnailImageContainer}>
                     <Image
-                      source={i.name}
+                       source={{
+                        uri: i.thumbnail_image,
+                      }}
                       style={{
                         width: 130,
-                        height: 80,
+                        height: 100,
                         borderTopLeftRadius: 5,
                         borderBottomLeftRadius: 5,
                       }}
                     />
                   </View>
                   <View style={styles.itemDetailContainer}>
-                    <Text style={styles.itemTextOrigin}>{i.origin}</Text>
+                    <Text style={styles.itemTextVariety}>{i.verityname}</Text>
+                    <Text style={styles.itemTextOrigin}>{i.originsname}</Text>
                     <Text style={styles.itemTextFarm}>{i.farm}</Text>
                     <View style={{flexDirection: 'row'}}>
                 <Text style={styles.ratingStyle}>
                   {'  '}
-                  {i.ratings}{' '}
+                  {i.avg_rating}{' '}
                   <Icon
                     name="star"
-                    size={13}
+                    size={12}
                     style={{
                       justifyContent: 'center',
                       textAlignVertical: 'center',
@@ -230,7 +196,7 @@ class Search extends Component {
                     paddingLeft: 10,
                     paddingRight: 10,
                   }}>
-                  100:ratings
+                  {i.rating}: ratings
                 </Text>
               </View>
                   </View>

@@ -51,6 +51,13 @@ class ProductDescriptionTemplate extends Component {
     this.fetchProduct();
   }
 
+  // componentDidUpdate(prevProps,prevState){
+  //   if(prevState.productData !== this.state.productData){
+  //     this.setState({productData:this.state.productData})
+  //   }
+
+  // }
+
   fetchProduct = async () => {
     this.setState({spinner: true});
     let data = JSON.stringify({
@@ -67,8 +74,7 @@ class ProductDescriptionTemplate extends Component {
         },
       })
       .then(res => {        
-        console.log(res.data.data)
-        this.setState({spinner: false, productData: res.data.data});
+       this.setState({spinner: false, productData: res.data.data});
       })
       .catch(err => {
         this.setState({spinner: false});
@@ -184,7 +190,7 @@ class ProductDescriptionTemplate extends Component {
 
             <View style={styles.container}>
               <ProductDescription {...this.state}/>
-              <ProductAction {...this.state}/>
+              <ProductAction {...this.state} onFetchProduct = {this.fetchProduct}/>
             </View>
           </View>
         </KeyboardAwareScrollView>

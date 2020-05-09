@@ -281,6 +281,7 @@ class HomeScreen extends Component {
                 justifyContent: 'space-between',
                 paddingLeft: 5,
                 paddingRight: 5,
+                paddingTop:10
               }}>
               <Text style={styles.microalign}>Origin/Regions</Text>
               <Text

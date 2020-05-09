@@ -321,7 +321,7 @@ class Routes extends Component {
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
                   }}>
-                  All Featured
+                  All Featured Crops
                 </Text>
               ),
               headerStyle: {backgroundColor: '#00aa00'},

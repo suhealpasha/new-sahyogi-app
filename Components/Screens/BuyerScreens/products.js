@@ -31,8 +31,9 @@ class LatestProducts extends Component{
         numColumns={2}
         keyExtractor = {(items)=>{items.product_Id}}      
         renderItem = {({item})=>{
-        let ratingIcon = <Text style={styles.ratingStyle} >{'  '}{item.avg_rating}{' '}<Icon name="star" size={13} style={{justifyContent:'center',textAlignVertical:'center'}}/>{'  '}</Text>
-        let ratings =  <Text style={{color:'black',fontFamily:'GothamLight',fontSize:10,textAlignVertical:'center',paddingLeft:10,paddingRight:10}}>{'   '}{item.rating}:ratings</Text>
+         
+        let ratingIcon = <Text style={styles.ratingStyle} >{'  '}{item.avg_rating}{' '}<Icon name="star" size={12} style={{justifyContent:'center',textAlignVertical:'center'}}/>{'  '}</Text>
+        let ratings =  <Text style={{fontFamily:'GothamLight'}}>{'   '}{item.rating}:ratings</Text>
         return(   
            <TouchableNativeFeedback style={{width:(this.state.width/2)-5}} onPress={()=>this.productDetails(item.product_Id,item.verityname)}>
             <Card style={{backgroundColor:'white'}}>
@@ -79,8 +80,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#00ac00',
         color: 'white',
         lineHeight: 20,   
-        fontSize: 13,
+        fontSize: 14,
         width: 45,
+      
+        
                
       }
 }

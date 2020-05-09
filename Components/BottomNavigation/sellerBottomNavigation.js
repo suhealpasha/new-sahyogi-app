@@ -22,12 +22,11 @@ class OwnBottomNavigation extends Component {
 
   goTo = arg1 => {
     this.props.navigation.navigate(arg1);
-    const lowerArg1 = String(arg1).toLowerCase();
-    console.log('curreent page',arg1)
+    const lowerArg1 = String(arg1).toLowerCase(); 
     this.props.onBottomTabClicked(lowerArg1);
   };
   goToSwitch = async () => {
-    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');    
     if (this.state.userLogged || isLoggedIn === '2') {      
       this.goTo('Seller Profile');
     } else {
@@ -41,8 +40,7 @@ class OwnBottomNavigation extends Component {
     }
   };
 
-  render() {
-    console.log(this.props.active)
+  render() {    
     return (
       <BottomNavigation
         active={this.props.active}

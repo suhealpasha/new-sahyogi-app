@@ -24,6 +24,7 @@ import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
+import * as api from '../assets/api/api';
 
 class Login extends Component {
   constructor(props) {
@@ -39,7 +40,7 @@ class Login extends Component {
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -57,16 +58,16 @@ class Login extends Component {
     return true;
   }
 
-  _handleLogin = async () => {
-    this.setState({passwordError:false,mobileNumberError:false})
+  _handleLogin = async () => {   
     if (this.state.mobileNumber !== null && this.state.password !== null) {
-      this.setState({spinner:true})
-      let data = JSON.stringify({
+      let data;
+      this.setState({spinner: true});
+      data = JSON.stringify({
         user_id: this.state.mobileNumber,
         password: this.state.password,
-      });
+      });      
       await axios
-        .post('http://mathtech.co.in/microffee_api/Buyer/signIn', data, {
+        .post(api.signInAPI, data, {
           headers: {
             accept: 'application/json',
             'accept-language': 'en_US',
@@ -74,19 +75,29 @@ class Login extends Component {
           },
         })
         .then(res => {
-          if (res.data.status === 'success') {
+          if (res.data.status === 'success' && res.data.user_type === 'Buyer') {
             AsyncStorage.setItem('isLoggedIn', res.data.access_token);
-            this.setState({spinner:false,mobileNumber: null, password: null});
             this.props.onBottomTabClicked('home');
             this.props.onSignIn();
+            this.setState({spinner: false, mobileNumber: null, password: null});
+          } else if (
+            res.data.status === 'success' &&
+            res.data.user_type === 'Seller'
+          ) {
+            AsyncStorage.setItem('isLoggedIn', res.data.access_token);
+            this.props.onBottomTabClicked('home');
+            this.props.onSellerSignIn();
+            this.setState({spinner: false, mobileNumber: null, password: null});
+          } else {
+            this.setState({spinner: false});
+            alert('Invalid Credentials!');
           }
         })
         .catch(err => {
-          this.setState({spinner:false})
-          alert('Invalid Credentials!');
+          console.log(err);
         });
     } else {
-      if (this.state.mobileNumber === null) {
+      if (this.state.mobileNumber === null ) {
         this.setState({mobileNumberError: true});
       } else {
         this.setState({mobileNumberError: false});
@@ -105,15 +116,12 @@ class Login extends Component {
         alignItems: 'center',
         paddingLeft: 10,
         paddingRight: 10,
-        backgroundColor: '#efebea',
-        paddingTop: 10,
-        paddingBottom: 10,
+        paddingTop:10,
         justifyContent: 'center',
-        height: this.state.height,
       },
       spinnerTextStyle: {
-        color: '#00aa00'
-      },     
+        color: '#00aa00',
+      },
 
       logoContainer: {},
       logoImageStyle: {
@@ -141,13 +149,14 @@ class Login extends Component {
     });
 
     return (
-      <KeyboardAwareScrollView enableOnAndroid={true}>
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
+      scrollEnabled={false}>
         <View style={styles.container}>
-        <Spinner
-          visible={this.state.spinner}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}         
-        />
+          <Spinner
+            visible={this.state.spinner}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
           <Logo />
           <View style={styles.signInFormContainer}>
             <Text
@@ -164,7 +173,31 @@ class Login extends Component {
               placeholder="Mobile Number"
               style={{fontFamily: 'Gotham Black Regular'}}
               keyboardType="numeric"
-              onChangeText={mobileNumber => this.setState({mobileNumber})}
+              onChangeText={mobileNumber =>
+                {
+                  const input = mobileNumber.replace(/\D/g, '').substring(0, 10);
+                  const first = input.substring(0, 3);
+                  const middle = input.substring(3, 6);
+                  const last = input.substring(6, 10);  
+                  if (input.length > 6) {
+                    this.setState({
+                      mobileNumber: `${first}-${middle}-${last}`,
+                      mobileNumberError: false,                     
+                    });
+                  } else if (input.length > 3) {
+                    this.setState({
+                      mobileNumber: `${first}-${middle}`,
+                      mobileNumberError: false,                     
+                    });
+                  } else if (input.length >= 0) {
+                    this.setState({
+                      mobileNumber: input,
+                      mobileNumberError: false,                     
+                    });
+                  }
+                }                
+                }
+              onBlur={this.state.mobileNumber === '' ? this.setState({mobileNumber:null}):null}
               errorMessage={
                 this.state.mobileNumberError === true
                   ? 'Enter the Mobile Number'
@@ -172,11 +205,12 @@ class Login extends Component {
               }
               value={this.state.mobileNumber}
             />
-            <Input
+            <Input            
               secureTextEntry={true}
               placeholder="Password"
               style={{fontFamily: 'Gotham Black Regular'}}
-              onChangeText={password => this.setState({password})}
+              onChangeText={password => this.setState({password,passwordError:false})}
+              onBlur={this.state.password === '' ? this.setState({password:null}):null}
               errorMessage={
                 this.state.passwordError === true ? 'Enter the Password' : false
               }
@@ -236,14 +270,13 @@ class Login extends Component {
     );
   }
 }
+
 const mapDispatchToProps = dispatch => {
   return {
     onForgotPasswordClicked: value =>
       dispatch({type: actionTypes.FORGOT_PASSWORD, payload: value}),
     onBottomTabClicked: value =>
       dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
-    onSellerUserSelected: value =>
-      dispatch({type: actionTypes.SELLER_USER_SELECTED, payload: value}),
   };
 };
 export default connect(

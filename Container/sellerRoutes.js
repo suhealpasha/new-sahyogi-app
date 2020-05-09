@@ -29,7 +29,6 @@ import EditSellerProfile from '../Components/Screens/SellerScreens/editSellerPro
 import MyAddress from '../Components/Screens/SellerScreens/myAddress';
 import AddAddress from './addAddress';
 import EditAddress from './editAddress';
-import ChangePassword from '../Container/passwordChange';
 import {HeaderBackground} from 'react-navigation-stack';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
@@ -41,6 +40,8 @@ import {connect} from 'react-redux';
 import KeyboardShift from '../Components/utils/keyboardShift';
 import {StatusBar} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import axios from 'axios';
+import * as api from '../assets/api/api' 
 
 const Tab = createMaterialTopTabNavigator();
 const Tab2 = createMaterialBottomTabNavigator();
@@ -68,7 +69,15 @@ class SellerRoutes extends Component {
       filterOn: false,
       sortOn: null,
       searchIcon: true,
+      userData:[]
     };
+  }
+
+  componentDidMount() {
+    this.fetchDetails();
+    // this.fetchAddress();
+    // this.fetchProducts();
+    // this.fetchRegions();
   }
 
   goBack = ({navigation}, path) => {
@@ -99,6 +108,30 @@ class SellerRoutes extends Component {
   _logout = async ({navigation}) => {
     await AsyncStorage.clear();
     navigation.navigate('Home');
+  };
+
+  fetchDetails = async () => {
+    const access_token = await AsyncStorage.getItem('isLoggedIn');       
+    await axios
+      .get(api.sellerDetailsAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {    
+        console.log(res.data)    
+        if (res.status) {
+          this.setState({
+            userData: res.data.data            
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   render() {
@@ -391,11 +424,14 @@ class SellerRoutes extends Component {
                   </TouchableOpacity>
                 </View>
               ),
-            })}
- 
-           
+            })}           
           >
-              {props => <SellerProfile {...props} onLogout = {this.props.onLogoutSession}/>}
+              {props => <SellerProfile 
+              {...props}
+               onFetchDetails={this.fetchDetails}
+               userData = {this.state.userData} 
+               saveIcon={this.state.saveIcon}
+               onLogout = {this.props.onLogoutSession}/>}
             </Stack.Screen>
             <Stack.Screen
                 name="Edit Seller Profile"
@@ -544,53 +580,7 @@ class SellerRoutes extends Component {
                 })}
                 {...this.state}
                 {...this.props}
-              />
-
-          <Stack.Screen
-            name="Change Password"
-            component={ChangePassword}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              headerTitle: (
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    flex: 1,
-                    fontFamily: 'Gotham Black Regular',
-                  }}>
-                  Change Password
-                </Text>
-              ),
-              headerStyle: {backgroundColor: '#00aa00'},
-              headerTintColor: '#ffffff',
-              headerLeft: () => (
-                <TouchableOpacity
-                  onPress={() => this.goBack({navigation}, 'My Address')}>
-                  <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
-              ),
-              headerRight: () => (
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity onPress={() => navigation.navigate('')}>
-                    <Icon
-                      name="notifications"
-                      size={23}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('')}>
-                    <Icon
-                      name="shopping-cart"
-                      size={23}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableOpacity>
-                </View>
-              ),
-            })}
-            {...this.state}
-            {...this.props}
-          />
+              />         
         </Stack.Navigator>
       </NavigationContainer>
     );

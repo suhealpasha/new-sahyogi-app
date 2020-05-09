@@ -263,7 +263,7 @@ export default class Cart extends Component {
                           paddingLeft: 10,
                           paddingRight: 10,
                         }}>
-                        100:Ratings
+                        100:ratings
                       </Text>
                     </View>
                   );

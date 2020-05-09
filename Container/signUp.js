@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import axios from 'axios';
 import {StyleSheet,TouchableWithoutFeedback,FlatList,Text,View,TextInput,Button,TouchableHighlight,Image,TochableOpacity,Alert,Dimensions} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import NextButton from '../Components/utils/nextButton';
 import BackButton from '../Components/utils/backButton';
 import Logo from '../Components/utils/logo';
-import {CheckBox} from 'react-native-elements';
+import * as actionTypes from '../Store/action';
+import {connect} from 'react-redux';
+
 
 class SignUp extends Component {
   constructor(props) {
@@ -71,12 +72,8 @@ class SignUp extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,
-        backgroundColor: '#efebea',
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: this.state.height,
-      },
+        paddingRight: 10,  
+       },
       signInFormContainer: {
         width: '100%',
       },
@@ -120,7 +117,8 @@ class SignUp extends Component {
 
 
     return (
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
+      scrollEnabled={false}>
         <View style={styles.container}>
           <BackButton {...this.props} />
           <Logo />
@@ -200,6 +198,7 @@ class SignUp extends Component {
                     this.props.navigation.navigate('Register');
                   } else {
                     this.resetState()
+                    this.props.onUserTypeClicked(null)
                     this.props.navigation.navigate('Seller Type');
                   }
                 }
@@ -211,4 +210,11 @@ class SignUp extends Component {
     );
   }
 }
-export default SignUp;
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onUserTypeClicked: value =>
+      dispatch({type: actionTypes.USER_TYPE, payload: value}), 
+  };
+};
+export default connect(null,mapDispatchToProps)( SignUp);

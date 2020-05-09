@@ -61,7 +61,7 @@ export default class Notification extends Component {
                 />
                 {'  '}
               </Text>
-              <Text style={{fontFamily:'GothamLight',fontSize:10,textAlignVertical:'center',paddingLeft:10,paddingRight:10}}>100:Ratings</Text>
+              <Text style={{fontFamily:'GothamLight',fontSize:10,textAlignVertical:'center',paddingLeft:10,paddingRight:10}}>100:ratings</Text>
               </View>
             );
             return (

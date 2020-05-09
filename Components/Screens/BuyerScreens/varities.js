@@ -7,13 +7,11 @@ import {
   Image,
   ScrollView,
   Button,
- CheckBox
-} from 'react-native';
-// import { CheckBox } from 'react-native-elements'
-import {
-  TouchableHighlight,
   TouchableOpacity,
-} from 'react-native-gesture-handler';
+  BackHandler,
+  AsyncStorage
+} from 'react-native';
+import {CheckBox} from 'react-native-elements';
 import {
   Card,
   CardTitle,
@@ -22,74 +20,192 @@ import {
   CardButton,
   CardImage,
 } from 'react-native-material-cards';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import BottomNavigation from '../../BottomNavigation/bottomNavigation';
-import ProductAction from '../../utils/productAction';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import Filter from '../../utils/filter';
-export default class Varities extends Component {
+import * as api from '../../../assets/api/api';
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
+import axios from 'axios';
+import Spinner from 'react-native-loading-spinner-overlay';
+
+let filteredData =[]
+class Varities extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      checked:null
+      spinner: false,
+      checked: false,
+      varitiesData:[],
+      searchedData:[]
     };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  render() {
+  componentDidMount(){
+    this.fetchVarities();
+  }
+
+  componentDidUpdate(prevProps,prevState){
+    filteredData = this.state.varitiesData.filter(item => {
+     const itemDataVariety = item.name.toUpperCase();    
+     if (this.props.searchBarText) {
+       const textData = this.props.searchBarText.toUpperCase();
+       if(itemDataVariety.indexOf(textData) > -1){
+         return itemDataVariety.indexOf(textData) > -1;
+     }  
+     }  
+   });
    
-    const items = [
-      {
-      variety:'variety1'
-      },
-      {
-        variety:'variety2'
-      },
-      {
-        variety:'variety3'
-      },
-      {
-        variety:'variety4'
-      },
-      {
-        variety:'variety5'
-      },
-      {
-        variety:'variety6'
-      },
-      {
-        variety:'variety7'
-      },
-      {
-        variety:'variety8'
-      },
-      {
-        variety:'variety9'
-      },
-    
-    ];
+   if(prevProps.searchBarText !== this.props.searchBarText ){
+     this.setState({searchedData:filteredData})
+   }
+ }
 
+  fetchVarities = async () =>{
+    this.setState({spinner:true})    
+    const access_token = await AsyncStorage.getItem('isLoggedIn');   
+    axios
+      .get(api.varitiesAPI,{
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        this.setState({spinner:false,varitiesData: res.data.data});
+      })
+      .catch(err => {
+        this.setState({spinner:false})
+        console.log(err);
+      });
+  
+  }
+
+  componentWillMount() {
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+   this.props.onClickedIcon()
+  }
+  handleBackButtonClick() {    
+    this.props.navigation.goBack(null);
+    return true;
+  } 
+
+  handleAllChecked = async () => {
+    await this.setState({checked: !this.state.checked});
+    let items = this.state.varitiesData;
+    items.forEach(item => (item.checked = this.state.checked));
+    this.setState({varitiesData: items});
+  };
+
+  selectVarities = args => {
+    this.setState({checked: false});
+    let items = this.state.varitiesData;
+    items.forEach(item => {
+      if (item.verity_Id === args)
+        if (item.checked === true) {
+          return (item.checked = false);
+        } else {
+          return (item.checked = true);
+        }
+    });
+    this.setState({varitiesData: items});
+  };
+
+  filterVarities = () => {   
+    console.log(this.state.items) 
+    // const newArray = [...this.state.items];
+    // let filteredData = newArray.filter(item => {
+    //   if (item.checked) {
+    //     return item.variety;
+    //   }
+    // });
+    // this.props.onFilterVaritiesData(filteredData)
+    // this.props.navigation.navigate('Listing')
+    // this.props.onClickedIcon();
+  };
+
+  render() {
+    console.log(this.state.varitiesData)
     return (
-      <View style={{flex:1.0}}>
-      <View style={styles.container}>
-        <FlatList
-          data={items}
-          numColumns={1}
-          // keyExtractor = {(items)=>{items.key}}
-
-          renderItem={({item}) => {           
-            return (
-              <View style={{paddingTop:10,paddingBottom:10,borderBottomWidth:0.25,borderColor:'#95A5A6',flexDirection:'row'}}>
-              <CheckBox />
-            <Text title={item.variety}  style={{fontFamily:'GothamLight',fontWeight:'normal',textAlignVertical:'center'}} >{item.variety}</Text>
-            </View>
-            );
-          }}
+      <View style={{flex: 1.0}}>
+        <View style={styles.container}>
+        <Spinner
+          visible={this.state.spinner}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}         
         />
-    
-      </View>
-      <TouchableOpacity >
-         <Text style={{paddingBottom:20,paddingTop:20,textAlign:'center',color:'#004561',textAlign:'center', fontSize:14,fontFamily:'GothamMedium',textAlignVertical:'center'}}>Apply</Text>
-       </TouchableOpacity>
+          <CheckBox
+            title="Check All"
+            checked={this.state.checked}
+            containerStyle={{
+              width: '100%',
+              marginLeft: 0,
+              marginTop: 0,
+              marginBottom: 0,
+            }}
+            checkedColor={'#00aa00'}
+            onPress={this.handleAllChecked}
+          />
+          <FlatList
+           data={!this.props.searchBarShow ? this.state.varitiesData : this.state.searchedData}
+            numColumns={1}
+            style={{padingLeft:10,paddingRight:10}}
+            // keyExtractor = {(items)=>{items.key}}
+
+            renderItem={({item}) => {
+              return (
+                <View
+                  style={{
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                    borderBottomWidth: 0.25,
+                    borderColor: '#95A5A6',
+                    flexDirection: 'row',
+                  }}>
+                  <CheckBox
+                    checkedColor={'#00aa00'}
+                    checked={this.state.checked || item.checked}
+                    onPress={() => this.selectVarities(item.verity_Id)}
+                  />
+                  <Text
+                    title={item.name}
+                    style={{
+                      fontFamily: 'GothamLight',
+                      fontWeight: 'normal',
+                      textAlignVertical: 'center',
+                    }}>
+                    {item.name}
+                  </Text>
+                </View>
+              );
+            }}
+          />
+        </View>
+        <TouchableOpacity onPress={this.filterVarities}>
+          <Text
+            style={{
+              paddingBottom: 20,
+              paddingTop: 20,
+              textAlign: 'center',
+              color: '#004561',
+              textAlign: 'center',
+              fontSize: 14,
+              fontFamily: 'GothamMedium',
+              textAlignVertical: 'center',
+            }}>
+            Apply
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -97,16 +213,28 @@ export default class Varities extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1.0,
-    paddingLeft: 10,
-    paddingRight: 10,
+    flex: 1.0,   
     paddingBottom: 10,
-    paddingTop: 10, 
-    backgroundColor:'white'
+    paddingTop: 10,
+    backgroundColor: 'white',
   },
-  applyText:{
-    textAlign:'center',
-    fontFamily:'GothamMedium'
-},
-  
+  applyText: {
+    textAlign: 'center',
+    fontFamily: 'GothamMedium',
+  },
+  spinnerTextStyle: {
+    color: '#00aa00'
+  }, 
 });
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onFilterVaritiesData: value =>
+      dispatch({type: actionTypes.FILTER_VARITIES_DATA, payload: value}),
+  };
+};
+
+export default connect(
+  null,
+  mapDispatchToProps,
+)(Varities)

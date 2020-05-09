@@ -20,8 +20,8 @@ import {
 } from 'react-native-material-cards';
 import BottomNavigation from '../../BottomNavigation/bottomNavigation';
 import {CheckBox} from 'react-native-elements';
-import {Checkbox} from 'react-native-paper';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import * as api from '../../../assets/api/api';
+import {TouchableWithoutFeedback, TouchableNativeFeedback} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Spinner from 'react-native-loading-spinner-overlay';
 import axios from 'axios';
@@ -47,11 +47,9 @@ fetchOrigins = async () =>{
   let data = JSON.stringify({
     region_Id: this.props.route.params.regionId   
   });
-
-
   const access_token = await AsyncStorage.getItem('isLoggedIn');   
   axios
-    .post('http://mathtech.co.in/microffee_api/Seller/getoriginsbyid',data,{
+    .post(api.originsByIdAPI,data,{
       headers: {
         accept: 'application/json',
         access_token: access_token,
@@ -69,24 +67,7 @@ fetchOrigins = async () =>{
 
 }
 
-
-// async componentWillReceiveProps(){
-//   console.log(this.props.searchBarText)
-  // this.state.originsData.filter(item => {
-  //   const itemDataOrigin = item.name.toUpperCase();
-    
-  //   if (this.props.searchBarText) {
-  //     const textData = this.props.searchBarText.toUpperCase();
-  //     console.log(itemDataOrigin.indexOf(textData) > -1)
-  //     return itemDataOrigin.indexOf(textData) > -1; 
-  //   }
-    
-  // });
-
-// }
-
-componentDidUpdate(prevProps,prevState){ 
-
+componentDidUpdate(prevProps,prevState){
    filteredData = this.state.originsData.filter(item => {
     const itemDataOrigin = item.name.toUpperCase();    
     if (this.props.searchBarText) {
@@ -98,10 +79,31 @@ componentDidUpdate(prevProps,prevState){
   });
   
   if(prevProps.searchBarText !== this.props.searchBarText ){
-    console.log(filteredData)
     this.setState({searchedData:filteredData})
   }
 }
+
+handleAllChecked = async () => {
+  await this.setState({checked: !this.state.checked});
+  let items = this.state.originsData;
+  items.forEach(item => (item.checked = this.state.checked));
+  this.setState({originsData: items});
+};
+
+selectOrigins = args => {
+    this.setState({checked: false});
+    let items = this.state.originsData;
+    items.forEach(item => {
+      if (item.origin_Id === args)
+        if (item.checked === true) {
+          return (item.checked = false);
+        } else {
+          return (item.checked = true);
+        }
+    });
+    this.setState({originsData: items});
+  };
+
   render() {    
     return (
       <View style={styles.container}>
@@ -115,11 +117,11 @@ componentDidUpdate(prevProps,prevState){
           checked={this.state.checked}
           containerStyle={{width: '100%', marginLeft: 0,marginTop:0,marginBottom:0}}
           checkedColor={'#00aa00'}
-          onPress={() => this.setState({checked: !this.state.checked})}
+          onPress={this.handleAllChecked}
 
         />
 
-        <View style={{flex: 1.0}}>
+        <View style={{flex: 1.0,paddingTop:10}}>
           <FlatList
             data={!this.props.searchBarShow ? this.state.originsData : this.state.searchedData}
             columnWrapperStyle={{justifyContent: 'space-between'}}
@@ -136,14 +138,11 @@ componentDidUpdate(prevProps,prevState){
                       }}
                       style={{width: 160,height: 120}}>
                       <CheckBox
-                        checked={this.state.checked}
+                        checked={this.state.checked || item.checked}
                         right
                         checkedColor={'#00aa00'}
-                        onPress={() =>
-                          this.setState({checked: !this.state.checked})
-                        }
-                        containerStyle={{
-                          border: 0,
+                        onPress={() => this.selectOrigins(item.origin_Id)}
+                        containerStyle={{                          
                           paddingLeft: 0,
                           paddingRight: 0,
                           paddingTop: 0,
@@ -162,7 +161,7 @@ componentDidUpdate(prevProps,prevState){
           />
         </View>
         <View>
-          <TouchableOpacity
+          <TouchableNativeFeedback
             onPress={() => this.props.navigation.navigate('Listing')}>
             <View
               style={{
@@ -190,7 +189,7 @@ componentDidUpdate(prevProps,prevState){
                 style={{textAlignVertical: 'center'}}
               />
             </View>
-          </TouchableOpacity>
+          </TouchableNativeFeedback>
         </View>
       </View>
     );

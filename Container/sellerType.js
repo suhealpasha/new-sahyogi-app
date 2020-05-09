@@ -38,7 +38,8 @@ class SellerType extends Component {
   }
 
   userClicked = (u) =>{
-    if(u ==='p'){    
+    if(u ==='p'){
+     this.props.onSellerUserTypeClicked('Producer')   
      this.setState({user1BorderColor:'#00aa00'})
      this.setState({user2BorderColor:'#95A5A6'})
      this.setState({user3BorderColor:'#95A5A6'})
@@ -47,6 +48,7 @@ class SellerType extends Component {
      this.setState({u3:false})
     }
     else if(u ==='d'){     
+     this.props.onSellerUserTypeClicked('Distributor')    
      this.setState({user1BorderColor:'#95A5A6'})
      this.setState({user2BorderColor:'#00aa00'})
      this.setState({user3BorderColor:'#95A5A6'})
@@ -55,6 +57,7 @@ class SellerType extends Component {
      this.setState({u3:false})
     }
     else{
+      this.props.onSellerUserTypeClicked('Producer or Distributor')   
       this.setState({user3BorderColor:'#00aa00'})
       this.setState({user2BorderColor:'#95A5A6'})
       this.setState({user1BorderColor:'#95A5A6'})
@@ -70,11 +73,7 @@ class SellerType extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,
-        backgroundColor: '#efebea',
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: this.state.height,
+        paddingRight: 10,        
       },
       signInFormContainer: {
         width: '100%',
@@ -132,7 +131,8 @@ class SellerType extends Component {
     });
 
     return (
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
+      scrollEnabled={false}>
         <View style={styles.container}>
           <BackButton {...this.props} />
           <Logo />
@@ -217,10 +217,9 @@ class SellerType extends Component {
               click={() => {
                 if (this.state.u1 === null && this.state.u2 === null  && this.state.u3 === null) {
                   this.setState({errorMessage: true});
-                } else {
+                } else {              
                   this.props.onUserTypeClicked('seller')
-                  this.props.navigation.navigate('Register')
-                  this.props.onUserTypeClicked(null)
+                  this.props.navigation.navigate('Register')                 
                 }
               }}
             />
@@ -234,6 +233,8 @@ const mapDispatchToProps = dispatch => {
   return {
     onUserTypeClicked: value =>
       dispatch({type: actionTypes.USER_TYPE, payload: value}),
+    onSellerUserTypeClicked: value =>
+      dispatch({type: actionTypes.SELLER_USER_TYPE, payload: value}),
   };
 };
 export default connect(null,mapDispatchToProps)(SellerType);

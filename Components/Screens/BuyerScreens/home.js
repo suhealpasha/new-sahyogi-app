@@ -39,6 +39,8 @@ class App extends Component {
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
+
+  
   componentWillMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
@@ -53,7 +55,7 @@ class App extends Component {
     );
   }
   handleBackButtonClick() {
-    console.log('clicked back button')
+    console.log('clicked back button in home')
     BackHandler.exitApp();
     return true;
   }

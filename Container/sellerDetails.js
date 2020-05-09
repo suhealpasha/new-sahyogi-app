@@ -16,42 +16,99 @@ import {
   CardButton,
   CardImage,
 } from 'react-native-material-cards';
-
+import * as actionTypes from '../Store/action';
+import {connect} from 'react-redux';
+import * as api from '../assets/api/api';
 
 class SellerDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      height: Dimensions.get('window').height,
+    height: Dimensions.get('window').height,
      company:null,
-     tin:null,
+     ein:null,
      alternatePhone:null,
      address:null,
      companyError:false,
-     tinError:false,
+     companyValidationError:false,
+     einError:false,
+     einValidationError:false,
      alternatePhoneError:false,
-     addressError:false
-     
+     alternatePhoneValidationError:false,
+     addressError:false     
     };
   }
-  handleRegister = () => {
+
+  einValidate = () =>{
+    if (this.state.ein === '') {
+      this.setState({ein: null});
+      return;
+    } else {     
+      if (String(this.state.ein).length !== 12) {
+        this.setState({einValidationError: true});
+        return;
+      } 
+  }
+}
+
+alternatePhoneValidate =()=>{
+  if (this.state.alternatePhone === '') {
+    this.setState({alternatePhone: null});
+    return;
+  } else {    
+    if (String(this.state.alternatePhone).length !== 12) {
+      this.setState({alternatePhoneValidationError: true});
+      return;
+    } 
+}
+}
+
+  handleRegister = async () => {
     if (
       this.state.company !== null &&
-      this.state.tin !== null &&
+      this.state.ein !== null &&
       this.state.alternatePhone !== null &&
-      this.state.address !== null
+      this.state.address !== null &&
+      this.state.companyValidationError === false &&
+      this.state.einValidationError  === false &&
+      this.state.alternatePhoneValidationError === false
     ) {
-      this.props.navigation.navigate('OTP');
+       let data = JSON.stringify({
+          mobile_no: this.props.mobile,
+        });        
+        await axios
+          .post(api.otpAPI, data, {
+            headers: {
+              accept: 'application/json',
+              'accept-language': 'en_US',
+              'content-type': 'application/x-www-form-urlencoded',
+            },
+          })
+          .then(res => {
+            if (res.status) {
+              this.props.onRegisterSellerAdditionalDetails(
+                this.state.company,
+                this.state.ein,
+                this.state.alternatePhone, 
+                this.state.address,             
+                String(res.data.data.otp),
+              );
+              this.props.navigation.navigate('OTP');
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
     } else {
       if (this.state.company === null) {
         this.setState({companyError: true});
       } else {
         this.setState({companyError: false});
       }
-      if (this.state.tin === null) {
-        this.setState({tinError: true});
+      if (this.state.ein === null) {
+        this.setState({einError: true});
       } else {
-        this.setState({tinError: false});
+        this.setState({einError: false});
       }
       if (this.state.alternatePhone === null) {
         this.setState({alternatePhoneError: true});
@@ -72,10 +129,7 @@ class SellerDetails extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,        
-        backgroundColor: '#efebea',    
-        paddingTop:10,
-        paddingBottom:10,  
+        paddingRight: 10,       
        
       },
       registerFormContainer: {
@@ -86,7 +140,8 @@ class SellerDetails extends Component {
     });
 
     return (
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
+      scrollEnabled={true}>
         <View style={styles.container}>    
         <BackButton {...this.props} />  
         <Logo />   
@@ -104,37 +159,110 @@ class SellerDetails extends Component {
             <Input
               placeholder="Company"
               style={styles.inputStyle}
-              onChangeText={company => this.setState({company})}
+              onChangeText={company =>{
+                if (/[^0-9a-zA-Z]/.test(company)) {
+                  this.setState({companyValidationError: true});
+                } else {
+                  this.setState({
+                    company,
+                    companyError: false,
+                    companyValidationError: false,
+                  });
+                }
+              }
+              
+              }
+              onBlur={this.state.company === '' ? this.setState({company:null}):null}
               errorMessage={
                 this.state.companyError === true
                   ? 'Enter the Company'
-                  : false
+                  : this.state.companyValidationError
+                  ? 'Invalid Company name'
+                  : null
               }
             />
             <Input
-              placeholder="TIN"
+              placeholder="EIN"
               style={styles.inputStyle}
-              onChangeText={tin => this.setState({tin})}
+              keyboardType="numeric"
+              maxLength={11}
+              onChangeText={
+                ein => {
+                  const input = ein.replace(/\D/g, '').substring(0, 11);
+                  const first = input.substring(0, 2);
+                  const last = input.substring(2, 11);             
+  
+                 if (input.length > 3) {
+                    this.setState({
+                      ein: `${first}-${last}`,
+                      einError: false,
+                      einValidationError: false,
+                    });
+                  } else if (input.length >= 0) {
+                    this.setState({
+                      ein: input,
+                      einError: false,
+                      einValidationError: false,
+                    });
+                  }
+                }
+              }
+              onBlur={this.einValidate}
               errorMessage={
-                this.state.tinError === true
-                  ? 'Enter the TIN'
-                  : false
+                this.state.einError === true
+                  ? 'Enter the EIN'
+                  : this.state.einValidationError 
+                  ? 'Invalid Ein'
+                  : null
               }
             />
             <Input
               placeholder="Alternate Phone"
+              keyboardType="numeric"
+              maxLength={10}
               style={styles.inputStyle}
-              onChangeText={alternatePhone => this.setState({alternatePhone})}
+              onChangeText={
+                alternatePhone => {
+                  const input = alternatePhone.replace(/\D/g, '').substring(0, 10);
+                  const first = input.substring(0, 3);
+                  const middle = input.substring(3, 6);
+                  const last = input.substring(6, 10);
+  
+                  if (input.length > 6) {
+                    this.setState({
+                      alternatePhone: `${first}-${middle}-${last}`,
+                      alternatePhoneError: false,
+                      alternatePhoneValidationError: false,
+                    });
+                  } else if (input.length > 3) {
+                    this.setState({
+                      alternatePhone: `${first}-${middle}`,
+                      alternatePhoneError: false,
+                      alternatePhoneValidationError: false,
+                    });
+                  } else if (input.length >= 0) {
+                    this.setState({
+                      alternatePhone: input,
+                      alternatePhoneError: false,
+                      alternatePhoneValidationError: false,
+                    });
+                  }
+                }
+              }
+              onBlur={this.alternatePhoneValidate}
               errorMessage={
                 this.state.alternatePhoneError === true
                   ? 'Enter the Alternate Phone number'
-                  : false
+                  : this.state.alternatePhoneValidationError
+                  ? 'Invalid Phone number'
+                  : null
               }
             />
             <Input
               placeholder="Address"
               style={styles.inputStyle}
-              onChangeText={address => this.setState({address})}
+              onChangeText={address => this.setState({address,addressError:false})}
+              onBlur={this.state.address === '' ? this.setState({address:null}):null}
               errorMessage={
                 this.state.addressError === true
                   ? 'Enter the Address'
@@ -150,4 +278,29 @@ class SellerDetails extends Component {
     );
   }
 }
-export default SellerDetails;
+
+const mapStateToProps = state => {
+  return {
+    mobile: state.reducer.mobile,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onRegisterSellerAdditionalDetails : (value,value2, value3, value4,value5) =>
+      dispatch({
+        type: actionTypes.REGISTER_SELLER_ADDITIONAL_DETAILS,
+        payload: value,
+        payload2: value2,
+        payload3: value3,
+        payload4: value4,
+        payload5:value5
+      
+      }),
+   
+  };
+};
+export default connect(
+  mapStateToProps ,
+  mapDispatchToProps,
+)(SellerDetails);

@@ -3,12 +3,18 @@ import {View , Text,  StyleSheet,Dimensions,Picker, Button,TouchableOpacity} fro
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import NumericInput from 'react-native-numeric-input'
 import SwitchButton from 'switch-button-react-native';
+import axios from 'axios';
+import * as api from '../../assets/api/api';
+import Spinner from 'react-native-loading-spinner-overlay';
+
 class ProductAction extends Component{
     constructor(props) {
         super(props);
         this.state = {
+          spinner:false,
             width: Dimensions.get('window').width,
             height: Dimensions.get('window').height,
+            productData:[],
             lbs:null,
             favouriteColor:'grey',
             active10Button:false,
@@ -19,13 +25,46 @@ class ProductAction extends Component{
         };
       }
 
-      favoutiteClicked = () =>{
+      componentDidMount(){
+        this.setState({productData:this.props.productData})
+      }
+
+      favoutiteClicked = async () =>{
+        this.setState({spinner:true})
+        let data;
         if(this.state.favouriteColor==='grey'){
             this.setState({favouriteColor:'red'})
+          data=JSON.stringify({
+            flag:true,
+            product_Id:this.props.productData.product_Id
+          })
       }
       else{
           this.setState({favouriteColor:'grey'})
+          data=JSON.stringify({
+            flag:false,
+            product_Id:this.props.productData.product_Id
+          })
       }
+      console.log(data)
+      await axios
+      .post(api.buyerWishlistAddOrRemoveAPI, data, {
+        headers: {
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        if (res.status) {
+          this.setState({spinner:false})
+        }
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
+
     }
 
     activateUnitsButton = (param1) =>{
@@ -35,8 +74,7 @@ class ProductAction extends Component{
             }
             else{ this.setState({active10Button:true})
          }
-        }
-       
+        }       
     }
   
     render(){
@@ -44,7 +82,8 @@ class ProductAction extends Component{
             productActionsContainer:{
                 alignItems:'center',
                 paddingTop:10,
-                height:200 ,
+                // height:200 ,
+               
                 width:this.state.width - 20
             },
             actionsContainer:{                               
@@ -85,7 +124,7 @@ class ProductAction extends Component{
               unitsActiveButton:{
                 paddingTop:5,
                 paddingBottom:5,
-                borderWidth: 0.5,
+                borderWidth: 1,
                 borderColor: '#004561',                             
                 paddingLeft:5,
                 paddingRight:5,
@@ -100,7 +139,7 @@ class ProductAction extends Component{
                
               },
               unitsActiveButtonText:{
-                fontFamily:'GothamLight',
+                fontFamily:'GothamBold',
                 color:'#004561',
                 fontSize:12
               },
@@ -134,15 +173,23 @@ class ProductAction extends Component{
                paddingRight:5,
                paddingLeft:5
               },
+              spinnerTextStyle: {
+                color: '#00aa00',
+              },
         })
         return(
         <View style={styles.productActionsContainer}>
+          <Spinner
+            visible={this.state.spinner}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
         <View style={styles.actionsContainer}>
             <View style={{width:'60%'}}>
             <Text style={styles.priceText}>$100.00</Text></View>
              <View style={{flexDirection:'row',width:'40%'}}>
               <View style={styles.ratingStyle}>
-              <Text style={{color:'white',textAlign:'center',justifyContent:'space-between'}}>5.0 <Icon
+              <Text style={{color:'white',textAlign:'center',justifyContent:'space-between'}}>{this.state.productData.rating} <Icon
                   name="star"
                   size={13}
                   style={{
@@ -153,7 +200,7 @@ class ProductAction extends Component{
                 />
                 </Text>               
               </View> 
-              <Text style={{fontFamily:'GothamLight',fontSize:10,textAlignVertical:'center',paddingLeft:10,paddingRight:10}}>100:Ratings</Text>      
+              <Text style={{fontFamily:'GothamLight',fontSize:10,textAlignVertical:'center',paddingLeft:10,paddingRight:10}}>{this.state.productData.avg_rating}: ratings</Text>      
               </View>
         </View>
         <View style={styles.actionsContainer}>
@@ -176,7 +223,7 @@ class ProductAction extends Component{
                 text2 = 'M'                       // optional: second text in switch button --- default OFF
                 switchWidth = {80}                 // optional: switch width --- default 44
                 switchHeight = {30}                 // optional: switch height --- default 100
-                switchdirection = 'rtl'             // optional: switch button direction ( ltr and rtl ) --- default ltr
+                switchdirection = 'ltl'             // optional: switch button direction ( ltr and rtl ) --- default ltr
                 switchBorderRadius = {0}          // optional: switch border radius --- default oval
                 switchSpeedChange = {100}           // optional: button change speed --- default 100
                 switchBorderColor = '#95A5A6'       // optional: switch border color --- default #d4d4d4

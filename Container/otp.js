@@ -20,6 +20,7 @@ import Logo from '../Components/utils/logo';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import {connect} from 'react-redux';
 import * as actionTypes from '../Store/action';
+import * as api from '../assets/api/api';
 
 class Otp extends Component {
   constructor(props) {
@@ -27,29 +28,41 @@ class Otp extends Component {
     this.state = {
       height: Dimensions.get('window').height,
       otp: '',
+      otpError:false,
+      invalidOTP:false
     };
   } 
 
-  getOtp(otp) {
-    console.log(otp);
-    this.setState({otp});
-  }
+ 
   handleLogin = () => {
-    this.props.navigation.navigate('Set Password');
+    // if(this.state.otp !== ''){
+    //  let otpCheck = String(this.state.otp).length     
+    //  if(otpCheck === 4){
+      // this.setState({invalidOTP:false})
+      this.props.navigation.navigate('Set Password');
+    //  } 
+    //  else{
+      //  this.setState({invalidOTP:true})
+    //  }
+    
+    // }
+    // else{
+    //   this.setState({otpError:true})
+    // }
+    
   };
 
   resendOTP = async() =>{
-    let data = JSON.stringify({
+     let data = JSON.stringify({
       mobile_no:this.props.mobile,
       otp:this.props.otp
     })
-    await axios.post('http://mathtech.co.in/microffee_api/Buyer/otp',data,
+    await axios.post(api.otpAPI,data,
     {headers:{'accept': 'application/json',
     'accept-language': 'en_US',
     'content-type': 'application/x-www-form-urlencoded'}} )
     .then(res =>{         
-      if(res.status){     
-           
+      if(res.status){             
         this.props.onResendOTP(String(res.data.data.otp));        
       }
     })
@@ -64,10 +77,6 @@ class Otp extends Component {
         alignItems: 'center',
         paddingLeft: 10,
         paddingRight: 10,        
-        backgroundColor: '#efebea',    
-        paddingTop:10,
-        paddingBottom:10,  
-        height:this.state.height  
       },
       otpFormContainer: {
         width: '100%',
@@ -116,7 +125,8 @@ class Otp extends Component {
     });
 
     return (
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
+      scrollEnabled={false}>
         <View style={styles.container}>
           <BackButton {...this.props} />
           <Logo />
@@ -137,15 +147,38 @@ class Otp extends Component {
               pinCount={4}
               style={styles.otpStyles}
               code={this.props.otp} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
-              // onCodeChanged = {code => { this.setState({code})}}
+              // onCodeChanged = {code => { this.setState({otp:code,otpError:false})}}
               // autoFocusOnLoad
               codeInputFieldStyle={styles.underlineStyleBase}
-              codeInputHighlightStyle={styles.underlineStyleHighLighted}
-              onCodeFilled={code => {
-                console.log(`Code is ${code}, you are good to go!`);
-              }}
+              codeInputHighlightStyle={styles.underlineStyleHighLighted}              
             />
           </View>
+          {this.state.otpError ? (
+              <Text
+                style={{
+                  color: 'red',
+                  fontSize: 12,
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                }}>
+                Enter the OTP
+              </Text>
+            ) : null}
+             {this.state.invalidOTP ? (
+              <Text
+                style={{
+                  color: 'red',
+                  fontSize: 12,
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                }}>
+                Invalid OTP
+              </Text>
+            ) : null}
           <View style={styles.resendOtpContainer}>
             <TouchableOpacity onPress={() => {this.resendOTP()}}>
             <Text
@@ -172,7 +205,7 @@ class Otp extends Component {
 const mapStateToProps = state => {
   return {
     otp: state.reducer.otp,
-    mobile: state.reducer.mobile,   
+    mobile: state.reducer.mobile,
   };
 };
 const mapDispatchToProps = dispatch => {

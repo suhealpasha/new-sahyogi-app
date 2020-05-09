@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native';
 import {
   Card,
@@ -17,19 +18,42 @@ import {
   CardImage,
 } from 'react-native-material-cards';
 import BottomNavigation from '../../BottomNavigation/bottomNavigation';
-import {TouchableHighlight} from 'react-native-gesture-handler';
+import {TouchableHighlight, TouchableNativeFeedback} from 'react-native-gesture-handler';
 import Dialog from 'react-native-dialog';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Rating, AirbnbRating} from 'react-native-ratings';
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
 
-export default class MyOrders extends Component {
+ class MyOrders extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dailogBoxOpen: false,
       comment:''
     };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
+
+  componentWillMount() {    
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+  handleBackButtonClick() {   
+    this.props.onBottomTabClicked('profile');
+    this.props.navigation.goBack(null);
+    return true;
+  }  
+
   ratingCompleted =(rating) => {
     console.log('Rating is: ' + rating);
   }
@@ -152,6 +176,7 @@ commentUpdate = () =>{
     return (
       <View style={styles.container}>
         <FlatList
+        style={{paddingLeft:10,paddingRight:10}}
           data={items}
           numColumns={1}
           // keyExtractor = {(items)=>{items.key}}
@@ -203,7 +228,7 @@ commentUpdate = () =>{
               </TouchableOpacity>
             );
             return (
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('Order Detail')}>
+              <TouchableNativeFeedback onPress={() => this.props.navigation.navigate('Order Detail')}>
                 <View style={styles.itemContainer}>
                   <View style={styles.thumbnailImageContainer}>
                     <Image
@@ -249,7 +274,7 @@ commentUpdate = () =>{
                     <Icon name="chevron-right" size={25} />
                   </View>
                 </View>
-              </TouchableOpacity>
+              </TouchableNativeFeedback>
             );
           }}
         />
@@ -302,8 +327,7 @@ commentUpdate = () =>{
 const styles = StyleSheet.create({
   container: {
     flex: 1.0,
-    paddingLeft: 10,
-    paddingRight: 10,
+   
     paddingBottom: 10,
     paddingTop: 10,
   },
@@ -369,3 +393,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
+const mapDispatchToProps = dispatch => {
+  return {
+    onBottomTabClicked: value =>
+      dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
+  };
+};
+export default connect(
+  null,
+  mapDispatchToProps,
+)(MyOrders);

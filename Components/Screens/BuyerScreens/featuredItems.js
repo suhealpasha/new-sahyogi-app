@@ -16,22 +16,9 @@ export default class FeaturedItems extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      width: Dimensions.get('window').width,
-      items: [
-      require('../../../assets/Images/coffeeFarms/img4.png'),
-       require('../../../assets/Images/coffeeFarms/img5.png'),
-        require('../../../assets/Images/coffeeFarms/img6.png'),
-       require('../../../assets/Images/coffeeFarms/img7.png'),
-       require('../../../assets/Images/coffeeFarms/img1.png'),      
-      ],
-      itemsData:[
-        {origin:'EL SALVADOR',farm:'Las Delicias',ratings:'4.0'} ,
-        {origin:'BOURBON',farm:'Sta Lucia',ratings:'2.5'} ,  
-        {origin:'BOURBON',farm:'Sta Lucia',ratings:'1.5'} ,  
-        {origin:'GEISHA',farm:'El Rosario',ratings:'5.0'} ,  
-        {origin:'EL SALVADOR',farm:'Las Delicias',ratings:'4.2'} ,
-    ],
-    currentSelecteditem:0
+      width: Dimensions.get('window').width,      
+      currentSelecteditem:0,
+      featuredProductsData:[]
     };
    
   }
@@ -39,12 +26,22 @@ export default class FeaturedItems extends Component {
   updateImageDetails = ( image ) => {
     this.setState({currentSelecteditem:image})
   };
+  
+   componentDidMount(){
+   this.setState({featuredProductsData:this.props.featuredProductsData})
+  }
 
   render() {
+
+    let images = [];
+    this.props.featuredProductsData.map(item =>{
+      images.push(item.thumbnail_image)
+    })
+   
     return (
       <View style={styles.container}>
         <SliderBox
-          images={this.state.items}
+          images={images}
           sliderBoxHeight={200}
           onCurrentImagePressed={index =>
             console.warn(`image ${index} pressed`)
@@ -59,15 +56,16 @@ export default class FeaturedItems extends Component {
         />
         <View style={{paddingLeft:10,paddingRight:5,flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
 
-        <View>
-        <Text  style={styles.itemTextOrigin}>{this.state.itemsData[this.state.currentSelecteditem].origin}</Text>        
-        <Text style={styles.itemTextFarm}>{this.state.itemsData[this.state.currentSelecteditem].farm}</Text>
+        <View>      
+        <Text  style={styles.itemTextVariety}>{this.props.featuredProductsData && this.props.featuredProductsData.length ? this.props.featuredProductsData[this.state.currentSelecteditem].verityname : null}</Text>        
+        <Text style={styles.itemTextOrigin}>{ this.props.featuredProductsData && this.props.featuredProductsData.length? this.props.featuredProductsData[this.state.currentSelecteditem].originsname : null}</Text>
+        <Text style={styles.itemTextFarm}>{ this.props.featuredProductsData && this.props.featuredProductsData.length? this.props.featuredProductsData[this.state.currentSelecteditem].farm : null}</Text>
         </View>
         <View>
         <View style={{flexDirection: 'row'}}>
                 <Text style={styles.ratingStyle}>
                   {'  '}
-                  {this.state.itemsData[this.state.currentSelecteditem].ratings}{' '}
+                  { this.props.featuredProductsData && this.props.featuredProductsData.length? this.props.featuredProductsData[this.state.currentSelecteditem].avg_rating : null}{' '}
                   <Icon
                     name="star"
                     size={13}
@@ -86,7 +84,7 @@ export default class FeaturedItems extends Component {
                     paddingLeft: 10,
                     paddingRight: 10,
                   }}>
-                  100:Ratings
+                  { this.props.featuredProductsData && this.props.featuredProductsData.length? this.props.featuredProductsData[this.state.currentSelecteditem].rating : null}: ratings
                 </Text>
               </View>
               </View>
@@ -102,10 +100,17 @@ const styles = StyleSheet.create({
     borderRadius:15,
     paddingBottom:10
   },
-  itemTextOrigin: {
+  itemTextVariety:{
     fontFamily: 'Gotham Black Regular',
     fontSize: 14,
     paddingTop: 5,
+  },
+  itemTextOrigin: {
+    fontSize: 12,
+    justifyContent: 'space-around',
+    fontFamily: 'GothamMedium',
+    color: '#95A5A6',
+  
   },
   itemTextFarm: {
     fontSize: 12,

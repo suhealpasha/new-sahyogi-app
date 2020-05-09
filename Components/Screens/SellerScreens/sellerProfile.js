@@ -45,26 +45,37 @@ class SellerProfile extends Component {
       oldPasswordError: false,
       passwordError: false,
       confirmPasswordError: false,
+      userData:[]
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
-  UNSAFE_componentWillMount() {
+
+  componentDidMount() {
+    this.setState({
+      userData:this.props.userData
+    });
+   
+  }
+
+  componentWillMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
 
-  UNSAFE_componentWillUnmount() {
+  componentWillUnmount() {
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
-  handleBackButtonClick() {  
-    BackHandler.exitApp();   
+  handleBackButtonClick() {
+    this.props.onBottomTabClicked('home');
+    this.props.navigation.goBack(null);
     return true;
   }
+
   _logout = async () => {
     await AsyncStorage.clear();
     this.props.onLogout();
@@ -96,6 +107,7 @@ class SellerProfile extends Component {
     }
   };
   render() {
+    console.log(this.state.userData)
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
@@ -191,7 +203,7 @@ class SellerProfile extends Component {
               </PhotoUpload>
             </View>
             <View style={styles.userDetailsContainer}>
-              <Text style={styles.userName}>Paul Mathew</Text>
+                <Text style={styles.userName}>hjhk</Text>
               <Text style={styles.otherDetails}>(341)-1001889110</Text>
               <Text style={styles.otherDetails}>paul@test.com</Text>
               <Text style={styles.companyDetails}>XYZ Coffee Producers</Text>

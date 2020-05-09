@@ -9,10 +9,15 @@ class ProductDescription extends Component {
     this.state = {
       width: Dimensions.get('window').width,
       height: Dimensions.get('window').height,
+      
     };
   }
 
+ 
+
   render() {
+
+
     const items = [
       {
         name: require('../../assets/Images/coffeeFarms/img1.png'),
@@ -28,7 +33,7 @@ class ProductDescription extends Component {
     ];
 
     const styles = StyleSheet.create({     
-      productDescriptionContainer: {    
+      productDescriptionContainer: {      
         paddingTop: 10,     
         height: 140,      
       },
@@ -72,10 +77,11 @@ class ProductDescription extends Component {
                 return (
                   <View style={styles.productDetailsContainer}>
                     <View style={styles.productDetailHeader}>
-                      <Text style={styles.productDetailHeaderText}>Origin</Text>
-                      <Text style={styles.productDetailHeaderText}>
+                    <Text style={styles.productDetailHeaderText}>
                         Variety 
                       </Text>
+                      <Text style={styles.productDetailHeaderText}>Origin</Text>
+                      
                       <Text style={styles.productDetailHeaderText}>Farm</Text>
                       <Text style={styles.productDetailHeaderText}>
                         Altitude 
@@ -86,20 +92,21 @@ class ProductDescription extends Component {
                       </Text>
                     </View>
                     <View style={styles.productDetail}>
-                      <Text style={styles.productDetailText}>
-                        : {item.origin}
+                    <Text style={styles.productDetailText}>
+                        : {this.props.productData.verityname}
                       </Text>
                       <Text style={styles.productDetailText}>
-                        : {item.variety}
+                        : {this.props.productData.originsname}
                       </Text>
-                      <Text style={styles.productDetailText}>: {item.farm}</Text>
+                      
+                      <Text style={styles.productDetailText}>: {this.props.productData.farm}</Text>
                       <Text style={styles.productDetailText}>
-                        : {item.altitude}
+                        : {this.props.productData.altitude}
                       </Text>
-                      <Text style={styles.productDetailText}>: {item.notes}</Text>
+                      <Text style={styles.productDetailText}>: {this.props.productData.note}</Text>
                       {/* */}
                       <Text style={styles.productDetailText}>
-                        : {item.process}
+                        : {this.props.productData.process}
                       </Text>
                     </View>
                   </View>

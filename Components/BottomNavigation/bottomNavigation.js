@@ -26,7 +26,7 @@ class OwnBottomNavigation extends Component {
     this.props.onBottomTabClicked(lowerArg1);
   };
   goToSwitch = async () => {
-    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');   
     if (this.state.userLogged || isLoggedIn === '1') {
       this.goTo('Profile');
     } else {

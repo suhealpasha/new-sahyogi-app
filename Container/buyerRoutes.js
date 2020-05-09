@@ -6,8 +6,7 @@ import {
   Text,
   View,
   Button,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback,  
   TextInput,
   Dimensions,
   AsyncStorage,
@@ -40,7 +39,6 @@ import MyAddress from '../Components/Screens/BuyerScreens/myAddress';
 import EditAddress from './editAddress';
 import AddAddress from './addAddress';
 import MyOrders from '../Components/Screens/BuyerScreens/myOrders';
-import ChangePassword from './passwordChange';
 import EditProfile from '../Components/Screens/BuyerScreens/editProfile';
 import SellerType from './sellerType';
 import SellerDetails from './sellerDetails';
@@ -54,6 +52,7 @@ import KeyboardShift from '../Components/utils/keyboardShift';
 import {StatusBar} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
+import * as api from '../assets/api/api';
 
 const Stack = createStackNavigator();
 const uiTheme = {
@@ -79,6 +78,7 @@ class Routes extends Component {
       searchBarShow: false,
       searchBarText:'',
       clickedIcon: null,
+      functionalIcon:false,
       searchIcon: true,
       saveIcon: false,
       saveIconAddress: false,
@@ -90,16 +90,19 @@ class Routes extends Component {
       gender: '',
       addressData: [],
       editAddressData: [],
-      productsData: [],
+      featuredProductsData:[],
+      latestProductsData: [],
       regionsData: [],
+      allRegionsData: [],          
     };
   }
 
   componentDidMount() {
+    this.fetchHomeScreenData();
     this.fetchDetails();
     this.fetchAddress();
-    this.fetchProducts();
-    this.fetchRegions();
+    this.fetchAllRegions();
+        
   }
 
   goBack = ({navigation}, path) => {
@@ -107,6 +110,9 @@ class Routes extends Component {
       navigation.navigate('Home');
     } else {
       navigation.goBack(null);
+    }
+    if(path === 'Listing'){
+      this.clickedIcon('Filter')
     }
     this.setState({home: true});
   };
@@ -117,20 +123,14 @@ class Routes extends Component {
     });
   };
 
-  // filterClicked = ({navigation}) => {
-  //   navigation.navigate('Listing', {
-  //     filterOn: !this.state.filterOn,
-  //   });
-  // };
 
-  clickedIcon = async arg => {
-    await this.setState({clickedIcon: arg});
+  clickedIcon = async arg => {    
+    await this.setState({functionalIcon:!this.state.functionalIcon,clickedIcon: arg});
   };
 
   clickedSave = () => {
     this.setState({saveIcon: !this.state.saveIcon});
-    // this.fetchDetails();
-  };
+    };
 
   clickedSaveAddress = () => {
     this.setState({saveIconAddress: !this.state.saveIconAddress});
@@ -150,10 +150,10 @@ class Routes extends Component {
     this.props.testFunc();
   };
 
-  fetchProducts = async () => {
+  fetchHomeScreenData = async () => {
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
-      .get('http://mathtech.co.in/microffee_api/Buyer/getproducts', {
+      .get(api.buyerHomeAPI, {
         headers: {
           accept: 'application/json',
           access_token: access_token,
@@ -161,10 +161,13 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {
-        if (res.status) {
+      .then(res => { 
+          
+        if (res.status) {         
           this.setState({
-            productsData: res.data.data,
+            featuredProductsData:res.data.data.featured_products,
+            latestProductsData:res.data.data.latest_products,
+            regionsData: res.data.data.regions,
           });
         }
       })
@@ -172,11 +175,13 @@ class Routes extends Component {
         console.log(err);
       });
   };
-
+  
+  
   fetchDetails = async () => {
-    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    const access_token = await AsyncStorage.getItem('isLoggedIn');      
+    console.log(access_token)
     await axios
-      .get('http://mathtech.co.in/microffee_api/Buyer/getBuyerdetails', {
+      .get(api.buyerDetailsAPI, {
         headers: {
           accept: 'application/json',
           access_token: access_token,
@@ -184,7 +189,7 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {
+      .then(res => {           
         if (res.status) {
           this.setState({
             user_name: res.data.data.first_name,
@@ -203,7 +208,7 @@ class Routes extends Component {
   fetchAddress = async () => {
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     axios
-      .get('http://mathtech.co.in/microffee_api/Buyer/getBuyerAddress', {
+      .get(api.buyerAddressAPI, {
         headers: {
           accept: 'application/json',
           access_token: access_token,
@@ -219,10 +224,10 @@ class Routes extends Component {
       });
   };
 
-  fetchRegions = async () => {
+  fetchAllRegions = async () => {
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     axios
-      .get('http://mathtech.co.in/microffee_api/Seller/getregions', {
+      .get(api.regionsAPI, {
         headers: {
           accept: 'application/json',
           access_token: access_token,
@@ -231,7 +236,7 @@ class Routes extends Component {
         },
       })
       .then(res => {
-        this.setState({regionsData: res.data.data});
+        this.setState({allRegionsData: res.data.data});
       })
       .catch(err => {
         console.log(err);
@@ -269,7 +274,7 @@ class Routes extends Component {
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
                   }}>
-                  Microfee
+                  microffee
                 </Text>
               ),
               headerStyle: {backgroundColor: '#00aa00'},
@@ -277,35 +282,36 @@ class Routes extends Component {
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Notification')}>
                     <Icon
                       name="notifications-none"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback onPress={() => navigation.navigate('Cart')}>
                     <Icon2
                       name="cart-outline"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}>
             {props => (
               <HomeScreen
                 {...props}
-                {...this.state}
+                {...this.state}      
+                featuredProductsData={this.state.featuredProductsData}        
                 regionsData={this.state.regionsData}
+                latestProductsData = {this.state.latestProductsData}
               />
             )}
           </Stack.Screen>
           <Stack.Screen
-            name="All Featured"
-            component={AllFeaturedItems}
+            name="All Featured"            
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -321,31 +327,21 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Home')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
-              ),
-              headerRight: () => (
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity onPress={() => navigation.navigate('')}>
-                    <Icon2
-                      name="sort"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('')}>
-                    <Icon
-                      name="filter-list"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableOpacity>
-                </View>
-              ),
+                </TouchableWithoutFeedback>
+              ),             
             })}
-          />
+          >
+            {props => (
+              <AllFeaturedItems
+                {...props}
+                clickedIcon={this.state.clickedIcon}
+                productsData={this.state.productsData}
+              />
+            )} 
+            </Stack.Screen>
           <Stack.Screen
             name="Listing"
             options={({navigation, route}) => ({
@@ -363,35 +359,36 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity onPress={() => this.goBack({navigation})}>
+                <TouchableWithoutFeedback onPress={() => this.goBack({navigation})}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity onPress={() => this.clickedIcon('Sort')}>
+                  <TouchableWithoutFeedback onPress={() => this.clickedIcon('Sort')}>
                     <Icon2
                       name="sort"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => this.clickedIcon('Filter')}>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback onPress={() => this.clickedIcon('Filter')}>
                     <Icon
                       name="filter-list"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}
             initialParams={{filterOn: this.state.filterOn}}>
             {props => (
               <Listing
-                {...props}
+                {...props}             
                 clickedIcon={this.state.clickedIcon}
-                productsData={this.state.productsData}
+                functionalIcon={this.state.functionalIcon}
+                allProductsData={this.state.allProductsData}
               />
             )}
           </Stack.Screen>
@@ -412,32 +409,14 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Home')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
-              ),
-              // headerRight: () => (
-              //   <View style={{flexDirection: 'row'}}>
-              //     <TouchableOpacity onPress={() => navigation.navigate('')}>
-              //       <Icon2
-              //         name="sort"
-              //         size={24}
-              //         style={{padding: 10, color: '#ffffff'}}
-              //       />
-              //     </TouchableOpacity>
-              //     <TouchableOpacity onPress={() => navigation.navigate('')}>
-              //       <Icon
-              //         name="filter-list"
-              //         size={24}
-              //         style={{padding: 10, color: '#ffffff'}}
-              //       />
-              //     </TouchableOpacity>
-              //   </View>
-              // ),
+                </TouchableWithoutFeedback>
+              ),             
             })}>
             {props => (
-              <AllRegions {...props} regionsData={this.state.regionsData} />
+              <AllRegions {...props} allRegionsData={this.state.allRegionsData} />
             )}
           </Stack.Screen>
           <Stack.Screen
@@ -466,13 +445,13 @@ class Routes extends Component {
               ),
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>                    
-                  <TouchableOpacity onPress={() => this.setState({searchBarShow:true})}>
+                  <TouchableWithoutFeedback onPress={() => this.setState({searchBarShow:true})}>
                     <Icon
                       name="search"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })
@@ -497,10 +476,12 @@ class Routes extends Component {
           }>
             {props => <AllOrigins {...props} searchBarText ={this.state.searchBarText} searchBarShow ={this.state.searchBarShow}/>}
           </Stack.Screen>
+
+
           <Stack.Screen
-            name="Varities"
-            component={Varities}
-            options={({navigation, route}) => ({
+            name="Varities"           
+            options={!this.state.searchBarShow ?              
+              ({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
                 <Text
@@ -509,38 +490,59 @@ class Routes extends Component {
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
                   }}>
-                  Varities
+                 Varities
                 </Text>
               ),
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Listing')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity onPress={() => navigation.navigate('')}>
+                <View style={{flexDirection: 'row'}}>                    
+                  <TouchableWithoutFeedback onPress={() => this.setState({searchBarShow:true})}>
                     <Icon
                       name="search"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })
-          
+          :
+          ({navigation, route}) => ({
+            headerTitle:()=>null,
+            headerLeft: () => (
+              <SearchBar
+              platform="android"
+              placeholder="Type Here..."
+              onChangeText={this.updateSearch}
+              value={this.state.searchBarText}
+              cancelIcon
+              inputContainerStyle={{width: this.state.width}}
+              onCancel={() => {
+                this.setState({searchBarShow: false});
+              }}
+            />
+            ),
+          })
           
           }
-            initialParams={{filterOn: this.state.filterOn}}
-            {...this.props}
-          />
+           >
+              {props => (
+              <Varities
+                {...props}
+                onClickedIcon = {()=>this.clickedIcon('Filter')}
+                searchBarText ={this.state.searchBarText} searchBarShow ={this.state.searchBarShow}
+              />
+            )}
+             </Stack.Screen>
           <Stack.Screen
-            name="Regions and Origins"
-            component={RegionsOrigins}
+            name="Regions and Origins"            
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -556,26 +558,33 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Listing')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity onPress={() => navigation.navigate('')}>
+                  <TouchableWithoutFeedback onPress={() => navigation.navigate('')}>
                     <Icon
                       name="search"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}
             initialParams={{filterOn: this.state.filterOn}}
             {...this.props}
-          />
+          >
+            {props => (
+              <RegionsOrigins
+                {...props}
+                onClickedIcon = {()=>this.clickedIcon('Filter')}
+              />
+            )}
+            </Stack.Screen>
           <Stack.Screen
             name="Search"
             component={Search}
@@ -591,9 +600,9 @@ class Routes extends Component {
               headerTitle: null,
               headerRightContainerStyle: styles.headerRightContainerStyle,
               headerLeft: () => (
-                <TouchableOpacity onPress={() => this.goBack({navigation})}>
+                <TouchableWithoutFeedback onPress={() => this.goBack({navigation})}>
                   <Icon name="chevron-left" size={35} color="black" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
 
               headerRight: () => (
@@ -636,16 +645,15 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Home')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
             })}
           />
           <Stack.Screen
-            name="Wishlist"
-            component={Wishlist}
+            name="Wishlist"            
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -661,33 +669,39 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Home')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Notification')}>
                     <Icon
                       name="notifications-none"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback onPress={() => navigation.navigate('Cart')}>
                     <Icon2
                       name="cart-outline"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
-            })}
-            {...this.props}
-          />
+            })}            
+          >
+            { props => (
+              <Wishlist
+                {...props}                
+                buyerWishlistData = {this.state.buyerWishlistData}            
+              />
+            )}
+            </Stack.Screen>
           <Stack.Screen
             name="Profile"
             options={({navigation, route}) => ({
@@ -707,21 +721,21 @@ class Routes extends Component {
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Notification')}>
                     <Icon
                       name="notifications-none"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback onPress={() => navigation.navigate('Cart')}>
                     <Icon2
                       name="cart-outline"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}
@@ -756,19 +770,19 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'My Address')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
-                <TouchableOpacity onPress={() => this.clickedSave()}>
+                <TouchableWithoutFeedback onPress={() => this.clickedSave()}>
                   <Icon2
                     name="content-save-outline"
                     size={24}
                     style={{padding: 10, color: '#ffffff'}}
                   />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
             })}>
             {props => (
@@ -783,52 +797,7 @@ class Routes extends Component {
                 gender={this.state.gender}
               />
             )}
-          </Stack.Screen>
-          <Stack.Screen
-            name="Change Password"
-            component={ChangePassword}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              headerTitle: (
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    flex: 1,
-                    fontFamily: 'Gotham Black Regular',
-                  }}>
-                  Change Password
-                </Text>
-              ),
-              headerStyle: {backgroundColor: '#00aa00'},
-              headerTintColor: '#ffffff',
-              headerLeft: () => (
-                <TouchableOpacity
-                  onPress={() => this.goBack({navigation}, 'My Address')}>
-                  <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
-              ),
-              headerRight: () => (
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity onPress={() => navigation.navigate('')}>
-                    <Icon
-                      name="notifications"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('')}>
-                    <Icon
-                      name="shopping-cart"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableOpacity>
-                </View>
-              ),
-            })}
-            {...this.state}
-            {...this.props}
-          />
+          </Stack.Screen>         
           <Stack.Screen
             name="My Address"
             options={({navigation, route}) => ({
@@ -847,14 +816,14 @@ class Routes extends Component {
               headerTintColor: '#ffffff',
               headerRightContainerStyle: styles.headerRightContainerStyle,
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Profile')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
                 <View style={{width: 300}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Add Address')}>
                     <Icon
                       style={{textAlign: 'right'}}
@@ -862,7 +831,7 @@ class Routes extends Component {
                       color={'white'}
                       size={24}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}>
@@ -892,19 +861,19 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'My Address')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
-                <TouchableOpacity onPress={() => this.clickedSaveAddress()}>
+                <TouchableWithoutFeedback onPress={() => this.clickedSaveAddress()}>
                   <Icon2
                     name="content-save-outline"
                     size={24}
                     style={{padding: 10, color: '#ffffff'}}
                   />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
             })}>
             {props => (
@@ -928,19 +897,19 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'My Address')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
-                <TouchableOpacity onPress={() => this.clickedSaveEditAddress()}>
+                <TouchableWithoutFeedback onPress={() => this.clickedSaveEditAddress()}>
                   <Icon2
                     name="content-save-outline"
                     size={24}
                     style={{padding: 10, color: '#ffffff'}}
                   />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
             })}>
             {props => (
@@ -969,19 +938,19 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Home')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
-                <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                <TouchableWithoutFeedback onPress={() => navigation.navigate('Cart')}>
                   <Icon2
                     name="cart-outline"
                     size={24}
                     style={{padding: 10, color: '#ffffff'}}
                   />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
             })}
             {...this.props}
@@ -998,69 +967,42 @@ class Routes extends Component {
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
                   }}>
-                  EL SALVADOR
+                    {this.props.varietyName}
                 </Text>
               ),
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Home')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Notification')}>
                     <Icon
                       name="notifications-none"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback onPress={() => navigation.navigate('Cart')}>
                     <Icon2
                       name="cart-outline"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}
             {...this.state}
           />
+          
           <Stack.Screen
-            name="Order Detail"
-            component={OrderDetail}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              headerTitle: (
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    flex: 1,
-                    fontFamily: 'Gotham Black Regular',
-                  }}>
-                  Order #1214
-                </Text>
-              ),
-              headerStyle: {backgroundColor: '#00aa00'},
-              headerTintColor: '#ffffff',
-              headerLeft: () => (
-                <TouchableOpacity
-                  onPress={() => this.goBack({navigation}, 'Home')}>
-                  <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
-              ),
-            })}
-            {...this.state}
-          />
-
-          <Stack.Screen
-            name="My Orders"
-            component={MyOrders}
+            name="My Orders"            
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -1076,14 +1018,14 @@ class Routes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'My Address')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() =>
                       this.setState({searchIcon: !this.state.searchIcon})
                     }>
@@ -1108,13 +1050,45 @@ class Routes extends Component {
                         }
                       />
                     )}
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
+              ),
+            })}          
+          >
+             {props => (
+              <MyOrders
+                {...props} 
+                {...this.state}               
+              />
+            )}
+            </Stack.Screen>
+          <Stack.Screen
+            name="Order Detail"
+            component={OrderDetail}
+            options={({navigation, route}) => ({
+              animationEnabled: false,
+              headerTitle: (
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 1,
+                    fontFamily: 'Gotham Black Regular',
+                  }}>
+                  Order #1214
+                </Text>
+              ),
+              headerStyle: {backgroundColor: '#00aa00'},
+              headerTintColor: '#ffffff',
+              headerLeft: () => (
+                <TouchableWithoutFeedback
+                  onPress={() => this.goBack({navigation}, 'My Orders')}>
+                  <Icon name="chevron-left" size={35} color="white" />
+                </TouchableWithoutFeedback>
               ),
             })}
             {...this.state}
-            {...this.props}
           />
+
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -1124,6 +1098,7 @@ const mapStateToProps = state => {
   return {
     addressId: state.reducer.addressId,
     regionName: state.reducer.regionName,
+    varietyName: state.reducer.varietyName,
   };
 };
 export default connect(

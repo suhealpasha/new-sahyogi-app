@@ -5,8 +5,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  TouchableWithoutFeedback,
- 
+  TouchableNativeFeedback
 } from 'react-native';
 import {CheckBox} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -22,11 +21,15 @@ class Filter extends Component {
     };
   }
 
-  _goto = (arg) =>{   
+  _goto = (arg) =>{  
     this.props.navigation.navigate(arg)
     this.props.resetClickedIcon();
   }
   
+filterOption =() =>{
+  // this.props.onFiltering({...this.state})
+}
+
   render() {
     const styles = StyleSheet.create({
       container: {
@@ -50,7 +53,7 @@ class Filter extends Component {
       actions: {        
         borderBottomWidth: 0.25,
         borderBottomColor: '#95A5A6',
-        paddingTop:10
+        paddingTop:10,
       },
       actionsCheckBox: {        
         borderBottomWidth: 0.25,
@@ -70,11 +73,12 @@ class Filter extends Component {
         paddingTop:4,
         fontFamily: 'GothamLight',
         fontSize: 14,
-       
+        
       },
       applyText:{
           textAlign:'center',
-          fontFamily:'GothamMedium'
+          fontFamily:'GothamMedium',
+          
       },
       checkBoxText:{
         fontFamily:'GothamLight',
@@ -90,8 +94,9 @@ class Filter extends Component {
         <View style={styles.FilterHeader}>
           <Text style={styles.FilterHeaderText}>Filter Option</Text>
         </View>
-        <View style={styles.actionContainer}>
-          <TouchableOpacity style={styles.actions} onPress={()=>{this._goto('Regions and Origins')}}>
+        <View style={styles.actionContainer}>        
+          <TouchableNativeFeedback onPress={()=>{this._goto('Regions and Origins')}}>
+            <View  style={styles.actions}>
               <View style={{flexDirection:'row',justifyContent:'space-between'}}>
             <View style={styles.caption}>
               <Text style={styles.actionItemText}>Regions and Origins</Text>
@@ -100,8 +105,10 @@ class Filter extends Component {
                 <Icon name="arrow-forward"size={20}/>
             </View>
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actions} onPress={()=>{this._goto('Varities')}}>
+            </View>
+          </TouchableNativeFeedback>          
+          <TouchableNativeFeedback  onPress={()=>{this._goto('Varities')}}>
+            <View style={styles.actions}>
               <View style={{flexDirection:'row',justifyContent:'space-between'}}>
             <View style={styles.caption}>
               <Text style={styles.actionItemText}>Variety</Text>
@@ -110,7 +117,8 @@ class Filter extends Component {
                 <Icon name="arrow-forward"size={20}/>
             </View>
             </View>
-          </TouchableOpacity>
+            </View>
+          </TouchableNativeFeedback>
           <View style={styles.actionsCheckBox}>
             <View style={styles.caption}>
               <View style={{flexDirection: 'row',paddingBottom:0}}>
@@ -136,8 +144,8 @@ class Filter extends Component {
         
         </View>
       </View>
-      <View style={{paddingBottom:10,paddingTop:10}}>
-          <TouchableOpacity>
+      <View style={{paddingBottom:15,paddingTop:10}}>
+          <TouchableOpacity onPress = {this.filterOption}>
               <Text style={styles.applyText}>Apply</Text>
           </TouchableOpacity>
       </View>

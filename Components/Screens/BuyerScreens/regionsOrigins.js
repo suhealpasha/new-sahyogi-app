@@ -7,7 +7,8 @@ import {
   Image,
   ScrollView,
   Button,
- CheckBox
+ CheckBox,
+ BackHandler
 } from 'react-native';
 // import { CheckBox } from 'react-native-elements'
 import {
@@ -37,14 +38,29 @@ export default class RegionsOrigins extends Component {
       checked: [],
       expanded: [],
     };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
+  componentWillMount() {
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
 
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+   this.props.onClickedIcon()
+  }
+  handleBackButtonClick() {    
+    this.props.navigation.goBack(null);
+    return true;
+  }
 
   render() {
-  
-    
-
     return (
       <View style={{flex:1.0}}>
       <View style={styles.container}>

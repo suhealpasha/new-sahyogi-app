@@ -3,14 +3,21 @@ import * as actionTypes from './action';
 const initialState = {
   sellerUser: false,
   active: 'home',
-  userType: null,
+  userType: null,  
+  sellerUserType: null,
   forgotPassword: null,
   name: null,
   mobile: null,
   email: null,
+  company:null,
+  ein:null,
+  alternatePhone:null,
+  address:null,
   otp: null,
   addressId: null,
   regionName: null,
+  varietyName: null,
+  varitiesData: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -20,7 +27,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         active: action.payload,
       };
-    case actionTypes.USER_TYPE:
+    case actionTypes.USER_TYPE:      
       return {
         ...state,
         userType: action.payload,
@@ -35,6 +42,11 @@ const reducer = (state = initialState, action) => {
         ...state,
         sellerUser: action.payload,
       };
+    case actionTypes.SELLER_USER_TYPE:
+      return {
+        ...state,
+        sellerUserType: action.payload,
+      };
     case actionTypes.REGISTER_DETAILS:
       return {
         ...state,
@@ -42,6 +54,22 @@ const reducer = (state = initialState, action) => {
         mobile: action.payload2,
         email: action.payload3,
         otp: action.payload4,
+      };
+    case actionTypes.REGISTER_SELLER_DETAILS:    
+      return {
+        ...state,
+        name: action.payload,
+        mobile: action.payload2,
+        email: action.payload3,
+      };
+    case actionTypes.REGISTER_SELLER_ADDITIONAL_DETAILS:
+      return {
+        ...state,
+        company: action.payload,
+        ein: action.payload2,
+        alternatePhone: action.payload3,
+        address: action.payload4,
+        otp: action.payload5,
       };
     case actionTypes.RESEND_OTP:
       return {
@@ -63,6 +91,16 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         regionName: action.payload,
+      };
+      case actionTypes.DISPLAY_VARIETY_NAME:
+      return {
+        ...state,
+        varietyName: action.payload,
+      };
+    case actionTypes.FILTER_VARITIES_DATA:
+      return {
+        ...state,
+        varitiesData: action.payload,
       };
     default:
       return state;

@@ -6,6 +6,7 @@ import {
   Text,
   Image,
   ScrollView,
+  AsyncStorage,BackHandler
 } from 'react-native';
 import {
   Card,
@@ -18,34 +19,90 @@ import {
 import BottomNavigation from '../../BottomNavigation/bottomNavigation';
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import axios from 'axios';
+import * as api from '../../../assets/api/api';
+import Spinner from 'react-native-loading-spinner-overlay';
+
 export default class AllFeaturedItems extends Component {
-  render() {
-    const items = [
-      {name : require('../../../assets/Images/coffeeFarms/img8.png') ,key:'8',origin:'EL SALVADOR',farm:'Las Delicias',ratings:3} ,  
-            {name : require('../../../assets/Images/coffeeFarms/img9.png') ,key:'9',origin:'BOURBON',farm:'Sta Lucia',ratings:2} ,  
-            {name : require('../../../assets/Images/coffeeFarms/img10.png') ,key:'10',origin:'EL SALVADOR',farm:'Las Delicias',ratings:4} ,
-            {name : require('../../../assets/Images/coffeeFarms/img1.png') ,key:'1' ,origin:'EL SALVADOR',farm:'Las Delicias',ratings:5} ,
-            {name : require('../../../assets/Images/coffeeFarms/img2.png') ,key:'2' ,origin:'BOURBON',farm:'Sta Lucia',ratings:3 } , 
-            {name : require('../../../assets/Images/coffeeFarms/img5.png') ,key:'5',origin:'BOURBON',farm:'Sta Lucia',ratings:4 } ,  
-            {name : require('../../../assets/Images/coffeeFarms/img6.png') ,key:'6',origin:'EL SALVADOR',farm:'Las Delicias',ratings:1} ,  
-            {name : require('../../../assets/Images/coffeeFarms/img7.png') ,key:'7',origin:'GEISHA',farm:'El Rosario',ratings:4} , 
-            {name : require('../../../assets/Images/coffeeFarms/img3.png') ,key:'3' ,origin:'GEISHA',farm:'El Rosario',ratings:2} ,  
-            {name : require('../../../assets/Images/coffeeFarms/img4.png') ,key:'4',origin:'EL SALVADOR',farm:'Las Delicias',ratings:5} ,  
-            
-    ];
+  constructor(props) {
+    super(props);
+    this.state = {
+      spinner:false,    
+     allFeaturedProductsData:[],
+  
+    };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentDidMount(){
+    this.fetchFeaturedProducts();
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  fetchFeaturedProducts = async () => {
+    this.setState({spinner:true})
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    await axios
+      .get(api.buyerAllFeaturedProductAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {     
+        if (res.status) {
+          this.setState({
+            spinner:false,
+            allFeaturedProductsData: res.data.data,
+          });
+        }
+      })
+      .catch(err => {
+        this.setState({spinner:false})
+        console.log(err);
+      });
+  };
+
+  componentWillUnmount() {    
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  handleBackButtonClick() {    
+     this.props.navigation.goBack(null);
+    return true;
+  }
+
+
+  render() {  
+    
+    
     return (
       <View style={styles.container}>
+         <Spinner
+              visible={this.state.spinner}
+              textContent={'Loading...'}
+              textStyle={styles.spinnerTextStyle}
+            />
         <FlatList
-          data={items}
+          data={this.state.allFeaturedProductsData}
+          style={{paddingLeft: 10, paddingRight: 10}}
           numColumns={1}
-          // keyExtractor = {(items)=>{items.key}}
+          keyExtractor = {(items)=>{items.product_Id}}
 
           renderItem={({item}) => {
             let ratingIcon = (
                 <View style={{flexDirection:'row'}}>
               <Text style={styles.ratingStyle}>
                 {'  '}
-                {item.ratings}{' '}
+                {item.avg_rating}{' '}
                 <Icon
                   name="star"
                   size={13}
@@ -56,7 +113,7 @@ export default class AllFeaturedItems extends Component {
                 />
                 {'  '}
               </Text>
-              <Text style={{fontFamily:'GothamLight',fontSize:10,textAlignVertical:'center',paddingLeft:10,paddingRight:10}}>100:Ratings</Text>
+            <Text style={{fontFamily:'GothamLight',fontSize:10,textAlignVertical:'center',paddingLeft:10,paddingRight:10}}>{item.rating}:ratings</Text>
               </View>
             );
             return (
@@ -64,17 +121,20 @@ export default class AllFeaturedItems extends Component {
                 <View style={styles.itemContainer}>
                   <View style={styles.thumbnailImageContainer}>
                     <Image
-                      source={item.name}
+                      source={{
+                        uri: item.thumbnail_image,
+                      }}
                       style={{
                         width: 130,
-                        height: 80,
+                        height: 100,
                         borderTopLeftRadius: 5,
                         borderBottomLeftRadius: 5,
                       }}
                     />
                   </View>
                   <View style={styles.itemDetailContainer}>
-                    <Text style={styles.itemTextOrigin}>{item.origin}</Text>
+                  <Text style={styles.itemTextVariety}>{item.verityname}</Text>
+                    <Text style={styles.itemTextOrigin}>{item.originsname}</Text>
                     <Text style={styles.itemTextFarm}>{item.farm}</Text>
                    {ratingIcon}
                   </View>
@@ -89,9 +149,7 @@ export default class AllFeaturedItems extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1.0,
-    paddingLeft: 10,
-    paddingRight: 10,
+    flex: 1.0,    
     paddingBottom: 10,
     paddingTop: 10,
   },
@@ -112,11 +170,20 @@ const styles = StyleSheet.create({
   itemDetailContainer: {
     paddingLeft: 10,
     paddingRight: 10,
+    paddingTop:10,
+    paddingBottom:10
   },
-  itemTextOrigin: {
+  itemTextVariety:{
     fontFamily: 'Gotham Black Regular',
     fontSize: 14,
     paddingTop: 5,
+  },
+  itemTextOrigin: {
+    fontSize: 12,
+    justifyContent: 'space-around',
+    fontFamily: 'GothamMedium',
+    color: '#95A5A6',
+  
   },
   itemTextFarm: {
     fontSize: 12,
@@ -134,5 +201,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     width: 45,
     borderRadius:5
+  },
+  spinnerTextStyle: {
+    color: '#00aa00',
   },
 });

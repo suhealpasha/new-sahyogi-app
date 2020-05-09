@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {
+  AsyncStorage,
   BackHandler,
   StyleSheet,
   FlatList,
@@ -26,22 +27,54 @@ import BottomNavigation from '../../BottomNavigation/bottomNavigation';
 import ProductAction from '../../utils/productAction';
 import {Button} from 'react-native-paper';
 import * as actionTypes from '../../../Store/action';
-import { connect} from 'react-redux'
+import {connect} from 'react-redux';
+import axios from 'axios';
+import Spinner from 'react-native-loading-spinner-overlay';
+import * as api from '../../../assets/api/api';
 
 class Wishlist extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      spinner: false,
       height: Dimensions.get('window').height,
+      buyerWishlistData: [],
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
-  componentWillMount() {
+  componentDidMount() {
+    this.fetchBuyerWishlist();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
+
+  fetchBuyerWishlist = async () => {
+    this.setState({spinner: true});
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .get(api.buyerWishlistAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        if (res.status) {
+          this.setState({
+            spinner: false,
+            buyerWishlistData: res.data.data,
+          });
+        }
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
+  };
 
   componentWillUnmount() {
     BackHandler.removeEventListener(
@@ -51,207 +84,132 @@ class Wishlist extends Component {
   }
   handleBackButtonClick() {
     this.props.onBottomTabClicked('home');
-    this.props.navigation.navigate('Home');
+    this.props.navigation.goBack(null);
     return true;
   }
+
   _deleteWishlist = e => {
     console.log('Child');
   };
+
   render() {
-    const items = [
-      {
-        name: require('../../../assets/Images/coffeeFarms/img1.png'),
-        key: '0',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '4.0',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img1.png'),
-        key: '1',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '4.0',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img2.png'),
-        key: '2',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        ratings: '1.1',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img3.png'),
-        key: '3',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        ratings: '3.6',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img4.png'),
-        key: '4',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '4.0',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img5.png'),
-        key: '5',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        ratings: '4.5',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img6.png'),
-        key: '6',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '2.0',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img7.png'),
-        key: '7',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        ratings: '1.5',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img8.png'),
-        key: '8',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '5.5',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img9.png'),
-        key: '9',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        ratings: '4.0',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img10.png'),
-        key: '10',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '5.0',
-      },
-    ];
+    console.log('))))))))))))))))', this.state.buyerWishlistData);
     return (
-     <View style={styles.outerContainer}>
+      <View style={styles.outerContainer}>
+        <View style={styles.container}>
+          <Spinner
+            visible={this.state.spinner}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
 
-     
-      <View style={styles.container}>
-        <FlatList
-          data={items}
-          numColumns={1}
-          // keyExtractor = {(items)=>{items.key}}
-
-          renderItem={({item}) => {
-            let ratingIcon = (
-              <View style={{flexDirection: 'row'}}>
-                <Text style={styles.ratingStyle}>
-                  {'  '}
-                  {item.ratings}{' '}
-                  <Icon
-                    name="star"
-                    size={13}
-                    style={{
-                      justifyContent: 'center',
-                      textAlignVertical: 'center',
-                    }}
-                  />
-                  {'  '}
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: 'GothamLight',
-                    fontSize: 10,
-                    textAlignVertical: 'center',
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                  }}>
-                  100:Ratings
-                </Text>
-              </View>
-            );
-            return (
-                <View style={{paddingLeft:10,paddingRight:10}}>
-                <View style={styles.itemContainer}>
-                  <View style={styles.thumbnailImageContainer}>
-                    <Image
-                      source={item.name}
+          <FlatList
+            data={this.state.buyerWishlistData && this.state.buyerWishlistData.length ? this.state.buyerWishlistData : null}
+            numColumns={1}
+            keyExtractor={items => {
+              items.product_Id;
+            }}
+            renderItem={({item}) => {
+              let ratingIcon = (
+                <View style={{flexDirection: 'row'}}>
+                  <Text style={styles.ratingStyle}>
+                    {'  '}
+                    {item.ratings}{' '}
+                    <Icon
+                      name="star"
+                      size={13}
                       style={{
-                        width: 130,
-                        height: 100,
-                        borderTopLeftRadius: 5,
-                        borderBottomLeftRadius: 5,
+                        justifyContent: 'center',
+                        textAlignVertical: 'center',
                       }}
                     />
-                  </View>
-                  <View style={styles.itemDetailContainer}>
-                    <View style={{flexDirection: 'row', paddingTop: 10}}>
-                      <View style={{width: '50%'}}>
-                        <Text style={styles.itemTextOrigin}>{item.origin}</Text>
-                      </View>
-                      <View style={{width: '50%'}}>
-                        <TouchableWithoutFeedback>
-                          <Icon2
-                            name="delete-outline"
-                            size={25}
-                            color={'#95A5A6'}
-                            onPress={() => {
-                              this._deleteWishlist();
-                            }}></Icon2>
-                        </TouchableWithoutFeedback>
-                      </View>
+                    {'  '}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: 'GothamLight',
+                      fontSize: 10,
+                      textAlignVertical: 'center',
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                    }}>
+                    100:ratings
+                  </Text>
+                </View>
+              );
+              return (
+                <View style={{paddingLeft: 10, paddingRight: 10}}>
+                  <View style={styles.itemContainer}>
+                    <View style={styles.thumbnailImageContainer}>
+                      <Image
+                        source={item.thumbnail_image}
+                        style={{
+                          width: 130,
+                          height: 100,
+                          borderTopLeftRadius: 5,
+                          borderBottomLeftRadius: 5,
+                        }}
+                      />
                     </View>
-                    <Text style={styles.itemTextFarm}>{item.farm}</Text>
-                    {ratingIcon}
+                    <View style={styles.itemDetailContainer}>
+                      <View style={{flexDirection: 'row', paddingTop: 10}}>
+                        <View style={{width: '50%'}}>
+                          <Text style={styles.itemTextOrigin}>
+                            {item.verityname}
+                          </Text>
+                        </View>
+                        <View style={{width: '50%'}}>
+                          <TouchableWithoutFeedback>
+                            <Icon2
+                              name="delete-outline"
+                              size={25}
+                              color={'#95A5A6'}
+                              onPress={() => {
+                                this._deleteWishlist();
+                              }}
+                            />
+                          </TouchableWithoutFeedback>
+                        </View>
+                      </View>
+                      <Text style={styles.itemTextFarm}>
+                        {item.originsname}
+                      </Text>
+                      <Text style={styles.itemTextFarm}>{item.farm}</Text>
+                      {ratingIcon}
+                    </View>
                   </View>
                 </View>
-     </View>
-            );
-          }}
-        />
-        <TouchableOpacity pressDelay={10}>
-          <Text
-            style={{
-              paddingBottom: 10,
-              paddingTop: 10,
-              textAlign: 'center',
-              color: '#004561',
-              textAlign: 'center',
-              fontSize: 14,
-              fontFamily: 'GothamMedium',
-              textAlignVertical: 'center',
-            }}>
-            Clear All
-          </Text>
-        </TouchableOpacity>    
-      </View>
-      <BottomNavigation {...this.props} {...this.state}/>
+              );
+            }}
+          />
+
+          <TouchableOpacity style={styles.clearAllButton}>
+            <Text
+              style={{
+                textAlign: 'center',
+                color: '#004561',
+                fontSize: 14,
+                fontFamily: 'GothamMedium',
+                paddingTop: 15,
+                paddingBottom: 15,
+              }}>
+              Clear All
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <BottomNavigation {...this.props} {...this.state} />
       </View>
     );
   }
 }
-const mapDispatchToProps = dispatch => {
-  return {
-       onBottomTabClicked: value =>
-      dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
-  };
-};
-export default connect(null,mapDispatchToProps)(Wishlist);
-
 const styles = StyleSheet.create({
-  outerContainer:{
-    flex: 1.0,   
+  outerContainer: {
+    flex: 1.0,
   },
   container: {
-    flex: 1.0, 
-    paddingBottom: 10,
+    flex: 1.0,
     paddingTop: 10,
-   
+    backgroundColor: '#efebea',
   },
   itemContainer: {
     marginBottom: 10,
@@ -293,4 +251,22 @@ const styles = StyleSheet.create({
     fontSize: 13,
     width: 45,
   },
+  clearAllButton: {
+    borderTopWidth: 0.25,
+    borderColor: '#95A5A6',
+  },
+  spinnerTextStyle: {
+    color: '#00aa00',
+  },
 });
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onBottomTabClicked: value =>
+      dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
+  };
+};
+export default connect(
+  null,
+  mapDispatchToProps,
+)(Wishlist);

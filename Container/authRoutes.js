@@ -100,7 +100,7 @@ class AuthRoutes extends Component {
     return (
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen
+         <Stack.Screen
             name="Sign In"
             options={({navigation, route}) => ({
               animationEnabled: false,

@@ -1,111 +1,88 @@
 import React, {Component} from 'react';
-import {TouchableWithoutFeedback,BackHandler,AsyncStorage,StyleSheet,FlatList,View,Text,Image,ScrollView,Button,Dimensions,TouchableOpacity,AppRegistry,navigation} from 'react-native';
+import {
+  TouchableWithoutFeedback,
+  BackHandler,
+  AsyncStorage,
+  StyleSheet,
+  FlatList,
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Button,
+  Dimensions,
+  TouchableOpacity,
+  AppRegistry,
+  navigation,
+} from 'react-native';
 import {Toolbar, COLOR, BottomNavigation, Icon} from 'react-native-material-ui';
-import PropTypes from 'prop-types';
 import Products from './products';
 import FeaturedItems from './featuredItems';
 import Regions from './regions';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
-import KeyboardShift from '../../utils/keyboardShift';
 import {YellowBox} from 'react-native';
-import Dashboard from 'react-native-dashboard';
 
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
-const Tab = createMaterialBottomTabNavigator();
+
 
 class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       height: Dimensions.get('window').height,
-      width: Dimensions.get('window').width,    
-      regionsData:[] 
+      width: Dimensions.get('window').width,
+      regionsData:[],    
+      featuredProductsData:[],
+      latestProductsData:[] 
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  componentDidMount(){   
-    this.setState({regionsData:this.props.regionsData})
-  }
-
-  componentDidUpdate(prevProps,prevState){
-    if(prevProps.regionsData !== this.props.regionsData){
-      this.setState({regionsData:this.props.regionsData})
-    }
-    
-  }
-
-   componentWillMount() {
+  componentDidMount() {
+    this.setState({regionsData: this.props.regionsData,featuredProductsData:this.props.featuredProductsData,latestProductsData:this.props.latestProductsData}); 
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+    
   }
 
-  componentWillUnmount() {
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.regionsData !== this.props.regionsData) {
+      this.setState({regionsData: this.props.regionsData});
+    }
+    if (prevProps.featuredProductsData !== this.props.featuredProductsData) {
+      this.setState({featuredProductsData: this.props.featuredProductsData});
+    }
+    if (prevProps.latestProductsData !== this.props.latestProductsData) {
+      this.setState({latestProductsData: this.props.latestProductsData});
+    }
+    
+  }
+  
+    componentWillUnmount() {
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
-  handleBackButtonClick() {   
-    console.log('Home backbutton')
+  handleBackButtonClick() {
+    console.log('Home backbutton');
     BackHandler.exitApp();
     return true;
   }
-  
-  
-navigationHandler = (arg) =>{
-  this.props.onBottomTabClicked('order listing')
-  this.props.navigation.navigate('Order Listing')
-}
 
-onSeeAll = () =>{
-  this.props.navigation.navigate('Listing')
-}
+  navigationHandler = arg => {
+    this.props.onBottomTabClicked('order listing');
+    this.props.navigation.navigate('Order Listing');
+  };
+
+  onSeeAll = () => {
+    this.props.navigation.navigate('Listing');
+  };
 
   render() {
-    const items = [
-      {name: 'Total Orders', background: '#3498db', value: '$25000'},
-      {name: 'Total Revenue', background: '#ef0202', value: '500'},
-      {name: 'Refunds', background: '#efcf02', value: '$300'},
-      {name: 'Average Revenue', background: '#02ef1d', value: '$1500'},
-    ];
-
-    const orders = [
-      {
-        key: '8',
-        buyerName: 'Adam Smith',
-        amount: '$5000',
-        orderNumber: 3443,
-        status: 'Delivered',
-        orderDate: '05-Mar-2020',
-        rated: true,
-      },
-      {
-        key: '9',
-        buyerName: 'Philis Smith',
-        amount: '$550',
-        orderNumber: 3113,
-        status: 'Ordered',
-        orderDate: '05-Mar-2020',
-        rated: false,
-      },
-      {
-        key: '10',
-        buyerName: 'Sandra J Jhonson',
-        amount: '$8000',
-        orderNumber: 6443,
-        status: 'Rejected',
-        orderDate: '25-Feb-2020',
-        rated: true,
-      },
-    ];
-
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
@@ -246,80 +223,75 @@ onSeeAll = () =>{
     });
 
     return (
-      <ScrollView>        
-          <View style={styles.container}>
-            <View style={styles.featuredItems}>
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingLeft: 5,
-                  paddingRight: 5,
-                }}>
-                <Text style={styles.microalign}>Featured Items</Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    this.props.navigation.navigate('All Featured')
-                  }>
-                  <Text style={styles.viewall}>View All</Text>
-                </TouchableOpacity>
-              </View>
-              <FeaturedItems />
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.featuredItems}>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingLeft: 5,
+                paddingRight: 5,
+              }}>
+              <Text style={styles.microalign}>Featured Crops</Text>
+              <TouchableWithoutFeedback 
+                onPress={() => this.props.navigation.navigate('All Featured')}>
+                <Text style={styles.viewall}>View All Featured Crops</Text>
+                </TouchableWithoutFeedback>
             </View>
-            <View style={styles.microLots}>
-              <View
-                style={{
-                  display: 'flex',
+            <FeaturedItems {...this.props} featuredProductsData = {this.state.featuredProductsData}/>
+          </View>
+          <View style={styles.microLots}>
+            <View
+              style={{
+                display: 'flex',
 
-                  paddingLeft: 5,
-                  paddingRight: 5,
-                }}>
-                <Text style={styles.microalign}>Products</Text>
-              </View>
-              <Products {...this.props} />
-              <View
-                style={{
-                  marginTop: 10,
-                  borderTopWidth: 0.25,
-                  borderColor: '#95A5A6',
-                  borderBottomWidth: 0.25,
-                }}>
-                <TouchableWithoutFeedback
-                  onPress={this.onSeeAll}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}>
-                    <Text style={styles.viewall}>See All</Text>
-                    <Icon name="chevron-right" color={'#3e708f'} size={25} />
-                  </View>
-                  </TouchableWithoutFeedback>
-              </View>
+                paddingLeft: 5,
+                paddingRight: 5,
+              }}>
+              <Text style={styles.microalign}>Latest Products</Text>
             </View>
-
-            <View style={styles.regions}>
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingLeft: 5,
-                  paddingRight: 5,
-                }}>
-                <Text style={styles.microalign}>Regions</Text>
-                <Text
-                  style={styles.viewall}
-                  onPress={() => this.props.navigation.navigate('All Regions')}>
-                  View All
-                </Text>
-              </View>
-              <Regions {...this.props} regionsData = {this.state.regionsData} />
+            <Products {...this.props} latestProductsData = {this.state.latestProductsData}/>
+            <View
+              style={{
+                marginTop: 10,              
+                borderColor: '#95A5A6',
+                borderBottomWidth: 0.25,
+              }}>
+              <TouchableWithoutFeedback onPress={this.onSeeAll}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                  <Text style={styles.viewall}>See All Products</Text>
+                  <Icon name="chevron-right" color={'#3e708f'} size={25} />
+                </View>
+              </TouchableWithoutFeedback>
             </View>
           </View>
-        
+
+          <View style={styles.regions}>
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingLeft: 5,
+                paddingRight: 5,
+              }}>
+              <Text style={styles.microalign}>Origin/Regions</Text>
+              <Text
+                style={styles.viewall}
+                onPress={() => this.props.navigation.navigate('All Regions')}>
+                View All Regions
+              </Text>
+            </View>
+            <Regions {...this.props} regionsData={this.state.regionsData} />
+          </View>
+        </View>
       </ScrollView>
     );
   }
@@ -336,4 +308,7 @@ const mapDispatchToProps = dispatch => {
       dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
   };
 };
-export default connect(null, mapDispatchToProps)(HomeScreen);
+export default connect(
+  null,
+  mapDispatchToProps,
+)(HomeScreen);

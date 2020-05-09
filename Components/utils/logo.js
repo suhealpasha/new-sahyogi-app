@@ -25,7 +25,7 @@ class Logo extends Component{
 export default Logo;
 const styles = StyleSheet.create({
     logoContainer: {
-        paddingTop:10,
+        paddingTop:20,
         paddingBottom:10
     },
     logoImageStyle: {

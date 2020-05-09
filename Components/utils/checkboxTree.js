@@ -136,8 +136,8 @@ this.setState((state, props) => {
     let checkboxList = this.state.data.map((item, i) => {
       return (
         <View>
-          <View style={{justifyContent: 'space-between', flexDirection: 'row'}}>
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{justifyContent: 'space-between', flexDirection: 'row',alignItems:'center'}}>
+            <View style={{flexDirection: 'row', alignItems: 'center',}}>
               <CheckBox 
               onPress={() => this.checkBox_Test(i) }
               checked = { this.state.check[i]}
@@ -146,7 +146,7 @@ this.setState((state, props) => {
             
               <Text style={styles.checkBoxText}>{item.text}</Text>
             </View>
-            <View>
+            <View >
                 {this.state.selectedParent === null 
                  ? 
                  <TouchableWithoutFeedback

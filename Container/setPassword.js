@@ -22,10 +22,9 @@ import Dialog from 'react-native-dialog';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
-import {stat} from 'react-native-fs';
 import Toast from 'react-native-simple-toast';
 import Spinner from 'react-native-loading-spinner-overlay';
-
+import * as api from '../assets/api/api';
 class SetPassword extends Component {
   constructor(props) {
     super(props);
@@ -35,6 +34,7 @@ class SetPassword extends Component {
       password: null,
       confirmPassword: null,
       passwordError: false,
+      passwordValidationError:false,
       confirmPasswordError: false,
       passwordMatchError: false,
       dailogBoxOpen: false,
@@ -42,28 +42,46 @@ class SetPassword extends Component {
   }
 
   handleRegister = async () => {
-    if (this.state.password !== null && this.state.confirmPassword !== null) {
+    if (this.state.password !== null && this.state.confirmPassword !== null && this.state.passwordValidationError === false) {
       if (this.state.password === this.state.confirmPassword) {
         this.setState({spinner:true})
-        let userType;
-        if (this.props.sellerUser) {
-          userType = 'Seller';
-        } else {
-          userType = 'Buyer';
-        }
-
         if (this.props.forgotPassword === null) {
-          let data = JSON.stringify({
-            name: this.props.name,
-            gender: '',
-            email: this.props.email,
-            mobile_no: this.props.mobile,
-            password: this.state.password,
-            user_type: userType,
-          });
-
+          let data,userType,signUp
+          if(this.props.userType === 'seller'){
+            signUp = api.sellerSignupAPI
+            userType = 'Seller';            
+            data = JSON.stringify({
+              first_name: this.props.name,
+              last_name:'',
+              type:this.props.sellerUserType,
+              company:this.props.company,
+              EIN:this.props.ein,
+              reference:'',
+              gender: '',
+              email: this.props.email,
+              mobile_no: this.props.mobile,
+              alternative_phone:this.props.alternatePhone,
+              document:'',
+              password: this.state.password,
+              user_type: userType,     
+      });
+     
+          }
+          else{
+            userType = 'Buyer';  
+            signUp = api.buyerSignupAPI         
+              data = JSON.stringify({
+              name: this.props.name,
+              gender: '',
+              email: this.props.email,
+              mobile_no: this.props.mobile,
+              password: this.state.password,
+              user_type: userType,
+            });
+          }     
+          
           await axios
-            .post('http://mathtech.co.in/microffee_api/Buyer/signup', data, {
+            .post(signUp, data, {
               headers: {
                 accept: 'application/json',
                 'accept-language': 'en_US',
@@ -82,10 +100,10 @@ class SetPassword extends Component {
             mobile_no: this.props.mobile,
             password: this.state.password,
           });
-
+          let resetPasswordAPI          
           await axios
             .post(
-              'http://mathtech.co.in/microffee_api/Buyer/resetPassword',
+              api.resetPasswordAPI,
               data,
               {
                 headers: {
@@ -97,6 +115,7 @@ class SetPassword extends Component {
             )
             .then(res => {
               this.setState({spinner:false})
+              this.props.onUserTypeClicked(null);
              Toast.show("Password Reset.") 
              this.props.navigation.navigate('Sign In')
             })
@@ -122,9 +141,24 @@ class SetPassword extends Component {
   };
 
   handleOk = () => {
-    this.setState({dailogBoxOpen: false});
+    this.setState({dailogBoxOpen: false});    
+    this.props.onUserTypeClicked(null);
     this.props.navigation.navigate('Sign In');
   };
+
+  passwordValidate = () =>{
+    if(this.state.password === ''){
+      this.setState({password:null})
+    }
+    else {
+      const passwordReg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+      if (passwordReg.test(this.state.password) === false) {
+        this.setState({passwordValidationError: true});
+      } else {
+        this.setState({passwordError: false, passwordValidationError: false});
+      }
+    } 
+  }
 
   render() {
     const styles = StyleSheet.create({
@@ -132,11 +166,7 @@ class SetPassword extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,
-        backgroundColor: '#efebea',
-        paddingTop: 10,
-        paddingBottom: 10,
-        height: this.state.height,
+        paddingRight: 10,       
       },
       registerFormContainer: {
         width: '100%',
@@ -153,7 +183,8 @@ class SetPassword extends Component {
     });
 
     return (
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
+      scrollEnabled={true}>
         <View style={styles.container}>
         <Spinner
           visible={this.state.spinner}
@@ -180,8 +211,13 @@ class SetPassword extends Component {
               onChangeText={password =>
                 this.setState({password, passwordError: false})
               }
+              onBlur={this.passwordValidate}
               errorMessage={
-                this.state.passwordError === true ? 'Enter the Password' : false
+                this.state.passwordError === true 
+                ? 'Enter the Password'
+                : this.state.passwordValidationError
+                ? 'Should contain min 8 digits,atleast 1 number & 1 uppercase letter.'
+                : null
               }
             />
             <Input
@@ -191,6 +227,7 @@ class SetPassword extends Component {
               onChangeText={confirmPassword =>
                 this.setState({confirmPassword, confirmPasswordError: false})
               }
+              onBlur={this.state.confirmPassword === '' ? this.setState({confirmPassword:null}):null}
               errorMessage={
                 this.state.confirmPasswordError === true
                   ? 'Confirm the password'
@@ -256,11 +293,23 @@ const mapStateToProps = state => {
     forgotPassword: state.reducer.forgotPassword,
     name: state.reducer.name,
     mobile: state.reducer.mobile,
-    email: state.reducer.email,
-    sellerUser: state.reducer.sellerUser,
+    email: state.reducer.email,    
+    userType : state.reducer.userType,
+    sellerUserType:state.reducer.sellerUserType,
+    company:state.reducer.company,
+    ein:state.reducer.ein,
+    alternatePhone:state.reducer.alternatePhone,
+    address:state.reducer.address
   };
 };
+const mapDispatchToProps = dispatch => {
+  return {
+    onUserTypeClicked: value =>
+      dispatch({type: actionTypes.USER_TYPE, payload: value}), 
+  };
+};
+
 export default connect(
   mapStateToProps,
-  null,
+  mapDispatchToProps,
 )(SetPassword);

@@ -1,6 +1,18 @@
 import 'react-native-gesture-handler';
 import React, {Component, useState, useEffect} from 'react';
-import {BackHandler,StyleSheet,Text,View,Button,TouchableOpacity,TextInput,Dimensions,AsyncStorage,Image,Animated} from 'react-native';
+import {
+  BackHandler,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TouchableOpacity,
+  TextInput,
+  Dimensions,
+  AsyncStorage,
+  Image,
+  Animated,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {COLOR, ThemeContext, getTheme} from 'react-native-material-ui';
@@ -33,17 +45,17 @@ const uiTheme = {
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {      
-      isLoggedIn:false,
-      sellerLoggedIn:false,
-      isSignedIn:false,
+    this.state = {
+      isLoggedIn: false,
+      isSignedIn: false,
+      isSellerSignedIn:false,
+      userType: null,
       isVisible: true,
-      width: Dimensions.get('window').width,  
-      accessToken:null,  
+      width: Dimensions.get('window').width,
+      accessToken: null,
     };
   }
 
-  
   Hide_Splash_Screen = () => {
     this.setState({
       isVisible: false,
@@ -51,37 +63,32 @@ class App extends Component {
   };
 
   async componentDidMount() {
-    
-    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');    
-    // console.log(isLoggedIn)
-    if(isLoggedIn){
-      this.setState({isLoggedIn:true})
-      //  AsyncStorage.setItem('isLoggedIn', res.data.access_token);
+    const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+    const user = await AsyncStorage.getItem('userType');
+    if (isLoggedIn) {
+      this.setState({isLoggedIn: true, userType: user});
     }
-    
+
     var that = this;
     setTimeout(function() {
       that.Hide_Splash_Screen();
     }, 5000);
   }
 
-  onLogoutSession = () => {    
-   this.setState({isLoggedIn:false})
-   this.setState({isSignedIn:false})
-   this.setState({sellerLoggedIn:false})
-  }
- 
-  onsignIn = () =>{
-  this.setState({isSignedIn:true})
-  }
- 
-  onsellersignIn = () =>{
-    this.setState({isSignedIn:true})
-    this.setState({sellerLoggedIn:true})
-    }
-  render() {
+  onLogoutSession = () => {
+    this.setState({isLoggedIn: false});
+    this.setState({isSignedIn: false});
+  };
 
-    
+  onsignIn = async () => {  
+    this.setState({isSignedIn: true,isSellerSignedIn:false});
+  };
+
+  onsellersignIn = async () => {   
+    this.setState({isSignedIn:true,isSellerSignedIn:true});
+  };
+
+  render() {
     const styles = StyleSheet.create({
       headerRightContainerStyle: {
         width: this.state.width - 20,
@@ -111,7 +118,7 @@ class App extends Component {
     });
 
     const store = createStore(Reducer);
-    
+
     let Splash_Screen = (
       <Animated.View style={styles.SplashScreen_RootView}>
         <View style={styles.SplashScreen_ChildView}>
@@ -124,20 +131,31 @@ class App extends Component {
     );
     return (
       <ThemeContext.Provider value={getTheme(uiTheme)}>
-      <Provider store={store}>
-        <StatusBar
-          barStyle="dark-content"
-          hidden={false}
-          backgroundColor="#007b00"
-          translucent={true}
-          barStyle="light-content"
-        />
-        {this.state.isLoggedIn || this.state.isSignedIn ? this.state.sellerLoggedIn ? <SellerRoutes  onLogoutSession = {this.onLogoutSession}  /> : <BuyerRoutes  onLogoutSession = {this.onLogoutSession} /> : <AuthRoutes {...this.state} onSignedIn = {this.onsignIn} onSellerSignedIn = {this.onsellersignIn}/>}
-       
-      </Provider>
-      {this.state.isVisible === true ? Splash_Screen : null}
-    </ThemeContext.Provider>
-    )
+        <Provider store={store}>
+          <StatusBar
+            barStyle="dark-content"
+            hidden={false}
+            backgroundColor="#007b00"
+            translucent={true}
+            barStyle="light-content"
+          />
+          {this.state.isLoggedIn || this.state.isSignedIn ? (
+            this.state.isSellerSignedIn ? (
+              <SellerRoutes onLogoutSession={this.onLogoutSession} />
+            ) : (
+              <BuyerRoutes onLogoutSession={this.onLogoutSession} />
+            )
+          ) : (
+            <AuthRoutes
+              {...this.state}
+              onSignedIn={this.onsignIn}
+              onSellerSignedIn={this.onsellersignIn}
+            />
+          )}
+        </Provider>
+        {this.state.isVisible === true ? Splash_Screen : null}
+      </ThemeContext.Provider>
+    );
   }
 }
 export default App;

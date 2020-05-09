@@ -6,10 +6,10 @@ import {
   Dimensions,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  CheckBox,
+
   
 } from 'react-native';
-// import {CheckBox} from 'react-native-elements';
+import {CheckBox} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RadioButton } from 'react-native-paper';
 class Sort extends Component {
@@ -28,6 +28,12 @@ class Sort extends Component {
     this.props.test()
     this.props.navigation.goBack(null)
   }
+
+  sortOption = (args) =>{
+    this.setState({checked:args})
+    this.props.onSorting(args)
+  }
+
   render() {
     const { checked } = this.state;
 
@@ -90,58 +96,58 @@ class Sort extends Component {
         <View style={styles.actionContainer}>
          
          <View style={{flexDirection: 'row',justifyContent:'space-between',paddingBottom:10}}>
-           <Text style={styles.checkBoxText}>
+           <Text style={styles.checkBoxText} onPress={()=>this.sortOption('first')}>
              Popularity
            </Text>
          <RadioButton
          color='#00aa00'
           value="first"
           status={checked === 'first' ? 'checked' : 'unchecked'}
-          onPress={() => { this.setState({ checked: 'first' }); }}
+          onPress={()=>this.sortOption('first')}
         />
         </View>
         <View style={{flexDirection: 'row',justifyContent:'space-between',paddingBottom:10}}>
-           <Text style={styles.checkBoxText}>
+           <Text style={styles.checkBoxText}  onPress={()=>this.sortOption('second')}>
             Newest First
            </Text>
          <RadioButton
          color='#00aa00'
           value="second"
           status={checked === 'second' ? 'checked' : 'unchecked'}
-          onPress={() => { this.setState({ checked: 'second' }); }}
+          onPress={()=>this.sortOption('second')}
         />
         </View>
         <View style={{flexDirection: 'row',justifyContent:'space-between',paddingBottom:10}}>
-           <Text style={styles.checkBoxText}>
+           <Text style={styles.checkBoxText} onPress={()=>this.sortOption('third')}>
             Ratings -- high to low
            </Text>
          <RadioButton
          color='#00aa00'
           value="third"
           status={checked === 'third' ? 'checked' : 'unchecked'}
-          onPress={() => { this.setState({ checked: 'third' }); }}
+          onPress={()=>this.sortOption('third')}
         />
         </View>
         <View style={{flexDirection: 'row',justifyContent:'space-between',paddingBottom:10}}>
-           <Text style={styles.checkBoxText}>
+           <Text style={styles.checkBoxText} onPress={()=>this.sortOption('forth')}>
             Ratings -- low to high
            </Text>
          <RadioButton
          color='#00aa00'
           value="forth"
           status={checked === 'forth' ? 'checked' : 'unchecked'}
-          onPress={() => { this.setState({ checked: 'forth' }); }}
+          onPress={()=>this.sortOption('forth')}
         />
         </View>
         <View style={{flexDirection: 'row',justifyContent:'space-between',paddingBottom:10}}>
-           <Text style={styles.checkBoxText}>
+           <Text style={styles.checkBoxText} onPress={()=>this.sortOption('fifth')}>
             Alphabetical
            </Text>
          <RadioButton
          color='#00aa00'
           value="fifth"
           status={checked === 'fifth' ? 'checked' : 'unchecked'}
-          onPress={() => { this.setState({ checked: 'fifth' }); }}
+          onPress={()=>this.sortOption('fifth')}
         />
         </View>
         

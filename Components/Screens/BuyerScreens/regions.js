@@ -7,7 +7,7 @@ import {
   Image,
   ScrollView,
   Button,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 import {
   Card,
@@ -19,39 +19,35 @@ import {
 } from 'react-native-material-cards';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
+import {TouchableNativeFeedback} from 'react-native-gesture-handler';
 
 class Regions extends Component {
   constructor(props) {
     super(props);
     this.state = {
       filterOn: null,
-      regionsData: [],
     };
   }
 
-  componentDidMount() {
-    this.setState({regionsData: this.props.regionsData});
-  }
-
-  fetchOrigins = (args,args1) => {       
-    this.props.onDisplayRegionName(args1)    
-    this.props.navigation.navigate('All Origins',{regionId:args})
+  fetchOrigins = (args, args1) => {
+    this.props.onDisplayRegionName(args1);
+    this.props.navigation.navigate('All Origins', {regionId: args});
   };
 
   render() {
-    let size = 3;
-    let items = this.props.regionsData.slice(0, size);
     return (
       <View style={styles.regionstyles}>
         <FlatList
-          data={items}
+          data={this.props.regionsData}
           horizontal={true}
-          keyExtractor = {(items)=>{items.region_Id}}
+          keyExtractor={items => {
+            items.region_Id;
+          }}
           renderItem={({item}) => {
             return (
-              <TouchableOpacity
+              <TouchableNativeFeedback
                 style={{width: 175}}
-                onPress={()=>this.fetchOrigins(item.region_Id,item.name)}>
+                onPress={() => this.fetchOrigins(item.region_Id, item.name)}>
                 <Card style={{backgroundColor: 'white'}}>
                   <CardImage
                     source={{
@@ -69,7 +65,7 @@ class Regions extends Component {
                     }}
                   />
                 </Card>
-              </TouchableOpacity>
+              </TouchableNativeFeedback>
             );
           }}
         />
@@ -88,12 +84,12 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = dispatch => {
-    return {
-        onDisplayRegionName: value =>
-          dispatch({type: actionTypes.DISPLAY_REGION_NAME, payload: value}),
-      };
+  return {
+    onDisplayRegionName: value =>
+      dispatch({type: actionTypes.DISPLAY_REGION_NAME, payload: value}),
   };
-  export default connect(
-    null,
-    mapDispatchToProps,
-  )(Regions);
+};
+export default connect(
+  null,
+  mapDispatchToProps,
+)(Regions);

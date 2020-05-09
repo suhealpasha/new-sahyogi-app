@@ -11,23 +11,15 @@ import {BackHandler,
   AsyncStorage
 } from 'react-native';
 import {
-  Card,
-  CardTitle,
-  CardContent,
-  CardAction,
-  CardButton,
-  CardImage,
-} from 'react-native-material-cards';
-import {
   TouchableHighlight,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
-import { concat } from 'react-native-reanimated';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
 import Toast from 'react-native-simple-toast';
+import * as api from '../../../assets/api/api';
 
  class MyAddress extends Component {
   constructor(props) {
@@ -81,7 +73,7 @@ import Toast from 'react-native-simple-toast';
     });
 
     const access_token = await AsyncStorage.getItem('isLoggedIn')
-      await axios.post('http://mathtech.co.in/microffee_api/Buyer/deleteBuyerAddress',data,
+      await axios.post(api.buyerAddressDeleteAPI,data,
       {headers:{
         "access_token" : access_token,
         'accept': 'application/json',
@@ -106,8 +98,7 @@ import Toast from 'react-native-simple-toast';
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,
-        paddingTop: 10,
+        paddingRight: 10,   
         backgroundColor: '#efebea',
       },
       itemContainer: {

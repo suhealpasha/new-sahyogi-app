@@ -17,22 +17,12 @@ import {
 } from 'react-native';
 import {Input} from 'react-native-elements';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import NextButton from '../Components/utils/nextButton';
 import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
 import Toast from 'react-native-simple-toast';
 import Spinner from 'react-native-loading-spinner-overlay';
-
-import {
-  Card,
-  CardTitle,
-  CardContent,
-  CardAction,
-  CardButton,
-  CardImage,
-} from 'react-native-material-cards';
+import * as api from '../assets/api/api';
 
 class AddAddress extends Component {
   constructor(props) {
@@ -42,10 +32,12 @@ class AddAddress extends Component {
       spinner: false,
       userName: null,
       userNameError: false,
+      userNameValidationError:false,
       doorNumber: null,
       doorNumberError: false,
       phoneNumber: null,
       phoneNumberError: false,
+      phoneNumberValidationError:false,
       street: null,
       streetError: false,
       state: null,
@@ -53,9 +45,7 @@ class AddAddress extends Component {
       cityError:false,
       stateError: false,
       zipCode: null,
-      zipCodeError: false,
-      mobile: null,
-      mobileError: false,
+      zipCodeError: false,      
       addressData: [],      
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
@@ -72,7 +62,7 @@ class AddAddress extends Component {
    this.setState({spinner:true})
      const access_token = await AsyncStorage.getItem('isLoggedIn');            
       axios
-     .post('http://mathtech.co.in/microffee_api/Buyer/getBuyerAddressById',data,{
+     .post(api.buyerAddressByIdAPI,data,{
        headers: {
          accept: 'application/json',
          access_token: access_token,
@@ -106,9 +96,21 @@ class AddAddress extends Component {
     return true;
   }
 
+  mobileValidate = () =>{
+    if (this.state.phoneNumber === '') {
+      this.setState({phoneNumber: null});
+      return;
+    } else {
+      if (String(this.state.phoneNumber).length !== 12) {
+        this.setState({phoneNumberValidationError: true});
+        return;
+      }
+  }
+}
+
   async UNSAFE_componentWillReceiveProps() {     
       let name, street, door_number, city, state, zip, contact_no;
-      if (this.state.userName === null) {
+      if (this.state.userName === null && this.state.userNameValidationError === false) {
         name = this.state.addressData.name;
       } else {
         name = this.state.userName;
@@ -139,10 +141,10 @@ class AddAddress extends Component {
       } else {
         zip = this.state.zipCode;
       }
-      if (this.state.mobile === null) {
+      if (this.state.phoneNumber === null && this.state.phoneNumberValidationError === false) {
         contact_no = this.state.addressData.contact_no;
       } else {
-        contact_no = this.state.mobile;
+        contact_no = this.state.phoneNumber;
       }
 
       const data = JSON.stringify({
@@ -158,7 +160,7 @@ class AddAddress extends Component {
       this.setState({spinner:true})
 
       const access_token = await AsyncStorage.getItem('isLoggedIn')
-        await axios.post('http://mathtech.co.in/microffee_api/Buyer/updateBuyerAddressById',data,
+        await axios.post(api.buyerAddressUpdateAPI,data,
         {headers:{
           "access_token" : access_token,
           'accept': 'application/json',
@@ -183,11 +185,10 @@ class AddAddress extends Component {
     const styles = StyleSheet.create({
       container: {
         paddingLeft: 10,
-        paddingRight: 10,
-        paddingTop: 10,
-        height: this.state.height,
+        paddingRight: 10, 
         flexDirection: 'column',
         justifyContent: 'flex-start',
+        
       },
       registerFormContainer: {
         width: '100%',
@@ -197,7 +198,8 @@ class AddAddress extends Component {
       }, 
     });
     return (
-      <KeyboardAwareScrollView>
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}}
+      scrollEnabled={false} style={{backgroundColor: '#efebea'}}>
         <View style={styles.container}>
         <Spinner
           visible={this.state.spinner}
@@ -208,14 +210,29 @@ class AddAddress extends Component {
             <Input
               placeholder={this.state.addressData.name}
               style={styles.inputStyle}
-              onChangeText={userName =>
-                this.setState({userName, userNameError: false})
+              onChangeText={userName => {
+                if (/[^a-zA-Z\s]/.test(userName)) {
+                  this.setState({userNameValidationError: true});
+                } else {
+                  this.setState({
+                    userName,
+                    userNameError: false,
+                    userNameValidationError: false,
+                  });
+                }
+              }}
+              onBlur={
+                this.state.userName === ''
+                  ? this.setState({userName: null})
+                  : null
               }
-              // errorMessage={
-              //   this.state.userNameError === true
-              //     ? 'Enter the User Name'
-              //     : false
-              // }
+              errorMessage={
+                this.state.userNameError === true
+                  ? 'Enter the User Name'
+                  : this.state.userNameValidationError
+                  ? 'Invalid User Name'
+                  : false
+              }              
             />
             <Input
               placeholder={this.state.addressData.door_number}
@@ -273,13 +290,44 @@ class AddAddress extends Component {
             <Input
               placeholder={this.state.addressData.contact_no}
               style={styles.inputStyle}
-              onChangeText={phoneNumber => this.setState({phoneNumber})}
+              maxLength={10}
+              onChangeText={phoneNumber => {
+                const input = phoneNumber.replace(/\D/g, '').substring(0, 10);
+                const first = input.substring(0, 3);
+                const middle = input.substring(3, 6);
+                const last = input.substring(6, 10);
+
+                if (input.length > 6) {
+                  this.setState({
+                    phoneNumber: `${first}-${middle}-${last}`,
+                    phoneNumberError: false,
+                    phoneNumberValidationError: false,
+                  });
+                } else if (input.length > 3) {
+                  this.setState({
+                    phoneNumber: `${first}-${middle}`,
+                    phoneNumberError: false,
+                    phoneNumberValidationError: false,
+                  });
+                } else if (input.length >= 0) {
+                  this.setState({
+                    phoneNumber: input,
+                    phoneNumberError: false,
+                    phoneNumberValidationError: false,
+                  });
+                }
+              }}
+              onBlur={         
+               this.mobileValidate
+            }
               keyboardType="numeric"
-              // errorMessage={
-              //   this.state.userNameError === true
-              //     ? 'Enter the User Name'
-              //     : false
-              // }
+              errorMessage={
+                this.state.phoneNumberError === true
+                  ? 'Enter the mobile number'
+                  : this.state.phoneNumberValidationError
+                  ? 'Invalid mobile number'
+                  : null
+              }
             />
           </View>
         </View>

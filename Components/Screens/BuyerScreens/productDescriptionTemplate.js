@@ -91,6 +91,7 @@ class ProductDescriptionTemplate extends Component {
     const styles = StyleSheet.create({
       outerContaier: {
         flex: 1.0,
+        backgroundColor: '#efebea',
       },
       innerContainer: {
         flex: 1.0,
@@ -99,7 +100,7 @@ class ProductDescriptionTemplate extends Component {
         color: '#00aa00',
       },
       container: {
-        backgroundColor: '#efebea',
+       
         width: this.state.width,
         alignItems: 'center',
         paddingRight: 10,
@@ -108,7 +109,6 @@ class ProductDescriptionTemplate extends Component {
       originHeaderContainer: {
         width: this.state.width,
         paddingBottom: 10,
-
         height: 50,
         alignItems: 'center',
         flexDirection: 'row',

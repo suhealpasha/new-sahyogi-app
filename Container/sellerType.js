@@ -27,45 +27,43 @@ class SellerType extends Component {
     super(props);
     this.state = {
       height: Dimensions.get('window').height,
-      checkedUser: false,     
+      checkedUser: false,
       user1BorderColor: '#95A5A6',
       user2BorderColor: '#95A5A6',
       user3BorderColor: '#95A5A6',
-      u1:null,
-      u2:null,
-      u3:null,
+      u1: null,
+      u2: null,
+      u3: null,
     };
   }
 
-  userClicked = (u) =>{
-    if(u ==='p'){
-     this.props.onSellerUserTypeClicked('Producer')   
-     this.setState({user1BorderColor:'#00aa00'})
-     this.setState({user2BorderColor:'#95A5A6'})
-     this.setState({user3BorderColor:'#95A5A6'})
-     this.setState({u1:true})
-     this.setState({u2:false})
-     this.setState({u3:false})
+  userClicked = u => {
+    if (u === 'p') {
+      this.props.onSellerUserTypeClicked('Producer');
+      this.setState({user1BorderColor: '#00aa00'});
+      this.setState({user2BorderColor: '#95A5A6'});
+      this.setState({user3BorderColor: '#95A5A6'});
+      this.setState({u1: true});
+      this.setState({u2: false});
+      this.setState({u3: false});
+    } else if (u === 'd') {
+      this.props.onSellerUserTypeClicked('Distributor');
+      this.setState({user1BorderColor: '#95A5A6'});
+      this.setState({user2BorderColor: '#00aa00'});
+      this.setState({user3BorderColor: '#95A5A6'});
+      this.setState({u2: true});
+      this.setState({u1: false});
+      this.setState({u3: false});
+    } else {
+      this.props.onSellerUserTypeClicked('Producer or Distributor');
+      this.setState({user3BorderColor: '#00aa00'});
+      this.setState({user2BorderColor: '#95A5A6'});
+      this.setState({user1BorderColor: '#95A5A6'});
+      this.setState({u3: true});
+      this.setState({u1: false});
+      this.setState({u2: false});
     }
-    else if(u ==='d'){     
-     this.props.onSellerUserTypeClicked('Distributor')    
-     this.setState({user1BorderColor:'#95A5A6'})
-     this.setState({user2BorderColor:'#00aa00'})
-     this.setState({user3BorderColor:'#95A5A6'})
-     this.setState({u2:true})
-     this.setState({u1:false})
-     this.setState({u3:false})
-    }
-    else{
-      this.props.onSellerUserTypeClicked('Producer or Distributor')   
-      this.setState({user3BorderColor:'#00aa00'})
-      this.setState({user2BorderColor:'#95A5A6'})
-      this.setState({user1BorderColor:'#95A5A6'})
-      this.setState({u3:true})
-      this.setState({u1:false})
-      this.setState({u2:false})
-    }
-  }
+  };
 
   render() {
     const styles = StyleSheet.create({
@@ -73,7 +71,9 @@ class SellerType extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,        
+        paddingRight: 10,
+        justifyContent: 'center',
+        height: this.state.height - 90,
       },
       signInFormContainer: {
         width: '100%',
@@ -84,7 +84,6 @@ class SellerType extends Component {
       },
       users: {
         flexDirection: 'column',
-      
       },
       user1: {
         borderColor: this.state.user1BorderColor,
@@ -94,7 +93,6 @@ class SellerType extends Component {
         paddingLeft: 15,
         paddingBottom: 10,
         borderRadius: 10,
-       
       },
       user2: {
         borderColor: this.state.user2BorderColor,
@@ -104,7 +102,6 @@ class SellerType extends Component {
         paddingLeft: 15,
         paddingBottom: 10,
         borderRadius: 10,
-      
       },
       user3: {
         borderColor: this.state.user3BorderColor,
@@ -114,27 +111,28 @@ class SellerType extends Component {
         paddingLeft: 15,
         paddingBottom: 10,
         borderRadius: 10,
-      
       },
       userTextInactive: {
         fontFamily: 'Gotham Black Regular',
         fontSize: 14,
-        textAlign: 'center',       
+        textAlign: 'center',
         color: '#95A5A6',
       },
       userTextActive: {
         fontFamily: 'Gotham Black Regular',
         fontSize: 14,
-        textAlign: 'center',       
+        textAlign: 'center',
         color: '#00aa00',
       },
     });
 
     return (
-      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
-      scrollEnabled={false}>
+      <KeyboardAwareScrollView
+        resetScrollToCoords={{x: 0, y: 0}}
+        style={{backgroundColor: '#efebea'}}
+        scrollEnabled={false}>
+        <BackButton {...this.props} />
         <View style={styles.container}>
-          <BackButton {...this.props} />
           <Logo />
           <View style={styles.signInFormContainer}>
             <Text
@@ -150,54 +148,60 @@ class SellerType extends Component {
           </View>
           <View style={styles.usersContainer}>
             <View style={styles.users}>
-              <View style={{flexDirection:'row', justifyContent:'space-around',marginBottom:10}}>
-              <View style={styles.user1}>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    this.userClicked('p');
-                  }}>
-                  <Text
-                    style={
-                      this.state.u1
-                        ? styles.userTextActive
-                        : styles.userTextInactive
-                    }>
-                    Producer
-                  </Text>
-                </TouchableWithoutFeedback>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  marginBottom: 10,
+                }}>
+                <View style={styles.user1}>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      this.userClicked('p');
+                    }}>
+                    <Text
+                      style={
+                        this.state.u1
+                          ? styles.userTextActive
+                          : styles.userTextInactive
+                      }>
+                      Producer
+                    </Text>
+                  </TouchableWithoutFeedback>
+                </View>
+                <View style={styles.user2}>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      this.userClicked('d');
+                    }}>
+                    <Text
+                      style={
+                        this.state.u2
+                          ? styles.userTextActive
+                          : styles.userTextInactive
+                      }>
+                      Distributor
+                    </Text>
+                  </TouchableWithoutFeedback>
+                </View>
               </View>
-              <View style={styles.user2}>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    this.userClicked('d');
-                  }}>
-                  <Text
-                    style={
-                      this.state.u2
-                        ? styles.userTextActive
-                        : styles.userTextInactive
-                    }>
-                    Distributor
-                  </Text>
-                </TouchableWithoutFeedback>
-              </View>
-              </View>
-            <View style={{flexDirection:'row', justifyContent:'space-around'}}>
-              <View style={styles.user3}>
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    this.userClicked('p_d');
-                  }}>
-                  <Text
-                    style={
-                      this.state.u3
-                        ? styles.userTextActive
-                        : styles.userTextInactive
-                    }>
-                    Producer/Distributor
-                  </Text>
-                </TouchableWithoutFeedback>
-              </View>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+                <View style={styles.user3}>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      this.userClicked('p_d');
+                    }}>
+                    <Text
+                      style={
+                        this.state.u3
+                          ? styles.userTextActive
+                          : styles.userTextInactive
+                      }>
+                      Producer/Distributor
+                    </Text>
+                  </TouchableWithoutFeedback>
+                </View>
               </View>
             </View>
             {this.state.errorMessage ? (
@@ -215,11 +219,15 @@ class SellerType extends Component {
             ) : null}
             <NextButton
               click={() => {
-                if (this.state.u1 === null && this.state.u2 === null  && this.state.u3 === null) {
+                if (
+                  this.state.u1 === null &&
+                  this.state.u2 === null &&
+                  this.state.u3 === null
+                ) {
                   this.setState({errorMessage: true});
-                } else {              
-                  this.props.onUserTypeClicked('seller')
-                  this.props.navigation.navigate('Register')                 
+                } else {
+                  this.props.onUserTypeClicked('seller');
+                  this.props.navigation.navigate('Register');
                 }
               }}
             />
@@ -237,4 +245,7 @@ const mapDispatchToProps = dispatch => {
       dispatch({type: actionTypes.SELLER_USER_TYPE, payload: value}),
   };
 };
-export default connect(null,mapDispatchToProps)(SellerType);
+export default connect(
+  null,
+  mapDispatchToProps,
+)(SellerType);

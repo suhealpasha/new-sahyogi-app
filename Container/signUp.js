@@ -73,6 +73,8 @@ class SignUp extends Component {
         alignItems: 'center',
         paddingLeft: 10,
         paddingRight: 10,  
+        justifyContent:'center',
+        height:this.state.height - 90,         
        },
       signInFormContainer: {
         width: '100%',
@@ -119,8 +121,9 @@ class SignUp extends Component {
     return (
       <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
       scrollEnabled={false}>
+        <BackButton {...this.props} />
         <View style={styles.container}>
-          <BackButton {...this.props} />
+   
           <Logo />
           <View style={styles.signInFormContainer}>
             <Text

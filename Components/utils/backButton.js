@@ -14,7 +14,7 @@ class BackButton extends Component{
 
         return(
             <View style={styles.actionBarContainer}>
-          <TouchableOpacity  onPress={() =>   this.props.navigation.goBack(null)}>
+          <TouchableOpacity  onPress={() =>   this.props.navigation.goBack(null)} style={{paddingRight:10,paddingBottom:10,paddingTop:10}}>
             <Icon name="arrow-back" color="#004561" size={30} />
           </TouchableOpacity>
           </View>
@@ -25,8 +25,8 @@ class BackButton extends Component{
 export default BackButton;
 const styles = StyleSheet.create({
     actionBarContainer:{
-        paddingTop:10,
-        marginTop:20,      
-        width:'100%'
+        paddingTop:40,
+        paddingLeft:10,
+        width:'100%',     
       },
 })

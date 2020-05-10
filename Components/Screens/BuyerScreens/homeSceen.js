@@ -118,7 +118,7 @@ class HomeScreen extends Component {
         fontSize: 14,
         fontFamily: 'GothamBold',
         paddingTop: 10,
-        paddingBottom: 10,
+        paddingBottom: 20,
         paddingLeft: 10,
         paddingRight: 10,
       },

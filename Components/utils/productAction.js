@@ -30,14 +30,15 @@ class ProductAction extends Component {
       activeButton: '',
       activeSwitch: 1,
       price: null,
-      value: 0,
+      value: 1,
       availableQuantity: null,
     };
   }
 
-  componentDidMount() {
-    this.setState({productData: this.props.productData});
-  }
+   componentDidMount() {
+   this.setState({productData: this.props.productData});
+   }
+
 
   favoutiteClicked = async () => {
     this.setState({spinner: true});
@@ -89,8 +90,6 @@ class ProductAction extends Component {
       productActionsContainer: {
         alignItems: 'center',
         paddingTop: 10,
-        // height:200 ,
-
         width: this.state.width - 20,
       },
       actionsContainer: {
@@ -121,7 +120,7 @@ class ProductAction extends Component {
       unitsButton: {
         paddingTop: 5,
         paddingBottom: 5,
-        borderWidth: 0.5,
+        borderWidth: 1,
         borderColor: '#95A5A6',
         paddingLeft: 5,
         paddingRight: 5,
@@ -141,7 +140,7 @@ class ProductAction extends Component {
       unitsButtonText: {
         fontFamily: 'GothamLight',
         fontSize: 12,
-        color: '#95A5A6',
+        color: 'grey',
       },
       unitsActiveButtonText: {
         fontFamily: 'GothamBold',
@@ -242,10 +241,20 @@ class ProductAction extends Component {
         <View style={styles.actionsContainer}>
           <View style={{width: '60%'}}>
             <Text style={styles.priceText}>
-              ${' '}
-              {this.state.availableQuantity
-                ? this.state.value * this.state.price
-                : 0}
+          ${' '}{this.state.activeButton === '' ? 
+          this.props.productData.nano ?
+          
+           this.props.productData.nano ? this.props.productData.nano[0].price : null 
+          : 
+          this.props.productData.micro ? this.props.productData.micro[0] : null
+          :           
+            this.state.availableQuantity
+              ? this.state.value * this.state.price
+              : 0
+            
+            }
+
+             
             </Text>
           </View>
           <View style={{flexDirection: 'row', width: '40%'}}>
@@ -256,7 +265,7 @@ class ProductAction extends Component {
                   textAlign: 'center',
                   justifyContent: 'space-between',
                 }}>
-                {this.state.productData.rating}{' '}
+                {this.props.productData.rating}{' '}
                 <Icon
                   name="star"
                   size={12}
@@ -275,7 +284,7 @@ class ProductAction extends Component {
                 paddingLeft: 10,
                 paddingRight: 10,
               }}>
-              {this.state.productData.avg_rating}: ratings
+              {this.props.productData.avg_rating}: ratings
             </Text>
           </View>
         </View>
@@ -362,11 +371,11 @@ class ProductAction extends Component {
               onChange={value => this.setState({value: value})}
               totalWidth={80}
               totalHeight={30}
-              minValue={0}
+              minValue={1}
               maxValue={
                 this.state.activeButton !== ''
                   ? Number.parseInt(this.state.availableQuantity, 10)
-                  : 0
+                  : 1
               }
               onLimitReached={(isMax, msg) => {
                 Toast.show('Quantity is not available.');

@@ -201,10 +201,12 @@ class Wishlist extends Component {
                   <View style={styles.itemContainer}>
                     <View style={styles.thumbnailImageContainer}>
                       <Image
-                        source={item.thumbnail_image}
+                         source={{
+                          uri: item.thumbnail_image,
+                        }}
                         style={{
                           width: 130,
-                          height: 100,
+                          height: 120,
                           borderTopLeftRadius: 5,
                           borderBottomLeftRadius: 5,
                         }}

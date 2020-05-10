@@ -76,7 +76,9 @@ class Otp extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,        
+        paddingRight: 10,  
+        height:this.state.height - 90,
+        justifyContent:'center'      
       },
       otpFormContainer: {
         width: '100%',
@@ -127,8 +129,8 @@ class Otp extends Component {
     return (
       <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
       scrollEnabled={false}>
-        <View style={styles.container}>
-          <BackButton {...this.props} />
+         <BackButton {...this.props} />
+        <View style={styles.container}>         
           <Logo />
 
           <View style={styles.otpFormContainer}>

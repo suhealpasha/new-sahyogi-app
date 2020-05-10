@@ -117,7 +117,8 @@ class Login extends Component {
         paddingLeft: 10,
         paddingRight: 10,
         paddingTop:10,
-        justifyContent: 'center',
+        justifyContent:'center',        
+        height:this.state.height
       },
       spinnerTextStyle: {
         color: '#00aa00',
@@ -131,6 +132,7 @@ class Login extends Component {
       },
       signInFormContainer: {
         width: '100%',
+        
       },
       inputStyle: {
         fontFamily: 'Gotham Black Regular',
@@ -149,7 +151,7 @@ class Login extends Component {
     });
 
     return (
-      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea'}}
       scrollEnabled={false}>
         <View style={styles.container}>
           <Spinner

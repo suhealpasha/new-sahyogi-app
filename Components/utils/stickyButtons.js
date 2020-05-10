@@ -38,7 +38,8 @@ class StickyButton extends Component{
               borderColor: '#95A5A6',
               width:'50%',
               paddingTop:5,
-              paddingBottom:5
+              paddingBottom:5,
+              backgroundColor:'#ffffff'
             },
             buyButton:{               
                 backgroundColor:'#004561',              

@@ -179,7 +179,7 @@ class Register extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,
+        paddingRight: 10,       
       },
       registerFormContainer: {
         width: '100%',
@@ -199,13 +199,14 @@ class Register extends Component {
         resetScrollToCoords={{x: 0, y: 0}}
         style={{backgroundColor: '#efebea'}}
         scrollEnabled={true}>
+            <BackButton {...this.props} />
         <View style={styles.container}>
           <Spinner
             visible={this.state.spinner}
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
-          <BackButton {...this.props} />
+        
           <Logo />
           <View style={styles.registerFormContainer}>
             <Text

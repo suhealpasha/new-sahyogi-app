@@ -41,10 +41,24 @@ class ForgotPassword extends Component {
       height: Dimensions.get('window').height,
       mobileNumber: null,
       mobileNumberError: false,
+      mobileValidationError:false
     };
   }
+validateMobile = () =>{
+  if (this.state.mobileNumber === '') {
+    this.setState({mobileNumber: null});
+    return;
+  } else {
+    if (String(this.state.mobileNumber).length !== 12) {
+      this.setState({mobileValidationError: true});
+      return;
+    }
+}
+}
+
   handleForgotPassword = async () => {
-    if (this.state.mobileNumber !== null) {     
+    console.log(this.state.mobileNumber)
+    if (this.state.mobileNumber !== null && this.state.mobileValidationError === false) {     
       let data = JSON.stringify({
         mobile_no: this.state.mobileNumber,
       });
@@ -89,7 +103,9 @@ class ForgotPassword extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,      
+        paddingRight: 10,  
+        height:this.state.height - 90,
+        justifyContent:'center' ,   
       },
       ForgotPasswordFormContainer: {
         width: '100%',
@@ -107,13 +123,14 @@ class ForgotPassword extends Component {
     return (
       <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
       scrollEnabled={false}>
+             <BackButton {...this.props} />
         <View style={styles.container}>
         <Spinner
             visible={this.state.spinner}
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
-          <BackButton {...this.props} />
+     
           <Logo />
 
           <View style={styles.ForgotPasswordFormContainer}>
@@ -132,11 +149,40 @@ class ForgotPassword extends Component {
               placeholder="Mobile Number"
               style={styles.inputStyle}
               keyboardType="numeric"
-              onChangeText={mobileNumber => this.setState({mobileNumber})}
+              maxLength={10}   
+              onBlur={this.validateMobile}           
+              onChangeText={mobileNumber => {
+                const input = mobileNumber.replace(/\D/g, '').substring(0, 10);
+                const first = input.substring(0, 3);
+                const middle = input.substring(3, 6);
+                const last = input.substring(6, 10);
+
+                if (input.length > 6) {
+                  this.setState({
+                    mobileNumber: `${first}-${middle}-${last}`,
+                    mobileNumberError: false,
+                    mobileValidationError: false,
+                  });
+                } else if (input.length > 3) {
+                  this.setState({
+                    mobileNumber: `${first}-${middle}`,
+                    mobileNumberError: false,
+                    mobileValidationError: false,
+                  });
+                } else if (input.length >= 0) {
+                  this.setState({
+                    mobileNumber: input,
+                    mobileNumberError: false,
+                    mobileValidationError: false,
+                  });
+                }
+              }}
               errorMessage={
                 this.state.mobileNumberError === true
-                  ? 'Enter the Mobile Number'
-                  : false
+                  ? 'Enter the mobile number'
+                  : this.state.mobileValidationError
+                  ? 'Invalid mobile number'
+                  : null
               }
             />
           </View>

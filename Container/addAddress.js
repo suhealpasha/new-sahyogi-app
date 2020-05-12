@@ -103,8 +103,16 @@ class AddAddress extends Component {
       });
       this.setState({spinner: true});
       const access_token = await AsyncStorage.getItem('isLoggedIn');
+      const userType = await AsyncStorage.getItem('userType');
+      let addAddressAPI;
+      if(userType === 'Buyer'){
+        addAddressAPI = api.buyerAddAddressAPI
+      }
+      else{
+        addAddressAPI = api.sellerAddAddressAPI 
+      }
       await axios
-        .post(api.buyerAddAddressAPI, data, {
+        .post(addAddressAPI, data, {
           headers: {
             access_token: access_token,
             accept: 'application/json',

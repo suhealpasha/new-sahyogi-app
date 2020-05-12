@@ -32,6 +32,10 @@ import * as api from '../../../assets/api/api';
   }
 
   componentDidMount() {  
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
     this.setState({
       addressData:this.props.addressData
     });
@@ -43,14 +47,7 @@ import * as api from '../../../assets/api/api';
       this.setState({addressData: this.props.addressData});
     }   
   }
-     
-  componentWillMount() {    
-    BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
-  }
-
+  
   componentWillUnmount() {
     BackHandler.removeEventListener(
       'hardwareBackPress',

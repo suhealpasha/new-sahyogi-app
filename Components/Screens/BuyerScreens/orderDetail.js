@@ -367,9 +367,10 @@ class ProductDescriptionTemplate extends Component {
                     </View>
                     <View>
                       <TouchableOpacity
-                        onPress={() =>
-                          this.props.navigation.navigate('Product Description')
-                        }>
+                        // onPress={() =>
+                        //   this.props.navigation.navigate('Product Description')
+                        // }
+                        >
                         <Text style={styles.viewall}>View Detail</Text>
                       </TouchableOpacity>
                     </View>

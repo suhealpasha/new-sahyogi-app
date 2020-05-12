@@ -74,9 +74,10 @@ class Login extends Component {
             'content-type': 'application/x-www-form-urlencoded',
           },
         })
-        .then(res => {
+        .then(res => {         
           if (res.data.status === 'success' && res.data.user_type === 'Buyer') {
             AsyncStorage.setItem('isLoggedIn', res.data.access_token);
+            AsyncStorage.setItem('userType', res.data.user_type);
             this.props.onBottomTabClicked('home');
             this.props.onSignIn();
             this.setState({spinner: false, mobileNumber: null, password: null});
@@ -85,6 +86,7 @@ class Login extends Component {
             res.data.user_type === 'Seller'
           ) {
             AsyncStorage.setItem('isLoggedIn', res.data.access_token);
+            AsyncStorage.setItem('userType', res.data.user_type);
             this.props.onBottomTabClicked('home');
             this.props.onSellerSignIn();
             this.setState({spinner: false, mobileNumber: null, password: null});
@@ -198,7 +200,7 @@ class Login extends Component {
                     });
                   }
                 }                
-                }
+                }            
               onBlur={this.state.mobileNumber === '' ? this.setState({mobileNumber:null}):null}
               errorMessage={
                 this.state.mobileNumberError === true

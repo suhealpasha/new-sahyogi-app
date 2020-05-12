@@ -194,7 +194,7 @@ class ProductDescriptionTemplate extends Component {
             </View>
           </View>
         </KeyboardAwareScrollView>
-        <StickyButton cancel="Add to Cart" proceed="Buy Now" />
+        <StickyButton cancel="Add to Cart" proceed="Buy Now" {...this.props}/>
       </View>
     );
   }

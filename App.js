@@ -64,7 +64,8 @@ class App extends Component {
 
   async componentDidMount() {
     const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
-    const user = await AsyncStorage.getItem('userType');
+    const user = await AsyncStorage.getItem('userType');  
+    console.log(user)  
     if (isLoggedIn) {
       this.setState({isLoggedIn: true, userType: user});
     }
@@ -78,6 +79,7 @@ class App extends Component {
   onLogoutSession = () => {
     this.setState({isLoggedIn: false});
     this.setState({isSignedIn: false});
+    this.setState({userType:null})
   };
 
   onsignIn = async () => {  
@@ -140,7 +142,7 @@ class App extends Component {
             barStyle="light-content"
           />
           {this.state.isLoggedIn || this.state.isSignedIn ? (
-            this.state.isSellerSignedIn ? (
+            this.state.isSellerSignedIn || this.state.userType === 'Seller' ? (
               <SellerRoutes onLogoutSession={this.onLogoutSession} />
             ) : (
               <BuyerRoutes onLogoutSession={this.onLogoutSession} />

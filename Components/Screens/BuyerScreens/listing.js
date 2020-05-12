@@ -57,8 +57,17 @@ class Listing extends Component {
   fetchProducts = async () => {
     this.setState({spinner:true})
     const access_token = await AsyncStorage.getItem('isLoggedIn');
+
+   const data = {
+      "featured":true,
+      "origin_Id":this.props.filterOriginsData.length ? String(this.props.filterOriginsData) : null,
+      "lot":null,
+      "verity_Id":this.props.filterVaritiesData.length ? String(this.props.filterVaritiesData) : null,
+    }
     await axios
-      .get(api.buyerAllProductAPI, {
+      .post(api.buyerAllProductAPI,
+       data
+        ,{
         headers: {
           accept: 'application/json',
           access_token: access_token,
@@ -66,8 +75,8 @@ class Listing extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {     
-        if (res.status) {
+      .then(res => {      
+           if (res.status) {
           this.setState({
             spinner:false,
             allProductsData: res.data.data,
@@ -140,33 +149,19 @@ class Listing extends Component {
         return;
     }
   };
-  
-  
-  filtering =(args)=>{
-    const newArray = [...this.state.items];
-    this.setState({filtering:true})
-    if(this.props.varitiesData !== null){
 
-    }
-   
-    let filteredData = newArray.filter(item =>{
-      if(args.featuredChecked || args.microLotsChecked || args.nanoLotsChecked){
-        if( args.featuredChecked && item.featured === 'Yes' || args.microLotsChecked && item.lot === 'Micro' || args.nanoLotsChecked && item.lot === 'Nano'){
-          return item
-        }
-      }
-      
-    }) 
-    this.setState({newItems:filteredData})
-    this.RBSheet.close();
-  }
-
+  filtering= args => {       
+        this.RBSheet.close();    
+        this.fetchProducts();
+  };
+  
   fetchProductDetails = (args, args1) => {
     this.props.onDisplayVarietyName(args1);
     this.props.navigation.navigate('Product Description', {productId: args});
   };
 
   render() {    
+    console.log('FFD inside',this.props.filterFeaturedData,this.props.filterOriginsData,this.props.filterVaritiesData)
     let optionsComponet;
     if (this.props.clickedIcon === 'Sort') {
       optionsComponet = (
@@ -179,7 +174,7 @@ class Listing extends Component {
           resetClickedIcon={() => {
             this.RBSheet.close();
           }}
-          onFiltering = {args => this.filtering(args)}
+          onFiltering = {this.filtering}
         />
       );
     }
@@ -193,7 +188,7 @@ class Listing extends Component {
             />
         <FlatList
           style={{paddingLeft: 10, paddingRight: 10}}
-          data={!this.state.filtering ? this.state.allProductsData : this.state.newItems}          
+          data={this.state.allProductsData}          
           numColumns={1}
           keyExtractor = {(items)=>{items.product_Id}}
 
@@ -336,7 +331,10 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    varitiesData: state.reducer.varitiesData,
+  filterFeaturedData:state.reducer.filterFeaturedData,
+  filterOriginsData:state.reducer.filterOriginsData,
+  filterLotNameData:state.reducer.filterLotNameData,
+  filterVaritiesData: state.reducer.filterVaritiesData,
   };
 };
 

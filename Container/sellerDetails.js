@@ -171,7 +171,7 @@ class SellerDetails extends Component {
               placeholder="Company"
               style={styles.inputStyle}
               onChangeText={company => {
-                if (/[^0-9a-zA-Z]/.test(company)) {
+                if (/[^0-9a-zA-Z\s]/.test(company)) {
                   this.setState({companyValidationError: true});
                 } else {
                   this.setState({

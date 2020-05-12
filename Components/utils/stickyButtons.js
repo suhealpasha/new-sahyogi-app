@@ -75,7 +75,7 @@ class StickyButton extends Component{
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.buyButton}
-          onPress={() => navigate('Home Screen')}
+          onPress={() => this.props.navigation.navigate('Cart')}
           underlayColor='#fff'>
           <Text style={styles.buyText}>{this.props.proceed}</Text>
         </TouchableOpacity>

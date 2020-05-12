@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import {CheckBox} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import * as actionTypes from '../../Store/action';
+import {connect} from 'react-redux';
 
 class Filter extends Component {
   constructor(props) {
@@ -27,7 +29,7 @@ class Filter extends Component {
   }
   
 filterOption =() =>{
-  // this.props.onFiltering({...this.state})
+ this.props.onFiltering();
 }
 
   render() {
@@ -86,7 +88,7 @@ filterOption =() =>{
         textAlignVertical:'center'
       }
     });
-
+console.log(this.props.filterFeaturedData)
     
     return (
         <View style={{flex:1.0}}>
@@ -135,7 +137,7 @@ filterOption =() =>{
             onPress={() => this._logout()}>
  
             <View style={{flexDirection: 'row',justifyContent:'flex-start',paddingBottom:0}}>
-              <CheckBox  checked={this.state.featuredChecked} checkedColor='#00aa00' onPress={() => this.setState({featuredChecked: !this.state.featuredChecked})}/><Text style={styles.checkBoxText}>Featured</Text>
+              <CheckBox  checked={this.props.filterFeaturedData} checkedColor='#00aa00' onPress={() =>this.props.onFeaturedProductsFiltered(!this.props.filterFeaturedData) }/><Text style={styles.checkBoxText}>Featured</Text>
              
                 
             
@@ -154,4 +156,24 @@ filterOption =() =>{
   }
 }
 
-export default Filter;
+const mapStateToProps = state => {
+  return {
+  filterFeaturedData:state.reducer.filterFeaturedData,
+  filterOriginsData:state.reducer.filterOriginsData,
+  filterLotNameData:state.reducer.filterLotNameData,
+  filterVaritiesData: state.reducer.filterVaritiesData,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+         onFeaturedProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_FEATURED_DATA, payload: value}),      
+  };
+};
+
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Filter);

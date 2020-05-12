@@ -32,52 +32,59 @@ class AddAddress extends Component {
       spinner: false,
       userName: null,
       userNameError: false,
-      userNameValidationError:false,
+      userNameValidationError: false,
       doorNumber: null,
       doorNumberError: false,
       phoneNumber: null,
       phoneNumberError: false,
-      phoneNumberValidationError:false,
+      phoneNumberValidationError: false,
       street: null,
       streetError: false,
       state: null,
-      city:null,
-      cityError:false,
+      city: null,
+      cityError: false,
       stateError: false,
       zipCode: null,
-      zipCodeError: false,      
-      addressData: [],      
+      zipCodeError: false,
+      addressData: [],
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   componentDidMount() {
-    this.fetchEditAddress();    
+    this.fetchEditAddress();
   }
 
-  fetchEditAddress = async() =>{ 
-   const data = JSON.stringify({
-     address_Id:this.props.route.params.addressId
-   })
-   this.setState({spinner:true})
-     const access_token = await AsyncStorage.getItem('isLoggedIn');            
-      axios
-     .post(api.buyerAddressByIdAPI,data,{
-       headers: {
-         accept: 'application/json',
-         access_token: access_token,
-         'accept-language': 'en_US',
-         'content-type': 'application/x-www-form-urlencoded',
-       },
-     })
-     .then(res => {       
-       this.setState({spinner:false,addressData:res.data.data})    
-     })
-     .catch(err => {
-      this.setState({spinner:false})
-       console.log(err);
-     });
- }
+  fetchEditAddress = async () => {
+    const data = JSON.stringify({
+      address_Id: this.props.route.params.addressId,
+    });
+    this.setState({spinner: true});
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    const userType = await AsyncStorage.getItem('userType');
+    let editAddressAPI;
+    if (userType === 'Buyer') {
+      editAddressAPI = api.buyerAddressByIdAPI;
+    } else {
+      editAddressAPI = api.sellerAddressByIdAPI;
+    }
+    axios
+      .post(editAddressAPI, data, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        this.setState({spinner: false, addressData: res.data.data});
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
+  };
   componentWillMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
@@ -96,7 +103,7 @@ class AddAddress extends Component {
     return true;
   }
 
-  mobileValidate = () =>{
+  mobileValidate = () => {
     if (this.state.phoneNumber === '') {
       this.setState({phoneNumber: null});
       return;
@@ -105,107 +112,120 @@ class AddAddress extends Component {
         this.setState({phoneNumberValidationError: true});
         return;
       }
-  }
-}
+    }
+  };
 
-  async UNSAFE_componentWillReceiveProps() {     
-      let name, street, door_number, city, state, zip, contact_no;
-      if (this.state.userName === null && this.state.userNameValidationError === false) {
-        name = this.state.addressData.name;
-      } else {
-        name = this.state.userName;
-      }
-      if (this.state.doorNumber === null) {
-        door_number = this.state.addressData.door_number;
-      } else {
-        door_number = this.state.doorNumber;
-      }
-      if (this.state.street === null) {
-        street = this.state.addressData.address;
-        
-      } else {
-        street = this.state.street;
-      }
-      if (this.state.city === null) {
-        city = this.state.addressData.city;       
-      } else {
-        city = this.state.city;
-      }
-      if (this.state.state === null) {
-        state = this.state.addressData.state;
-      } else {
-        state = this.state.state;
-      }
-      if (this.state.zipCode === null) {
-        zip = this.state.addressData.zip;
-      } else {
-        zip = this.state.zipCode;
-      }
-      if (this.state.phoneNumber === null && this.state.phoneNumberValidationError === false) {
-        contact_no = this.state.addressData.contact_no;
-      } else {
-        contact_no = this.state.phoneNumber;
-      }
+  async UNSAFE_componentWillReceiveProps() {
+    let name, street, door_number, city, state, zip, contact_no;
+    if (
+      this.state.userName === null &&
+      this.state.userNameValidationError === false
+    ) {
+      name = this.state.addressData.name;
+    } else {
+      name = this.state.userName;
+    }
+    if (this.state.doorNumber === null) {
+      door_number = this.state.addressData.door_number;
+    } else {
+      door_number = this.state.doorNumber;
+    }
+    if (this.state.street === null) {
+      street = this.state.addressData.address;
+    } else {
+      street = this.state.street;
+    }
+    if (this.state.city === null) {
+      city = this.state.addressData.city;
+    } else {
+      city = this.state.city;
+    }
+    if (this.state.state === null) {
+      state = this.state.addressData.state;
+    } else {
+      state = this.state.state;
+    }
+    if (this.state.zipCode === null) {
+      zip = this.state.addressData.zip;
+    } else {
+      zip = this.state.zipCode;
+    }
+    if (
+      this.state.phoneNumber === null &&
+      this.state.phoneNumberValidationError === false
+    ) {
+      contact_no = this.state.addressData.contact_no;
+    } else {
+      contact_no = this.state.phoneNumber;
+    }
 
-      const data = JSON.stringify({
-        address_Id:this.state.addressData.address_Id,
-        name: name,
-        street: street,
-        door_number: door_number,
-        city: city,
-        state: state,
-        zip: zip,
-        contact_no: contact_no,
-      });
-      this.setState({spinner:true})
-
-      const access_token = await AsyncStorage.getItem('isLoggedIn')
-        await axios.post(api.buyerAddressUpdateAPI,data,
-        {headers:{
-          "access_token" : access_token,
-          'accept': 'application/json',
-        'accept-language': 'en_US',
-        'content-type': 'application/x-www-form-urlencoded'}} )
-        .then(res =>{
-        if(res.status) {
-          this.setState({spinner:false})
-          Toast.show('Address Updated')
-          this.props.onFetchAddress()
-          this.props.navigation.navigate('My Address')
-
+    const data = JSON.stringify({
+      address_Id: this.state.addressData.address_Id,
+      name: name,
+      street: street,
+      door_number: door_number,
+      city: city,
+      state: state,
+      zip: zip,
+      contact_no: contact_no,
+    });
+    this.setState({spinner: true});
+    const userType = await AsyncStorage.getItem('userType');
+    let addressUpdateAPI;
+    if (userType === 'Buyer') {
+      addressUpdateAPI = api.buyerAddressUpdateAPI;
+    } else {
+      addressUpdateAPI = api.sellerAddressUpdateAPI;
+    }
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    await axios
+      .post(addressUpdateAPI, data, {
+        headers: {
+          access_token: access_token,
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        if (res.status) {
+          this.setState({spinner: false});
+          Toast.show('Address Updated');
+          this.props.onFetchAddress();
+          this.props.navigation.navigate('My Address');
         }
-
-        })
-        .catch(err =>{
-          this.setState({spinner:false})
-          console.log(err)})
-    
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
   }
   render() {
     const styles = StyleSheet.create({
       container: {
         paddingLeft: 10,
-        paddingRight: 10, 
+        paddingRight: 10,
         flexDirection: 'column',
         justifyContent: 'flex-start',
-        
       },
       registerFormContainer: {
         width: '100%',
       },
       spinnerTextStyle: {
-        color: '#00aa00'
-      }, 
+        color: '#00aa00',
+      },
     });
     return (
-      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}}
-      scrollEnabled={false} style={{backgroundColor: '#efebea'}}>
+      <KeyboardAwareScrollView
+        resetScrollToCoords={{x: 0, y: 0}}
+        scrollEnabled={false}
+        style={{backgroundColor: '#efebea'}}>
         <View style={styles.container}>
-        <Spinner
-          visible={this.state.spinner}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}         
-        />
+          <Spinner
+            visible={this.state.spinner}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
           <View style={styles.registerFormContainer}>
             <Input
               placeholder={this.state.addressData.name}
@@ -232,7 +252,7 @@ class AddAddress extends Component {
                   : this.state.userNameValidationError
                   ? 'Invalid User Name'
                   : false
-              }              
+              }
             />
             <Input
               placeholder={this.state.addressData.door_number}
@@ -317,9 +337,7 @@ class AddAddress extends Component {
                   });
                 }
               }}
-              onBlur={         
-               this.mobileValidate
-            }
+              onBlur={this.mobileValidate}
               keyboardType="numeric"
               errorMessage={
                 this.state.phoneNumberError === true

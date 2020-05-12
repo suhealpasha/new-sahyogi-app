@@ -37,7 +37,7 @@ class AllFeaturedItems extends Component {
   }
 
   componentDidMount(){
-    this.fetchFeaturedProducts();
+    // this.fetchFeaturedProducts();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,

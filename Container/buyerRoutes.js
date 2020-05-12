@@ -16,7 +16,6 @@ import {
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from '../Components/Screens/BuyerScreens/home';
-import AllFeaturedItems from '../Components/Screens/BuyerScreens/allFeaturedItems';
 import Varities from '../Components/Screens/BuyerScreens/varities';
 import RegionsOrigins from '../Components/Screens/BuyerScreens/regionsOrigins';
 import Listing from '../Components/Screens/BuyerScreens/listing';
@@ -163,7 +162,8 @@ class Routes extends Component {
       })
       .then(res => { 
           
-        if (res.status) {         
+        if (res.status) { 
+              
           this.setState({
             featuredProductsData:res.data.data.featured_products,
             latestProductsData:res.data.data.latest_products,
@@ -189,7 +189,7 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {           
+      .then(res => {    
         if (res.status) {
           this.setState({
             user_name: res.data.data.first_name,
@@ -309,39 +309,7 @@ class Routes extends Component {
                 latestProductsData = {this.state.latestProductsData}
               />
             )}
-          </Stack.Screen>
-          <Stack.Screen
-            name="All Featured"            
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              headerTitle: (
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    flex: 1,
-                    fontFamily: 'Gotham Black Regular',
-                  }}>
-                  All Featured Crops
-                </Text>
-              ),
-              headerStyle: {backgroundColor: '#00aa00'},
-              headerTintColor: '#ffffff',
-              headerLeft: () => (
-                <TouchableWithoutFeedback
-                  onPress={() => this.goBack({navigation}, 'Home')}>
-                  <Icon name="chevron-left" size={35} color="white" />
-                </TouchableWithoutFeedback>
-              ),             
-            })}
-          >
-            {props => (
-              <AllFeaturedItems
-                {...props}
-                clickedIcon={this.state.clickedIcon}
-                productsData={this.state.productsData}
-              />
-            )} 
-            </Stack.Screen>
+          </Stack.Screen>         
           <Stack.Screen
             name="Listing"
             options={({navigation, route}) => ({
@@ -353,7 +321,7 @@ class Routes extends Component {
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
                   }}>
-                  Products
+                 {this.props.listingTitle}
                 </Text>
               ),
               headerStyle: {backgroundColor: '#00aa00'},
@@ -1099,6 +1067,7 @@ const mapStateToProps = state => {
     addressId: state.reducer.addressId,
     regionName: state.reducer.regionName,
     varietyName: state.reducer.varietyName,
+    listingTitle: state.reducer.listingTitle,
   };
 };
 export default connect(

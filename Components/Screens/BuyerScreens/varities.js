@@ -122,20 +122,25 @@ class Varities extends Component {
   };
 
   filterVarities = () => {   
-    console.log(this.state.items) 
-    // const newArray = [...this.state.items];
-    // let filteredData = newArray.filter(item => {
-    //   if (item.checked) {
-    //     return item.variety;
-    //   }
-    // });
-    // this.props.onFilterVaritiesData(filteredData)
-    // this.props.navigation.navigate('Listing')
-    // this.props.onClickedIcon();
+    let checkList=[]
+    if(this.state.checked){
+      this.state.varitiesData.filter(item =>{
+        checkList.push(item.verity_Id)
+      })
+    }
+   else{
+      this.state.varitiesData.filter(item =>{
+       if(item.checked || item.checked === true){
+        checkList.push(item.verity_Id)
+       }
+     })
+   }
+   this.props.onFilterVaritiesData(checkList)
+   this.props.navigation.navigate('Listing')
   };
 
   render() {
-    console.log(this.state.varitiesData)
+    console.log('=====>',this.props.filterVaritiesData)
     return (
       <View style={{flex: 1.0}}>
         <View style={styles.container}>
@@ -227,6 +232,12 @@ const styles = StyleSheet.create({
   }, 
 });
 
+const mapStateToProps = state => {
+  return {
+    filterVaritiesData: state.reducer.filterVaritiesData,
+  };
+};
+
 const mapDispatchToProps = dispatch => {
   return {
     onFilterVaritiesData: value =>
@@ -235,6 +246,6 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps,
 )(Varities)

@@ -78,7 +78,16 @@ class HomeScreen extends Component {
     this.props.navigation.navigate('Order Listing');
   };
 
-  onSeeAll = () => {
+  onSeeAll = (args) => {
+    this.props.onProductListingTitle(args)
+    if(args === 'Products'){
+      this.props.onFeaturedProductsFiltered(null)
+    }
+    else{
+      this.props.onFeaturedProductsFiltered(true)
+    }
+    this.props.onOriginProductsFiltered([]);
+    this.props.onLotProductsFiltered([]);
     this.props.navigation.navigate('Listing');
   };
 
@@ -95,24 +104,30 @@ class HomeScreen extends Component {
         padding: 0,
         paddingLeft: 10,
         paddingRight: 10,
+    
       },
       microLots: {
         width: '100%',
         flexDirection: 'column',
         paddingLeft: 5,
-        paddingRight: 5,
-      },
-      nanoLots: {
-        width: '100%',
-        paddingLeft: 5,
-        paddingRight: 5,
-      },
+        paddingRight: 5,       
+      },     
       regions: {
         width: '100%',
         paddingLeft: 5,
         paddingRight: 5,
       },
-      viewall: {
+      viewallfeatured: {
+        color: '#3e708f',
+        borderRadius: 10,
+        fontSize: 14,
+        fontFamily: 'GothamBold',
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 10,
+        paddingRight: 10,      
+      },
+      seeAll:{
         color: '#3e708f',
         borderRadius: 10,
         fontSize: 14,
@@ -120,7 +135,17 @@ class HomeScreen extends Component {
         paddingTop: 10,
         paddingBottom: 20,
         paddingLeft: 10,
-        paddingRight: 10,
+        paddingRight: 10, 
+      },
+      viewall: {
+        color: '#3e708f',
+        borderRadius: 10,
+        fontSize: 14,
+        fontFamily: 'GothamBold',
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 10,
+        paddingRight: 10,      
       },
       viewallRecentOrders: {
         color: '#3e708f',
@@ -131,6 +156,13 @@ class HomeScreen extends Component {
         paddingBottom: 10,
         paddingLeft: 10,
         paddingRight: 10,
+      },
+      featuredalign: { 
+        paddingTop: 10,
+        paddingBottom: 10,
+        color: '#004561',
+        textAlignVertical: 'center',
+        fontFamily: 'Gotham Black Regular',
       },
       microalign: {
         paddingBottom: 10,
@@ -234,10 +266,10 @@ class HomeScreen extends Component {
                 paddingLeft: 5,
                 paddingRight: 5,
               }}>
-              <Text style={styles.microalign}>Featured Crops</Text>
+              <Text style={styles.featuredalign}>Featured Crops</Text>
               <TouchableWithoutFeedback 
-                onPress={() => this.props.navigation.navigate('All Featured')}>
-                <Text style={styles.viewall}>View All Featured Crops</Text>
+                onPress={()=>this.onSeeAll('All Featured Crops')}>
+                <Text style={styles.viewallfeatured}>View All Featured Crops</Text>
                 </TouchableWithoutFeedback>
             </View>
             <FeaturedItems {...this.props} featuredProductsData = {this.state.featuredProductsData}/>
@@ -259,14 +291,14 @@ class HomeScreen extends Component {
                 borderColor: '#95A5A6',
                 borderBottomWidth: 0.25,
               }}>
-              <TouchableWithoutFeedback onPress={this.onSeeAll}>
+              <TouchableWithoutFeedback onPress={()=>this.onSeeAll('Products')}>
                 <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                   }}>
-                  <Text style={styles.viewall}>See All Products</Text>
+                  <Text style={styles.seeAll}>See All Products</Text>
                   <Icon name="chevron-right" color={'#3e708f'} size={25} />
                 </View>
               </TouchableWithoutFeedback>
@@ -307,6 +339,14 @@ const mapDispatchToProps = dispatch => {
   return {
     onBottomTabClicked: value =>
       dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
+      onProductListingTitle:  value =>
+      dispatch({type: actionTypes.LISTING_TITLE, payload: value}),
+      onFeaturedProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_FEATURED_DATA, payload: value}),
+      onLotProductsFiltered : value =>
+      dispatch({type: actionTypes.FILTER_LOTS_DATA, payload: value}),
+      onOriginProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_ORIGINS_DATA, payload: value}),
   };
 };
 export default connect(

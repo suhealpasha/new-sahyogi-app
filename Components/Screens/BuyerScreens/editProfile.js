@@ -61,7 +61,7 @@ class EditProfile extends Component {
     });
   }
 
-  componentWillMount() {
+  componentDidMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,

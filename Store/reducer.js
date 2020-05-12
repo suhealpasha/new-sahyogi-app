@@ -3,6 +3,7 @@ import * as actionTypes from './action';
 const initialState = {
   sellerUser: false,
   active: 'home',
+  listingTitle:null,
   userType: null,  
   sellerUserType: null,
   forgotPassword: null,
@@ -17,7 +18,10 @@ const initialState = {
   addressId: null,
   regionName: null,
   varietyName: null,
-  varitiesData: [],
+  filterFeaturedData:null,
+  filterOriginsData:[],
+  filterLotNamesData:[],
+  filterVaritiesData: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -87,6 +91,11 @@ const reducer = (state = initialState, action) => {
         mobile: action.payload,
         otp: action.payload1,
       };
+      case actionTypes.LISTING_TITLE:
+      return {
+        ...state,
+        listingTitle: action.payload,
+      };
     case actionTypes.DISPLAY_REGION_NAME:
       return {
         ...state,
@@ -97,10 +106,25 @@ const reducer = (state = initialState, action) => {
         ...state,
         varietyName: action.payload,
       };
+      case actionTypes.FILTER_FEATURED_DATA:
+      return {
+        ...state,
+        filterFeaturedData: action.payload,
+      };
+      case actionTypes.FILTER_ORIGINS_DATA:
+      return {
+        ...state,
+        filterOriginsData: action.payload,
+      };
+      case actionTypes.FILTER_LOTS_DATA:
+      return {
+        ...state,
+        filterLotNameData: action.payload,
+      };   
     case actionTypes.FILTER_VARITIES_DATA:
       return {
         ...state,
-        varitiesData: action.payload,
+        filterVaritiesData: action.payload,
       };
     default:
       return state;

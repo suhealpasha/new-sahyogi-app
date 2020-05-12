@@ -378,6 +378,9 @@ class ProductAction extends Component {
                   : 1
               }
               onLimitReached={(isMax, msg) => {
+                this.state.activeButton === '' ?
+                Toast.show('Select the units.')
+                :
                 Toast.show('Quantity is not available.');
               }}
             />

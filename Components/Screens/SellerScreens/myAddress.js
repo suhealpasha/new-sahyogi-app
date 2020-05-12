@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {BackHandler,
+  AsyncStorage,
   StyleSheet,
   FlatList,
   View,
@@ -22,19 +23,36 @@ import {
   TouchableOpacity,
 } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-export default class MyAddress extends Component {
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
+import Toast from 'react-native-simple-toast';
+import * as api from '../../../assets/api/api';
+import axios from 'axios';
+
+class MyAddress extends Component {
   constructor(props) {
     super(props);
     this.state = {
       width: Dimensions.get('window').width,
+      addressData:[]    
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
-  componentWillMount() {
+
+  componentDidMount() {  
+    this.setState({
+      addressData:this.props.addressData
+    });
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.addressData !== this.props.addressData) {
+      this.setState({addressData: this.props.addressData});
+    }   
   }
 
   componentWillUnmount() {
@@ -48,42 +66,35 @@ export default class MyAddress extends Component {
     return true;
   }
 
-  productDetails = () => {
-    this.props.navigation.navigate('Product Description');
-  };
+  editAddress = async (args) =>{   
+    this.props.onAddressUpdate(args)     
+    this.props.navigation.navigate('Edit Address',{addressId:args})
+  }
+
+  deleteAddress = async (args) =>{
+    const data = JSON.stringify({
+      address_Id:args,      
+    });
+    const access_token = await AsyncStorage.getItem('isLoggedIn')
+    await axios.post(api.sellerAddressDeleteAPI,data,
+    {headers:{
+      "access_token" : access_token,
+      'accept': 'application/json',
+    'accept-language': 'en_US',
+    'content-type': 'application/x-www-form-urlencoded'}} )
+    .then(res =>{
+    if(res.status) {
+      Toast.show('Address Deleted')
+      this.props.onFetchAddress();
+    }
+
+    })
+    .catch(err =>{console.log(err)})
+
+}
 
   render() {
-    const items = [
-      {
-        name: 'Smith Adam',
-        key: '1ML',
-        addr:
-          '704 Oxford Dr, Richmond Hill GA,31324',
-        mobile: '(912) 727-3506',
-      },
-      {
-        name: 'Sandra J Johnson',
-        key: '2ML',
-        addr:
-          '105 Vista Dr #10, Tye,Tx,79563',
-        mobile:'(325) 698-8048',
-      },
-      {
-        name: 'Philis Smith',
-        key: '3ML',
-        addr:
-          '2086 N Creek Rd,Appomatax,VA 24522',
-        mobile: '(325) 698-8123',
-      },
-      {
-        name: 'Smith Adam',
-        key: '4ML',
-        addr:
-          '105 Vista Oxford Dr,Richmond Hill GA,31324 ',
-        mobile: '(325) 698-2333',
-      },
-    ];
-
+   
     const styles = StyleSheet.create({
       container: {
         flex: 1,
@@ -139,30 +150,41 @@ export default class MyAddress extends Component {
 
     return (
       <View style={styles.container}>
-        <FlatList
-          data={items}
-          numColumns={1}
-          renderItem={({item}) => {
-            return (
-              <View style={styles.itemContainer}>
-                <View style={styles.itemContainerData}>
-                  <Text style={styles.itemContainerName}>{item.name}</Text>
-                  <Text style={styles.itemContainerAddress}>{item.addr}</Text>
-                  <Text style={styles.itemContainerMobile}>{item.mobile}</Text>
+      <FlatList
+        data={this.state.addressData}
+        keyExtractor = {(items)=>{items.address_Id}}
+        numColumns={1}
+        renderItem={({item}) => {
+          return (
+            <View style={styles.itemContainer}>
+              <View style={styles.itemContainerData}>
+                <Text style={styles.itemContainerName}>{item.name}</Text>
+          <Text style={styles.itemContainerAddress}>{item.door_number},{item.address},{item.city}, {item.state}-{item.zip}</Text>
+                <Text style={styles.itemContainerMobile}>{item.contact_no}</Text>
+              </View>
+              <View style={styles.itemContainerActions}>
+                  <View style={styles.actions}>
+                <Icon  name='edit' size={25} color={'#95A5A6'} onPress={()=>{this.editAddress(item.address_Id)}}/>
                 </View>
-                <View style={styles.itemContainerActions}>
-                    <View style={styles.actions}>
-                  <Icon  name='edit' size={25} color={'#95A5A6'} onPress={()=>{this.props.navigation.navigate('Edit Address')}}/>
-                  </View>
-                  <View  style={styles.actions}>
-                  <Icon name='delete' size={25} color={'#95A5A6'}/>
-                  </View>
+                <View  style={styles.actions}>
+                <Icon name='delete' size={25} color={'#95A5A6'} onPress={()=>{this.deleteAddress(item.address_Id)}} />
                 </View>
               </View>
-            );
-          }}
-        />
-      </View>
+            </View>
+          );
+        }}
+      />
+    </View>
     );
   }
 }
+const mapDispatchToProps = dispatch => {
+  return {    
+    onAddressUpdate: value =>
+      dispatch({type: actionTypes.ADDRESS_UPDATE, payload: value}),
+  };
+};
+export default connect(
+  null,
+  mapDispatchToProps,
+)(MyAddress); 

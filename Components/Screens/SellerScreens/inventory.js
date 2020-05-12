@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {BackHandler,
+import {BackHandler,AsyncStorage,
   StyleSheet,
   FlatList,
   View,
@@ -16,27 +16,58 @@ import {
 import {Card,CardTitle,CardContent,CardAction,CardButton,CardImage,} from 'react-native-material-cards';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation from '../../BottomNavigation/sellerBottomNavigation';
-import ProductAction from '../../utils/productAction';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import Filter from '../../utils/filter';
-import Sort from '../../utils/sort';
+import axios from 'axios';
+import Spinner from 'react-native-loading-spinner-overlay';
+import * as api from '../../../assets/api/api';
+
 export default class Inventory extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      spinner: false,
       filterOn:null,
       height: Dimensions.get('window').height,
       width: Dimensions.get('window').width,
+      sellerInventoryData: [],
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  UNSAFE_componentWillMount() {
+componentDidMount() {
+  this.fetchSellerInventory();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
+
+  fetchSellerInventory = async () => {
+    this.setState({spinner: true});
+    const access_token = await AsyncStorage.getItem('isLoggedIn');  
+    console.log(access_token)  
+    axios
+      .get(api.sellerInventoryAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        console.log(res)
+        if (res.status) {
+          this.setState({
+            spinner: false,
+            sellerInventoryData: res.data.data,
+          });
+        }
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
+  };
 
   UNSAFE_componentWillUnmount() {
     BackHandler.removeEventListener(
@@ -50,115 +81,13 @@ export default class Inventory extends Component {
   }
   
 
-  componentDidUpdate(prevProps, prevState) {  
-    console.log(this.props.route.params.filterOn) 
-    if(this.props.route.params.filterOn ){
-      this.RBSheet.open()
-    }
-  
-  }
-  
-
  
 
-  render() {
-    const items = [
-      {
-        name: require('../../../assets/Images/coffeeFarms/img1.png'),
-        key: '1',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        orders:15,
-        avilable:5
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img1.png'),
-        key: '11',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        orders:15,
-        avilable:50
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img2.png'),
-        key: '2',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        orders:10,
-        avilable:4
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img3.png'),
-        key: '3',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        orders:50,
-        avilable:3
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img4.png'),
-        key: '4',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        orders:18,
-        avilable:7
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img5.png'),
-        key: '5',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        orders:5,
-        avilable:5
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img6.png'),
-        key: '6',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        orders:45,
-        avilable:34
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img7.png'),
-        key: '7',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        orders:34,
-        avilable:35
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img8.png'),
-        key: '8',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        orders:60,
-        avilable:10
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img9.png'),
-        key: '9',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        orders:150,
-        avilable:1
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img10.png'),
-        key: '10',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        orders:50,
-        avilable:0
-      },
-    ];
-
+  render() {    
+    
     const styles = StyleSheet.create({
       container: {
-        flex: 1.0,
-        
-     
-       
+        flex: 1.0,      
       },
       itemContainer: {
         width: this.state.width,
@@ -167,23 +96,34 @@ export default class Inventory extends Component {
         justifyContent: 'space-between',
         borderBottomWidth: 0.25,
         borderColor: '#95A5A6',
-        flexDirection: 'row',
-    
+        flexDirection: 'row',    
         backgroundColor: 'white',
       },
       itemDetailContainer: {},
+      spinnerTextStyle: {
+        color: '#00aa00',
+      },
       itemTextOrderText: {
         fontSize: 12,
         fontFamily: 'GothamLight',
         paddingLeft: 10,
         paddingRight: 10,
       },
-      itemTextOrigin: {
+      itemTextVariety: {
         fontFamily: 'Gotham Black Regular',
         fontSize: 14,
         paddingTop: 5,
         paddingLeft: 5,
         paddingRight: 5,
+      },
+      itemTextOrigin: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#95A5A6',    
+        paddingTop:5,
+        paddingLeft:10,
+        paddingRight:10,
       },
       itemTextFarm: {
         fontSize: 12,
@@ -200,17 +140,23 @@ export default class Inventory extends Component {
 
     return (
       <View style={styles.container}>
+         <Spinner
+            visible={this.state.spinner}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
          <FlatList
-              data={items}
+              data={this.state.sellerInventoryData}
               numColumns={1}
               // keyExtractor = {(items)=>{items.key}}
 
               renderItem={({item}) => {
                 return (
                   <TouchableOpacity
-                    onPress={() =>
-                      this.props.navigation.navigate('Order Detail')
-                    }>
+                    // onPress={() =>
+                    //   this.props.navigation.navigate('Order Detail')
+                    // }
+                    >
                     <View style={styles.itemContainer}>
                       <View style={styles.itemDetailContainer}>
                       
@@ -221,12 +167,12 @@ export default class Inventory extends Component {
                             paddingRight: 5,
                           }}>
                          
-                          <Text style={styles.itemTextOrigin}>
+                          <Text style={styles.itemTextVariety}>
                             
-                            {item.origin}
+                            {item.verity_name}
                           </Text>
                         </View>
-                        <Text style={styles.itemTextFarm}>{item.farm}</Text>
+                        <Text style={styles.itemTextOrigin}>{item.origins_name}</Text>                        
                         <View
                           style={{
                             flexDirection: 'row',
@@ -234,13 +180,31 @@ export default class Inventory extends Component {
                             width: this.state.width - 40,
                             
                           }}>
+                            
+                            <Text style={styles.itemTextFarm}>{item.farm}</Text>
+                        <View style={{flexDirection:'row'}}>
+                        <Text style={{fontFamily:'GothamMedium'}}>
+                            Price:  
+                        <Text style={item.avilable}>{' '}{item.price}</Text>
+                          </Text>
+                        </View>
+                          
+                        </View>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            width: this.state.width - 40,
+                            
+                          }}>
+                            
                             <Text style={styles.itemTextOrderText}>
                           Orders: {item.orders}
                         </Text>
                         <View style={{flexDirection:'row'}}>
                         <Text style={{fontFamily:'GothamMedium'}}>
                              Available:  
-                        <Text style={item.avilable < 5 ? {color:'red'} :{color:'green'}}>{' '}{item.avilable}</Text>
+                        <Text style={item.avilable < 5 ? {color:'red'} :{color:'green'}}>{' '}{item.available_quantity}</Text>
                           </Text>
                         </View>
                           

@@ -66,19 +66,25 @@ class SellerRoutes extends Component {
       width: Dimensions.get('window').width,
       home: false,
       searchText: '',
-      filterOn: false,
-      sortOn: null,
-      searchIcon: true,
-      userData:[]
+      saveIconAddress:false,
+      saveEditIconAddress: false,
+       searchIcon: true,
+      userData:[],
+      addressData: [],
+      saveIcon: false,
     };
   }
 
   componentDidMount() {
+    // this.fetchHomeScreenData();
     this.fetchDetails();
-    // this.fetchAddress();
-    // this.fetchProducts();
-    // this.fetchRegions();
+    this.fetchAddress();
+
   }
+
+  clickedSave = () => {
+    this.setState({saveIcon: !this.state.saveIcon});
+    };
 
   goBack = ({navigation}, path) => {
     navigation.goBack(null);
@@ -98,11 +104,12 @@ class SellerRoutes extends Component {
     });
   };
 
-  sortClicked = ({navigation}) => {
-    this.setState({sortOn: true});
-    navigation.navigate('All Microlots', {
-      sortOn: this.state.sortOn,
-    });
+  clickedSaveAddress = () => {
+    this.setState({saveIconAddress: !this.state.saveIconAddress});
+  };
+
+  clickedSaveEditAddress = () => {
+    this.setState({saveEditIconAddress: !this.state.saveEditIconAddress});
   };
 
   _logout = async ({navigation}) => {
@@ -111,7 +118,8 @@ class SellerRoutes extends Component {
   };
 
   fetchDetails = async () => {
-    const access_token = await AsyncStorage.getItem('isLoggedIn');       
+    const access_token = await AsyncStorage.getItem('isLoggedIn');   
+    console.log(access_token)    
     await axios
       .get(api.sellerDetailsAPI, {
         headers: {
@@ -122,12 +130,31 @@ class SellerRoutes extends Component {
         },
       })
       .then(res => {    
-        console.log(res.data)    
-        if (res.status) {
+        console.log(res)
+          if (res.status) {
           this.setState({
             userData: res.data.data            
           });
         }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  fetchAddress = async () => {
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .get(api.sellerAddressAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {        
+        this.setState({addressData: res.data.data.seller_addresses});
       })
       .catch(err => {
         console.log(err);
@@ -434,8 +461,7 @@ class SellerRoutes extends Component {
                onLogout = {this.props.onLogoutSession}/>}
             </Stack.Screen>
             <Stack.Screen
-                name="Edit Seller Profile"
-                component={EditSellerProfile}
+                name="Edit Seller Profile"                
                 options={({navigation, route}) => ({
                   animationEnabled: false,
                   headerTitle: (
@@ -457,21 +483,27 @@ class SellerRoutes extends Component {
                     </TouchableOpacity>
                   ),
                   headerRight: () => (
-                    <TouchableOpacity onPress={() => navigation.navigate('')}>
+                    <TouchableWithoutFeedback onPress={() => this.clickedSave()}>
                       <Icon2
                         name="content-save-outline"
                         size={24}
                         style={{padding: 10, color: '#ffffff'}}
                       />
-                    </TouchableOpacity>
+                    </TouchableWithoutFeedback>
                   ),
-                })}
-                {...this.state}
-                {...this.props}
+                })}              
+              >
+                 {props => (
+              <EditSellerProfile
+                {...props}
+                saveIcon={this.state.saveIcon}
+                onFetchDetails={this.fetchDetails}
+               userData ={this.state.userData}
               />
+            )}
+                </Stack.Screen>
               <Stack.Screen
                 name="My Address"
-                component={MyAddress}
                 options={({navigation, route}) => ({
                   animationEnabled: false,
                   headerTitle: (
@@ -506,12 +538,19 @@ class SellerRoutes extends Component {
                       </TouchableOpacity>
                     </View>
                   ),
-                })}
-                {...this.props}
+                })}    
+              >
+                {props => (
+              <MyAddress
+                {...props}
+                {...this.state}
+                onFetchAddress={this.fetchAddress}
+                onFetchEditAddress={this.fetchEditAddress}
               />
+            )}
+          </Stack.Screen>
               <Stack.Screen
                 name="Add Address"
-                component={AddAddress}
                 options={({navigation, route}) => ({
                   animationEnabled: false,
                   headerTitle: (
@@ -533,21 +572,22 @@ class SellerRoutes extends Component {
                     </TouchableOpacity>
                   ),
                   headerRight: () => (
-                    <TouchableOpacity onPress={() => navigation.navigate('')}>
+                    <TouchableWithoutFeedback onPress={() => this.clickedSaveAddress()}>
                     <Icon2
                       name="content-save-outline"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                   ),
-                })}
-                {...this.state}
-                {...this.props}
-              />
+                })}            
+              >
+                 {props => (
+              <AddAddress {...props} onFetchAddress={this.fetchAddress} />
+            )}
+          </Stack.Screen>
               <Stack.Screen
                 name="Edit Address"
-                component={EditAddress}
                 options={({navigation, route}) => ({
                   animationEnabled: false,
                   headerTitle: (
@@ -569,18 +609,24 @@ class SellerRoutes extends Component {
                     </TouchableOpacity>
                   ),
                   headerRight: () => (
-                    <TouchableOpacity onPress={() => navigation.navigate('')}>
+                    <TouchableWithoutFeedback onPress={() => this.clickedSaveEditAddress()}>
                     <Icon2
                       name="content-save-outline"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                   ),
                 })}
-                {...this.state}
-                {...this.props}
-              />         
+               >  
+               {props => (
+              <EditAddress
+                {...props}
+                saveEditIconAddress={this.state.saveEditIconAddress}
+                onFetchAddress={this.fetchAddress}
+              />
+            )}
+          </Stack.Screen>       
         </Stack.Navigator>
       </NavigationContainer>
     );

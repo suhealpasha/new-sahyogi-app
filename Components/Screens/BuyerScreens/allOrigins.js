@@ -25,9 +25,13 @@ import {TouchableWithoutFeedback, TouchableNativeFeedback} from 'react-native-ge
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Spinner from 'react-native-loading-spinner-overlay';
 import axios from 'axios';
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
 
 let filteredData =[]
-export default class AllOrigins extends Component {
+
+class AllOrigins extends Component {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -104,6 +108,27 @@ selectOrigins = args => {
     this.setState({originsData: items});
   };
 
+  onSeeAll = ()=>{
+    let checkList=[]
+    if(this.state.checked){
+      this.state.originsData.filter(item =>{
+        checkList.push(item.origin_Id)
+      })
+    }
+   else{
+      this.state.originsData.filter(item =>{
+       if(item.checked || item.checked === true){
+        checkList.push(item.origin_Id)
+       }
+     })
+   }
+   this.props.onProductListingTitle('Products')
+   this.props.onFeaturedProductsFiltered(false);
+   this.props.onLotProductsFiltered([]);
+   this.props.onOriginProductsFiltered(checkList);
+   this.props.navigation.navigate('Listing');
+  }
+
   render() {    
     return (
       <View style={styles.container}>
@@ -162,7 +187,7 @@ selectOrigins = args => {
         </View>
         <View>
           <TouchableNativeFeedback
-            onPress={() => this.props.navigation.navigate('Listing')}>
+            onPress={this.onSeeAll}>
             <View
               style={{
                 flexDirection: 'row',
@@ -234,3 +259,20 @@ const styles = StyleSheet.create({
   }, 
   
 });
+
+const mapDispatchToProps = dispatch => {
+  return {
+     onProductListingTitle:  value =>
+      dispatch({type: actionTypes.LISTING_TITLE, payload: value}),
+     onOriginProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_ORIGINS_DATA, payload: value}),
+      onFeaturedProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_FEATURED_DATA, payload: value}),
+      onLotProductsFiltered : value =>
+      dispatch({type: actionTypes.FILTER_LOTS_DATA, payload: value}),
+  };
+};
+export default connect(
+  null,
+  mapDispatchToProps,
+)(AllOrigins);

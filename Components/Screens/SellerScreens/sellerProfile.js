@@ -27,11 +27,13 @@ import BackButton from '../../utils/backButton';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon3 from 'react-native-vector-icons/EvilIcons';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {TouchableOpacity, TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import BottomNavigation from '../../BottomNavigation/sellerBottomNavigation';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
 import Dialog from 'react-native-dialog';
+import * as api from '../../../assets/api/api';
+import Toast from 'react-native-simple-toast';
 
 class SellerProfile extends Component {
   constructor(props) {
@@ -45,6 +47,7 @@ class SellerProfile extends Component {
       oldPasswordError: false,
       passwordError: false,
       confirmPasswordError: false,
+      oldPasswordValidity:false,
       userData:[]
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
@@ -54,15 +57,18 @@ class SellerProfile extends Component {
     this.setState({
       userData:this.props.userData
     });
-   
-  }
-
-  componentWillMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.userData !== this.props.userData) {
+      this.setState({userData: this.props.userData});
+    }
+  }
+
 
   componentWillUnmount() {
     BackHandler.removeEventListener(
@@ -80,34 +86,52 @@ class SellerProfile extends Component {
     await AsyncStorage.clear();
     this.props.onLogout();
   };
-  handleRegister = () => {
+  handleRegister = async() => {
+    const passwordReg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
     if (
       this.state.oldPassword !== null &&
       this.state.password !== null &&
       this.state.confirmPassword !== null
-    ) {
-      this.setState({dailogBoxOpen: false});
-    } else {
-      // if (this.state.oldPassword === null) {
-      //   this.setState({oldPasswordError: true});
-      // } else {
-      //   this.setState({oldPasswordError: false});
-      // }
-      // if (this.state.password === null) {
-      //   this.setState({passwordError: true});
-      // } else {
-      //   this.setState({passwordError: false});
-      // }
-      // if (this.state.confirmPassword === null) {
-      //   this.setState({confirmPasswordError: true});
-      // } else {
-      //   this.setState({confirmPasswordError: false});
-      // }
-      Alert.alert('Feilds are Missing');
+    )
+    {    
+        if (passwordReg.test(this.state.password) === false) {
+          alert('Password should contain min 8 digits,atleast 1 number & 1 uppercase letter.')
+        } else {       
+          if(this.state.password === this.state.confirmPassword)
+          {
+            let data = JSON.stringify({  
+              currentPassword:this.state.oldPassword,
+              confirmPassword:this.state.password       
+            })  
+               
+            const access_token = await AsyncStorage.getItem('isLoggedIn')        
+              await axios.post(api.changePasswordAPI,data,
+              {headers:{
+                "access_token" : access_token,        
+              'content-type': 'application/json/x-www-form-urlencoded'}} )
+              .then(res =>{                                
+              if(res.data.status) {
+                Toast.show('Password Changed Sucessfully')    
+                 this.setState({dailogBoxOpen: false});
+              }
+              else{
+                alert('Invalid Old Password!')
+              }              
+              
+              })
+              .catch(err =>{console.log(err)})
+              } 
+          else{
+            Alert.alert('Password Mismatch!');
+          }
+  
+        }
+    }
+    else {     
+      Alert.alert('Feilds are Missing!');
     }
   };
   render() {
-    console.log(this.state.userData)
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
@@ -188,7 +212,35 @@ class SellerProfile extends Component {
               />
             </View>
             <View style={styles.photoUploadContainer}>
-              <PhotoUpload>
+              <PhotoUpload
+               onPhotoSelect={async avatar => {
+                if (avatar) {
+                  let data = JSON.stringify({profile_pic: avatar});
+                  const access_token = await AsyncStorage.getItem(
+                    'isLoggedIn',
+                  );
+                  axios
+                    .post(
+                      api.sellerProfilePicUploadAPI,
+                      data,
+                      {
+                        headers: {
+                          access_token: access_token,
+                          accept: 'application/json',
+                          'accept-language': 'en_US',
+                          'content-type': 'application/x-www-form-urlencoded',
+                        },
+                      },
+                    )
+                    .then(res => {
+                      this.props.onFetchDetails()
+                    })
+                    .catch(err => {
+                      console.log(err);
+                    });
+                }
+              }}
+              >
                 <Image
                   style={{
                     width: 120,
@@ -198,19 +250,19 @@ class SellerProfile extends Component {
                     borderRadius: 100,
                   }}
                   resizeMode="cover"
-                  source={require('../../../assets/Images/users/userPhotoUpload.png')}
+                  source = {this.state.userData.profilepic ? {uri:this.state.userData.profilepic}:require('../../../assets/Images/users/userPhotoUpload.png')}
                 />
               </PhotoUpload>
             </View>
             <View style={styles.userDetailsContainer}>
-                <Text style={styles.userName}>hjhk</Text>
-              <Text style={styles.otherDetails}>(341)-1001889110</Text>
-              <Text style={styles.otherDetails}>paul@test.com</Text>
-              <Text style={styles.companyDetails}>XYZ Coffee Producers</Text>
+                <Text style={styles.userName}>{this.state.userData.first_name}</Text>
+              <Text style={styles.otherDetails}>{this.state.userData.mobile}</Text>
+              <Text style={styles.otherDetails}>{this.state.userData.email}</Text>
+              <Text style={styles.companyDetails}>{this.state.userData.company}</Text>
             </View>
           </View>
           <View style={styles.actionContainer}>
-            <TouchableOpacity
+            <TouchableWithoutFeedback
               style={styles.actions}
               onPress={() => {
                 
@@ -221,10 +273,11 @@ class SellerProfile extends Component {
                   <Text style={styles.actionItemText}>My Accounts</Text>
                 </View>
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
               style={styles.actions}
-              onPress={() => {
+              style={styles.actions}
+              onPress={() => {               
                 this.props.navigation.navigate('My Address');
               }}>
               <View style={styles.actionItem}>
@@ -233,8 +286,8 @@ class SellerProfile extends Component {
                   <Text style={styles.actionItemText}>My Address</Text>
                 </View>
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
               style={styles.actions}
               onPress={() => {
                
@@ -245,8 +298,8 @@ class SellerProfile extends Component {
                   <Text style={styles.actionItemText}>Document</Text>
                 </View>
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
               style={styles.actions}
               onPress={() => {
                 this.setState({dailogBoxOpen: true});
@@ -257,8 +310,8 @@ class SellerProfile extends Component {
                   <Text style={styles.actionItemText}>Change Password</Text>
                 </View>
               </View>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
               style={styles.actions}
               onPress={() => this._logout()}>
               <View style={styles.actionItem}>
@@ -267,7 +320,7 @@ class SellerProfile extends Component {
                   <Text style={styles.actionItemText}>Logout</Text>
                 </View>
               </View>
-            </TouchableOpacity>
+            </TouchableWithoutFeedback>
           </View>
         </View>
         <Dialog.Container

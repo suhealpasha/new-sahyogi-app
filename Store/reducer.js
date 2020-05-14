@@ -20,7 +20,8 @@ const initialState = {
   varietyName: null,
   filterFeaturedData:null,
   filterOriginsData:[],
-  filterLotNamesData:[],
+  filterMicroLotData:false,
+  filterNanoLotData:false,
   filterVaritiesData: [],
 };
 
@@ -111,17 +112,22 @@ const reducer = (state = initialState, action) => {
         ...state,
         filterFeaturedData: action.payload,
       };
-      case actionTypes.FILTER_ORIGINS_DATA:
+      case actionTypes.FILTER_ORIGINS_DATA:       
       return {
         ...state,
         filterOriginsData: action.payload,
       };
-      case actionTypes.FILTER_LOTS_DATA:
+      case actionTypes.FILTER_MICRO_LOT_DATA:        
       return {
         ...state,
-        filterLotNameData: action.payload,
+        filterMicroLotData: action.payload,
+      }; 
+      case actionTypes.FILTER_NANO_LOT_DATA:        
+      return {
+        ...state,
+        filterNanoLotData: action.payload,
       };   
-    case actionTypes.FILTER_VARITIES_DATA:
+    case actionTypes.FILTER_VARITIES_DATA:   
       return {
         ...state,
         filterVaritiesData: action.payload,

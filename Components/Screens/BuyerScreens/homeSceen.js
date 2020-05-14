@@ -67,8 +67,7 @@ class HomeScreen extends Component {
       this.handleBackButtonClick,
     );
   }
-  handleBackButtonClick() {
-    console.log('Home backbutton');
+  handleBackButtonClick() {    
     BackHandler.exitApp();
     return true;
   }
@@ -81,13 +80,15 @@ class HomeScreen extends Component {
   onSeeAll = (args) => {
     this.props.onProductListingTitle(args)
     if(args === 'Products'){
-      this.props.onFeaturedProductsFiltered(null)
+      this.props.onFeaturedProductsFiltered(false)
     }
     else{
       this.props.onFeaturedProductsFiltered(true)
     }
     this.props.onOriginProductsFiltered([]);
-    this.props.onLotProductsFiltered([]);
+    this.props.onVaritieyProductsFiltered([]);
+    this.props.onNanoLotProductsFiltered(false);
+    this.props.onMicroLotProductsFiltered(false);
     this.props.navigation.navigate('Listing');
   };
 
@@ -121,7 +122,7 @@ class HomeScreen extends Component {
         color: '#3e708f',
         borderRadius: 10,
         fontSize: 14,
-        fontFamily: 'GothamBold',
+        fontFamily: 'GothamMedium',
         paddingTop: 10,
         paddingBottom: 10,
         paddingLeft: 10,
@@ -131,7 +132,7 @@ class HomeScreen extends Component {
         color: '#3e708f',
         borderRadius: 10,
         fontSize: 14,
-        fontFamily: 'GothamBold',
+        fontFamily: 'GothamMedium',
         paddingTop: 10,
         paddingBottom: 20,
         paddingLeft: 10,
@@ -141,7 +142,7 @@ class HomeScreen extends Component {
         color: '#3e708f',
         borderRadius: 10,
         fontSize: 14,
-        fontFamily: 'GothamBold',
+        fontFamily: 'GothamMedium',
         paddingTop: 10,
         paddingBottom: 10,
         paddingLeft: 10,
@@ -315,7 +316,7 @@ class HomeScreen extends Component {
                 paddingRight: 5,
                 paddingTop:10
               }}>
-              <Text style={styles.microalign}>Origin/Regions</Text>
+              <Text style={styles.microalign}>Origins/Regions</Text>
               <Text
                 style={styles.viewall}
                 onPress={() => this.props.navigation.navigate('All Regions')}>
@@ -343,10 +344,14 @@ const mapDispatchToProps = dispatch => {
       dispatch({type: actionTypes.LISTING_TITLE, payload: value}),
       onFeaturedProductsFiltered:  value =>
       dispatch({type: actionTypes.FILTER_FEATURED_DATA, payload: value}),
-      onLotProductsFiltered : value =>
-      dispatch({type: actionTypes.FILTER_LOTS_DATA, payload: value}),
+      onNanoLotProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_NANO_LOT_DATA, payload: value}),   
+      onMicroLotProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_MICRO_LOT_DATA, payload: value}), 
       onOriginProductsFiltered:  value =>
       dispatch({type: actionTypes.FILTER_ORIGINS_DATA, payload: value}),
+      onVaritieyProductsFiltered:value =>
+      dispatch({type: actionTypes.FILTER_VARITIES_DATA, payload: value}), 
   };
 };
 export default connect(

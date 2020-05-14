@@ -355,8 +355,8 @@ class Routes extends Component {
               <Listing
                 {...props}             
                 clickedIcon={this.state.clickedIcon}
-                functionalIcon={this.state.functionalIcon}
-                allProductsData={this.state.allProductsData}
+                functionalIcon={this.state.functionalIcon}     
+               
               />
             )}
           </Stack.Screen>
@@ -543,13 +543,13 @@ class Routes extends Component {
                 </View>
               ),
             })}
-            initialParams={{filterOn: this.state.filterOn}}
-            {...this.props}
+            initialParams={{filterOn: this.state.filterOn}}            
           >
             {props => (
               <RegionsOrigins
                 {...props}
                 onClickedIcon = {()=>this.clickedIcon('Filter')}
+                allRegionsData = {this.state.allRegionsData}
               />
             )}
             </Stack.Screen>

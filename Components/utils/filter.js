@@ -86,10 +86,12 @@ filterOption =() =>{
         fontFamily:'GothamLight',
         fontWeight:'normal',
         textAlignVertical:'center'
-      }
+      },
+      spinnerTextStyle: {
+        color: '#00aa00',
+      },
     });
-console.log(this.props.filterFeaturedData)
-    
+
     return (
         <View style={{flex:1.0}}>
       <View style={styles.container}>
@@ -125,8 +127,8 @@ console.log(this.props.filterFeaturedData)
             <View style={styles.caption}>
               <View style={{flexDirection: 'row',paddingBottom:0}}>
               <Text  style={styles.checkBoxText}>Lots:</Text>  
-                <CheckBox checked={this.state.microLotsChecked} checkedColor='#00aa00' onPress={() => this.setState({microLotsChecked: !this.state.microLotsChecked})}/><Text style={styles.checkBoxText}>Microlots</Text>              
-                <CheckBox checked={this.state.nanoLotsChecked} checkedColor='#00aa00'  onPress={() => this.setState({nanoLotsChecked: !this.state.nanoLotsChecked})} /><Text style={styles.checkBoxText}>Nanolots</Text> 
+                <CheckBox  checked={this.props.filterNanoLotData} checkedColor='#00aa00' onPress={() =>this.props.onNanoLotProductsFiltered(!this.props.filterNanoLotData) }/><Text style={styles.checkBoxText}>Nanolots</Text>              
+                <CheckBox checked={this.props.filterMicroLotData} checkedColor='#00aa00'  onPress={() =>this.props.onMicroLotProductsFiltered(!this.props.filterMicroLotData)} /><Text style={styles.checkBoxText}>Microlots</Text> 
               </View>
             </View>
           </View>
@@ -134,13 +136,9 @@ console.log(this.props.filterFeaturedData)
           
           <View
             style={styles.actionsCheckBox}
-            onPress={() => this._logout()}>
- 
+           > 
             <View style={{flexDirection: 'row',justifyContent:'flex-start',paddingBottom:0}}>
               <CheckBox  checked={this.props.filterFeaturedData} checkedColor='#00aa00' onPress={() =>this.props.onFeaturedProductsFiltered(!this.props.filterFeaturedData) }/><Text style={styles.checkBoxText}>Featured</Text>
-             
-                
-            
             </View>
           </View>
         
@@ -160,15 +158,20 @@ const mapStateToProps = state => {
   return {
   filterFeaturedData:state.reducer.filterFeaturedData,
   filterOriginsData:state.reducer.filterOriginsData,
-  filterLotNameData:state.reducer.filterLotNameData,
+  filterNanoLotData:state.reducer.filterNanoLotData,
+  filterMicroLotData:state.reducer.filterMicroLotData,
   filterVaritiesData: state.reducer.filterVaritiesData,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-         onFeaturedProductsFiltered:  value =>
-      dispatch({type: actionTypes.FILTER_FEATURED_DATA, payload: value}),      
+      onFeaturedProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_FEATURED_DATA, payload: value}),  
+      onNanoLotProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_NANO_LOT_DATA, payload: value}),   
+      onMicroLotProductsFiltered:  value =>
+      dispatch({type: actionTypes.FILTER_MICRO_LOT_DATA, payload: value}),       
   };
 };
 

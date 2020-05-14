@@ -8,7 +8,8 @@ import {
   Image,
   ScrollView,
   Button,
-  BackHandler
+  BackHandler,
+  Dimensions
 } from 'react-native';
 import {
   TouchableHighlight,
@@ -39,7 +40,9 @@ class Listing extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      height: Dimensions.get('window').height,
       spinner:false,
+      noDataAvailable: false,
       clickedIcon: null,      
      newItems:[],
      allProductsData:[],
@@ -57,13 +60,13 @@ class Listing extends Component {
   fetchProducts = async () => {
     this.setState({spinner:true})
     const access_token = await AsyncStorage.getItem('isLoggedIn');
-
    const data = {
-      "featured":true,
+      "featured":this.props.filterFeaturedData ? this.props.filterFeaturedData : null,
       "origin_Id":this.props.filterOriginsData.length ? String(this.props.filterOriginsData) : null,
-      "lot":null,
-      "verity_Id":this.props.filterVaritiesData.length ? String(this.props.filterVaritiesData) : null,
+      "lot": this.props.filterNanoLotData && this.props.filterMicroLotData || !this.props.filterNanoLotData && !this.props.filterMicroLotData ? null : this.props.filterNanoLotData ? 'Nano' : 'Micro',
+      "verity_Id":this.props.filterVaritiesData.length ? String(this.props.filterVaritiesData) : null,   
     }
+    console.log(data)
     await axios
       .post(api.buyerAllProductAPI,
        data
@@ -75,12 +78,16 @@ class Listing extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {      
+      .then(res => {           
            if (res.status) {
-          this.setState({
-            spinner:false,
-            allProductsData: res.data.data,
-          });
+            if (res.data.data.length <= 0) {
+              this.setState({noDataAvailable: true, spinner: false});
+            } else {
+              this.setState({
+                spinner:false,
+                allProductsData: res.data.data,
+              });
+            }         
         }
       })
       .catch(err => {
@@ -160,8 +167,78 @@ class Listing extends Component {
     this.props.navigation.navigate('Product Description', {productId: args});
   };
 
-  render() {    
-    console.log('FFD inside',this.props.filterFeaturedData,this.props.filterOriginsData,this.props.filterVaritiesData)
+  render() {  
+    
+    const styles = StyleSheet.create({
+      container: {
+        flex: 1.0,
+        paddingBottom: 10,
+        paddingTop: 10,
+      },
+      noData: {
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: this.state.height - 150,
+      },
+      noDataText: {
+        fontSize: 20,
+        fontFamily: 'GothamBold',
+      },
+      itemContainer: {
+        marginBottom: 10,
+        flexDirection: 'row',
+        borderRadius: 5,
+        backgroundColor: 'white',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+        elevation: 4,
+       
+      },
+      itemDetailContainer: {
+        paddingBottom:10,
+        paddingTop:10,
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      itemTextVariety:{
+        fontFamily: 'Gotham Black Regular',
+        fontSize: 14,
+        paddingTop: 5,
+      },
+      itemTextOrigin: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#95A5A6',
+      
+      },
+      itemTextFarm: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#95A5A6',
+        paddingBottom: 10,
+      },
+      ratingStyle: {
+        backgroundColor: '#00ac00',
+        color: 'white',
+        lineHeight: 20,
+        justifyContent: 'center',
+        textAlignVertical: 'center',
+        fontSize: 14,
+        width: 45,
+      },
+      spinnerTextStyle: {
+        color: '#00aa00',
+      },
+    });
+  
     let optionsComponet;
     if (this.props.clickedIcon === 'Sort') {
       optionsComponet = (
@@ -186,6 +263,11 @@ class Listing extends Component {
               textContent={'Loading...'}
               textStyle={styles.spinnerTextStyle}
             />
+         {this.state.noDataAvailable ? (
+          <View style={styles.noData}>
+            <Text style={styles.noDataText}>No Data</Text>
+          </View>
+        ) : (
         <FlatList
           style={{paddingLeft: 10, paddingRight: 10}}
           data={this.state.allProductsData}          
@@ -247,7 +329,8 @@ class Listing extends Component {
               </TouchableNativeFeedback>
             );
           }}
-        />
+        />)
+  }
 
         <RBSheet
           ref={ref => {
@@ -268,72 +351,15 @@ class Listing extends Component {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1.0,
-    paddingBottom: 10,
-    paddingTop: 10,
-  },
-  itemContainer: {
-    marginBottom: 10,
-    flexDirection: 'row',
-    borderRadius: 5,
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-   
-  },
-  itemDetailContainer: {
-    paddingBottom:10,
-    paddingTop:10,
-    paddingLeft: 10,
-    paddingRight: 10,
-  },
-  itemTextVariety:{
-    fontFamily: 'Gotham Black Regular',
-    fontSize: 14,
-    paddingTop: 5,
-  },
-  itemTextOrigin: {
-    fontSize: 12,
-    justifyContent: 'space-around',
-    fontFamily: 'GothamMedium',
-    color: '#95A5A6',
-  
-  },
-  itemTextFarm: {
-    fontSize: 12,
-    justifyContent: 'space-around',
-    fontFamily: 'GothamMedium',
-    color: '#95A5A6',
-    paddingBottom: 10,
-  },
-  ratingStyle: {
-    backgroundColor: '#00ac00',
-    color: 'white',
-    lineHeight: 20,
-    justifyContent: 'center',
-    textAlignVertical: 'center',
-    fontSize: 14,
-    width: 45,
-  },
-  spinnerTextStyle: {
-    color: '#00aa00',
-  },
-});
+
 
 
 const mapStateToProps = state => {
   return {
   filterFeaturedData:state.reducer.filterFeaturedData,
   filterOriginsData:state.reducer.filterOriginsData,
-  filterLotNameData:state.reducer.filterLotNameData,
+  filterNanoLotData:state.reducer.filterNanoLotData,
+  filterMicroLotData:state.reducer.filterMicroLotData,
   filterVaritiesData: state.reducer.filterVaritiesData,
   };
 };

@@ -65,7 +65,6 @@ class App extends Component {
   async componentDidMount() {
     const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
     const user = await AsyncStorage.getItem('userType');  
-    console.log(user)  
     if (isLoggedIn) {
       this.setState({isLoggedIn: true, userType: user});
     }

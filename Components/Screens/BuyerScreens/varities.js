@@ -25,6 +25,7 @@ import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 
 let filteredData =[]
 class Varities extends Component {
@@ -140,17 +141,19 @@ class Varities extends Component {
   };
 
   render() {
-    console.log('=====>',this.props.filterVaritiesData)
-    return (
+      return (
       <View style={{flex: 1.0}}>
-        <View style={styles.container}>
+     <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}}
+        style={{backgroundColor: '#efebea'}}
+        scrollEnabled={true} >   
         <Spinner
           visible={this.state.spinner}
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}         
         />
           <CheckBox
-            title="Check All"
+            title="Select Varities         Select All"
+            iconRight
             checked={this.state.checked}
             containerStyle={{
               width: '100%',
@@ -195,7 +198,7 @@ class Varities extends Component {
               );
             }}
           />
-        </View>
+        </KeyboardAwareScrollView>   
         <TouchableOpacity onPress={this.filterVarities}>
           <Text
             style={{
@@ -232,11 +235,6 @@ const styles = StyleSheet.create({
   }, 
 });
 
-const mapStateToProps = state => {
-  return {
-    filterVaritiesData: state.reducer.filterVaritiesData,
-  };
-};
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -246,6 +244,6 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps,
 )(Varities)

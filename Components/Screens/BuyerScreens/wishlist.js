@@ -38,6 +38,7 @@ class Wishlist extends Component {
     super(props);
     this.state = {
       spinner: false,
+      noDataAvailable:false,
       height: Dimensions.get('window').height,
       buyerWishlistData: [],
     };
@@ -65,10 +66,16 @@ class Wishlist extends Component {
       })
       .then(res => {
         if (res.status) {
-          this.setState({
-            spinner: false,
-            buyerWishlistData: res.data.data,
-          });
+          if(res.data.data.length <= 0){
+            this.setState({noDataAvailable:true,spinner:false})
+          }
+          else{
+            this.setState({
+              spinner: false,
+              buyerWishlistData: res.data.data,
+            });
+          }
+         
         }
       })
       .catch(err => {
@@ -148,6 +155,80 @@ class Wishlist extends Component {
   };
 
   render() {
+    const styles = StyleSheet.create({
+      outerContainer: {
+        flex: 1.0,
+        backgroundColor: '#efebea',
+      },
+      noData: {
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: this.state.height - 150,
+      },
+      noDataText: {
+        fontSize: 20,
+        fontFamily: 'GothamBold',
+      },
+      container: {
+        flex: 1.0,
+        paddingTop: 10,
+    
+      },
+      itemContainer: {
+        marginBottom: 10,
+        flexDirection: 'row',
+        borderRadius: 5,
+        backgroundColor: 'white',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+        elevation: 4,
+      },
+      itemDetailContainer: {
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 20,
+      },
+      itemTextVariety: {
+        fontFamily: 'Gotham Black Regular',
+        fontSize: 14,
+        paddingTop: 5,
+      },
+      itemTextOrigin: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#95A5A6',
+      },
+      itemTextFarm: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#95A5A6',
+        paddingBottom: 10,
+      },
+      ratingStyle: {
+        backgroundColor: '#00ac00',
+        color: 'white',
+        lineHeight: 20,
+        justifyContent: 'center',
+        textAlignVertical: 'center',
+        fontSize: 14,
+        width: 45,
+      },
+      clearAllButton: {
+        borderTopWidth: 0.25,
+        borderColor: '#95A5A6',
+      },
+      spinnerTextStyle: {
+        color: '#00aa00',
+      },
+    });
     return (
       <View style={styles.outerContainer}>
         <View style={styles.container}>
@@ -156,7 +237,9 @@ class Wishlist extends Component {
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
-
+          {this.state.noDataAvailable ? <View style={styles.noData}>
+            <Text style={styles.noDataText}>No Data</Text>
+          </View> :     
           <FlatList
             data={
               this.state.buyerWishlistData &&
@@ -224,7 +307,7 @@ class Wishlist extends Component {
                             <Icon2
                               name="delete-outline"
                               size={25}
-                              color={'#95A5A6'}
+                              color={'red'}
                               onPress={() => {
                                 this._deleteWishlist(item.product_Id);
                               }}
@@ -243,7 +326,8 @@ class Wishlist extends Component {
               );
             }}
           />
-
+          }
+          {!this.state.noDataAvailable ? 
           <TouchableOpacity
             style={styles.clearAllButton}
             onPress={this._deleteAllWishlist}>
@@ -256,78 +340,17 @@ class Wishlist extends Component {
                 paddingTop: 15,
                 paddingBottom: 15,
               }}>
-              Clear All
+              Clear Wishlist
             </Text>
           </TouchableOpacity>
+          : null}
         </View>
         <BottomNavigation {...this.props} {...this.state} />
       </View>
     );
   }
 }
-const styles = StyleSheet.create({
-  outerContainer: {
-    flex: 1.0,
-  },
-  container: {
-    flex: 1.0,
-    paddingTop: 10,
-    backgroundColor: '#efebea',
-  },
-  itemContainer: {
-    marginBottom: 10,
-    flexDirection: 'row',
-    borderRadius: 5,
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-  },
-  itemDetailContainer: {
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: 20,
-  },
-  itemTextVariety: {
-    fontFamily: 'Gotham Black Regular',
-    fontSize: 14,
-    paddingTop: 5,
-  },
-  itemTextOrigin: {
-    fontSize: 12,
-    justifyContent: 'space-around',
-    fontFamily: 'GothamMedium',
-    color: '#95A5A6',
-  },
-  itemTextFarm: {
-    fontSize: 12,
-    justifyContent: 'space-around',
-    fontFamily: 'GothamMedium',
-    color: '#95A5A6',
-    paddingBottom: 10,
-  },
-  ratingStyle: {
-    backgroundColor: '#00ac00',
-    color: 'white',
-    lineHeight: 20,
-    justifyContent: 'center',
-    textAlignVertical: 'center',
-    fontSize: 14,
-    width: 45,
-  },
-  clearAllButton: {
-    borderTopWidth: 0.25,
-    borderColor: '#95A5A6',
-  },
-  spinnerTextStyle: {
-    color: '#00aa00',
-  },
-});
+
 
 const mapDispatchToProps = dispatch => {
   return {

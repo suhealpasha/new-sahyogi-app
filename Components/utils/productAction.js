@@ -323,6 +323,7 @@ class ProductAction extends Component {
                         activeSwitch: val,
                       });
                     } else {
+                      this.setState({activeSwitch:''}) 
                       Toast.show('No Nano Lots');
                     }
                   } else {
@@ -333,8 +334,10 @@ class ProductAction extends Component {
                         value: 0,
                         activeSwitch: val,
                       });
-                    } else {
+                    } else {                   
+                      this.setState({activeSwitch:''})           
                       Toast.show('No Micro Lots');
+                      return
                     }
                   }
                 }} // this is necessary for this component

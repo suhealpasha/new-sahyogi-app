@@ -144,26 +144,32 @@ class Varities extends Component {
       return (
       <View style={{flex: 1.0}}>
      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: '#efebea'}}
+        style={{backgroundColor: '#efebea',paddingLeft:10,paddingRight:10}}
         scrollEnabled={true} >   
         <Spinner
           visible={this.state.spinner}
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}         
         />
+        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+      
+      <Text style={{fontFamily:'GothamMedium',paddingLeft:5,paddingBottom:10,paddingTop:10}}>Select Origins</Text>
+      
           <CheckBox
-            title="Select Varities         Select All"
+            title="Select All"
             iconRight
             checked={this.state.checked}
-            containerStyle={{
-              width: '100%',
+            containerStyle={{         
               marginLeft: 0,
               marginTop: 0,
               marginBottom: 0,
+              width:105,
+            backgroundColor:'#efebea'
             }}
             checkedColor={'#00aa00'}
             onPress={this.handleAllChecked}
           />
+          </View>
           <FlatList
            data={!this.props.searchBarShow ? this.state.varitiesData : this.state.searchedData}
             numColumns={1}

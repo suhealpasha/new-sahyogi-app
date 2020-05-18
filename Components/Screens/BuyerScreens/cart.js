@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import {
+  AsyncStorage,
+  BackHandler,
   StyleSheet,
   FlatList,
   View,
@@ -27,6 +29,13 @@ import ProductAction from '../../utils/productAction';
 import {Button} from 'react-native-paper';
 import {YellowBox} from 'react-native';
 import ConfirmButton from '../../utils/confirmButton';
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
+import axios from 'axios';
+import Spinner from 'react-native-loading-spinner-overlay';
+import * as api from '../../../assets/api/api';
+import Toast from 'react-native-simple-toast';
+
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
 
 export default class Cart extends Component {
@@ -34,15 +43,95 @@ export default class Cart extends Component {
     super(props);
     this.state = {
       height: Dimensions.get('window').height,
+      spinner:false,
       active10Button: false,
       active20Button: false,
       active50Button: true,
+      buyerCartData: [],
     };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  _deleteCart = e => {
-    console.log('Child');
+  componentDidMount() {
+    this.fetchBuyerCart();
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  fetchBuyerCart = async () => {
+    this.setState({spinner: true});
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .get(api.buyerProductsCartData, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        console.log(res.data.data);
+        if (res.status) {
+          if (res.data.data.length <= 0) {
+            this.setState({noDataAvailable: true, spinner: false});
+          } else {
+            this.setState({
+              spinner: false,
+              buyerCartData: res.data.data,
+            });
+          }
+        }
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
   };
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+  handleBackButtonClick() {
+    // this.props.onBottomTabClicked('home');
+    this.props.navigation.goBack(null);
+    return true;
+  }
+
+ deleteItem = async (args)=>{  
+  const data = JSON.stringify({     
+  cart_Id:args
+   });   
+   const access_token = await AsyncStorage.getItem('isLoggedIn');
+ 
+   await axios
+     .post(api.buyerDeleteProductFromCart, data, {
+       headers: {
+         access_token: access_token,
+         accept: 'application/json',
+         'accept-language': 'en_US',
+         'content-type': 'application/x-www-form-urlencoded',
+       },
+     })
+     .then(res => {
+       console.log(res)
+       if (res.status) {
+         this.setState({ spinner: false });
+         this.fetchBuyerCart();
+         Toast.show('Removed from cart.')
+       }
+     })
+     .catch(err => {
+       this.setState({ spinner: false });
+       console.log(err);
+     });
+ }
+
   activateUnitsButton = param1 => {
     if (param1 === 'active10Button') {
       if (this.state.active10Button) {
@@ -54,39 +143,13 @@ export default class Cart extends Component {
   };
 
   render() {
-    const items = [
-      {
-        name: require('../../../assets/Images/coffeeFarms/img2.png'),
-        key: '2',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        ratings: '1.1',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img3.png'),
-        key: '1',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        ratings: '3.6',
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img3.png'),
-        key: '1',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        ratings: '3.6',
-      },
-     
-    ];
+    
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
         paddingLeft: 10,
         paddingRight: 10,
         paddingTop: 10,
-       
-   
-      
       },
       itemListContainer: {},
       itemContainer: {
@@ -142,17 +205,16 @@ export default class Cart extends Component {
         flex: 1.0,
         flexDirection: 'column',
         paddingTop: 10,
-       
       },
       orderPlacementContainerHeaderText: {
         fontSize: 20,
         fontFamily: 'Gotham Black Regular',
       },
-      orderPlacementContainerText:{
-        paddingBottom:10,
-        paddingTop:10,
-        fontFamily:'GothamBook',
-       lineHeight:20
+      orderPlacementContainerText: {
+        paddingBottom: 10,
+        paddingTop: 10,
+        fontFamily: 'GothamBook',
+        lineHeight: 20,
       },
       orderPlaceButton: {
         backgroundColor: '#004561',
@@ -196,13 +258,12 @@ export default class Cart extends Component {
         padding: 10,
         fontFamily: 'GothamMedium',
       },
-      totalAmount:{
-       
-        justifyContent:'center',
-        width:'50%'
+      totalAmount: {
+        justifyContent: 'center',
+        width: '50%',
       },
-      totalAmountText:{
-        textAlign:'center',
+      totalAmountText: {
+        textAlign: 'center',
         fontFamily: 'Gotham Black Regular',
         fontSize: 25,
         textAlignVertical: 'center',
@@ -215,27 +276,31 @@ export default class Cart extends Component {
         justifyContent: 'center',
         height: 40,
         backgroundColor: '#004561',
-      
-      
-       
       },
-      buttonTextStyle:{
-        color:'white',
+      buttonTextStyle: {
+        color: 'white',
         fontFamily: 'GothamMedium',
         fontSize: 14,
-        paddingLeft:10,
-        paddingRight:10
-      }
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      spinnerTextStyle: {
+        color: '#00aa00',
+      },
     });
 
     return (
-      <View style={{flex:1.0}}>
-         <ScrollView>
-        <View style={styles.container}>
-         
+      <View style={{flex: 1.0}}>
+        <Spinner
+          visible={this.state.spinner}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+        <ScrollView>
+          <View style={styles.container}>
             <View style={styles.itemListContainer}>
               <FlatList
-                data={items}
+                data={this.state.buyerCartData}
                 numColumns={1}
                 // keyExtractor = {(items)=>{items.key}}
 
@@ -356,7 +421,7 @@ export default class Cart extends Component {
                                 color: '#95A5A6',
                                 justifyContent: 'center',
                               }}
-                              onPress={() => navigate('HomeScreen')}>
+                              onPress={() => this.deleteItem(item.cart_Id)}>
                               <Text style={styles.placeOrderButtonText}>
                                 Remove
                               </Text>
@@ -376,46 +441,58 @@ export default class Cart extends Component {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                   }}>
-                  <View style={{width:'50%'}}>
+                  <View style={{width: '50%'}}>
                     <Text style={styles.orderPlacementContainerHeaderText}>
                       Address
                     </Text>
                     <Text style={styles.orderPlacementContainerText}>
-                      #268/5,xrz,street,
-                      pqr city, 123 state,US-560106.
+                      #268/5,xrz,street, pqr city, 123 state,US-560106.
                     </Text>
                   </View>
                   <View>
-                  <TouchableOpacity style={styles.loginButton} onPress={this.props.click}>
-        <Text style={styles.buttonTextStyle}>Change</Text>
-            </TouchableOpacity>
+                    <TouchableOpacity
+                      style={styles.loginButton}
+                      onPress={this.props.click}>
+                      <Text style={styles.buttonTextStyle}>Change</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
                 <View style={{}}>
-                    <Text style={styles.orderPlacementContainerHeaderText}>
-                      Price Details
-                    </Text>
-                    <View style={{flexDirection:'row'}}>
-                      <View style={{width:'50%'}}>
-
-                        <Text style={styles.orderPlacementContainerText}>Total</Text>
-                        <Text style={styles.orderPlacementContainerText}>Tax</Text>
-                        <Text style={styles.orderPlacementContainerText}>Shipping</Text>
-                        <Text style={styles.orderPlacementContainerText}>Total Amt</Text>
-                      </View>
-                      <View style={{width:'50%'}}>
-                      <Text style={styles.orderPlacementContainerText}>$340</Text>
-                        <Text style={styles.orderPlacementContainerText}>0</Text>
-                        <Text style={styles.orderPlacementContainerText}>$20</Text>
-                        <Text style={styles.orderPlacementContainerText}>$360</Text>
-
-                      </View>
+                  <Text style={styles.orderPlacementContainerHeaderText}>
+                    Price Details
+                  </Text>
+                  <View style={{flexDirection: 'row'}}>
+                    <View style={{width: '50%'}}>
+                      <Text style={styles.orderPlacementContainerText}>
+                        Total
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                        Tax
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                        Shipping
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                        Total Amt
+                      </Text>
+                    </View>
+                    <View style={{width: '50%'}}>
+                      <Text style={styles.orderPlacementContainerText}>
+                        $340
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>0</Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                        $20
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                        $360
+                      </Text>
                     </View>
                   </View>
+                </View>
               </View>
             </View>
-
-        </View>
+          </View>
         </ScrollView>
         <View
           style={{
@@ -423,10 +500,9 @@ export default class Cart extends Component {
             borderColor: '#95A5A6',
             borderTopWidth: 0.25,
             justifyContent: 'space-between',
-            backgroundColor:'white',
-            
+            backgroundColor: 'white',
           }}>
-          <View style={styles.totalAmount} >
+          <View style={styles.totalAmount}>
             <Text style={styles.totalAmountText}>$360</Text>
           </View>
           <TouchableOpacity

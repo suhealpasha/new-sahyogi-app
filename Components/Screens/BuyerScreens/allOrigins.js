@@ -40,6 +40,7 @@ class AllOrigins extends Component {
     this.state = {
       checked: true,
       height: Dimensions.get('window').height,
+      width: Dimensions.get('window').width,
       spinner: false,
       noDataAvailable: false,
       originsData: [],
@@ -156,8 +157,8 @@ class AllOrigins extends Component {
       },
       itemContainer: {
         marginBottom: 10,
-        backgroundColor: 'white',
-        width: 160,
+        backgroundColor: 'white',      
+        width:this.state.width / 2 - 20,
         shadowColor: '#000',
         shadowOffset: {
           width: 0,
@@ -191,19 +192,27 @@ class AllOrigins extends Component {
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}
         />
+        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+      
+        <Text style={{fontFamily:'GothamMedium',paddingLeft:10,paddingBottom:10,paddingTop:10}}>Select Origins</Text>
         <CheckBox
-          title="Select Origins                 Select All"
+          title={'Select All'}
+          fontFamily={'GothamMedium'}
           iconRight
           checked={this.state.checked}
           containerStyle={{
-            width: '100%',
+            paddingLeft:0,
             marginLeft: 0,
             marginTop: 0,
             marginBottom: 0,
+            width:105,
+            backgroundColor:'#efebea'
+            
           }}
           checkedColor={'#00aa00'}
           onPress={this.handleAllChecked}
         />
+        </View>
         {this.state.noDataAvailable ? (
           <View style={styles.noData}>
             <Text style={styles.noDataText}>No Data</Text>
@@ -229,7 +238,9 @@ class AllOrigins extends Component {
                         source={{
                           uri: item.url_thumbnail_image,
                         }}
-                        style={{width: 160, height: 120}}>
+                        style={{width: this.state.width / 2 - 20, height: 120}}
+                        resizeMode='stretch'
+                        >
                         <CheckBox
                           checked={this.state.checked || item.checked}
                           right

@@ -479,7 +479,7 @@ export default class Cart extends Component {
 
         </View>
         </ScrollView>
-       <StickyButton cancel='Cancel' proceed='Proceed'/>
+       <StickyButton cancel='Cancel' proceed='Proceed' buyer={false}/>
       </View>
     );
   }

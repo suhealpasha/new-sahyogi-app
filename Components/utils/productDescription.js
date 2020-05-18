@@ -17,7 +17,10 @@ import {
   CardButton,
   CardImage,
 } from 'react-native-material-cards';
-import {TouchableHighlight} from 'react-native-gesture-handler';
+
+import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
+
+
 
 class ProductDescription extends Component {
   constructor(props) {
@@ -25,33 +28,20 @@ class ProductDescription extends Component {
     this.state = {
       width: Dimensions.get('window').width,
       height: Dimensions.get('window').height,
+     
     };
   }
 
   render() {
-    const items = [
-      {
-        name: require('../../assets/Images/coffeeFarms/img1.png'),
-        key: '1',
-        origin: 'EL SALVADOR',
-        variety: 'Pacamara',
-        farm: 'Las Delicias',
-        altitude: '1500 Ft',
-        notes: 'Peach,Chocolate,Honey',
-        ratings: 5,
-        process: 'Natural',
-      },
-    ];
-
+  
     const styles = StyleSheet.create({
       productDescriptionContainer: {
-        paddingTop: 10,
-        height: 140,
+        paddingTop: 10,       
+        width:'100%',       
       },
       productDetailsContainer: {
-        flexDirection: 'row',
-        width: '100%',
-        height: 130,
+        flexDirection: 'column',
+        width: '100%',        
       },
       productDetailHeader: {
         flexDirection: 'column',
@@ -64,7 +54,7 @@ class ProductDescription extends Component {
       },
       productDetail: {
         flexDirection: 'column',
-        flexWrap: 'wrap',
+        
       },
       productDetailText: {
         fontSize: 15,
@@ -72,55 +62,60 @@ class ProductDescription extends Component {
         padding: 2,
         
       },
+     row1:{
+       flexDirection:'row',
+       justifyContent:'flex-start'
+     },
+     row2:{
+      flexDirection:'row',
+      justifyContent:'flex-start'
+     },
+     row3:{
+      flexDirection:'row',
+      justifyContent:'flex-start'
+     },
+     row4:{
+      flexDirection:'row',
+      justifyContent:'flex-start'
+     },
+     row5:{
+      flexDirection:'row',
+      justifyContent:'flex-start'
+     },
+     row6:{
+      flexDirection:'row',
+      justifyContent:'flex-start'
+     },
+     col1:{
+      fontFamily: 'GothamBold',     
+      fontSize: 15,
+      width:'35%',
+      padding:5
+     },
+     col2:{
+      width:'5%',
+      padding:5,
+      fontSize: 15,
+      fontFamily: 'GothamMedium',
+     },
+     col3:{
+      width:'60%',
+      padding:5,
+      fontFamily: 'GothamMedium',
+     }
     });
 
     return (
       <View style={styles.productDescriptionContainer}>
-        <View style={{flex: 1.0}}>
-          <FlatList
-            data={items}
-            columnWrapperStyle={{justifyContent: 'space-between'}}
-            numColumns={2}
-            // keyExtractor = {(items)=>{items.key}}
-
-            renderItem={({item}) => {
-              return (
-                <View style={styles.productDetailsContainer}>
-                  <View style={styles.productDetailHeader}>
-                    <Text style={styles.productDetailHeaderText}>Variety</Text>
-                    <Text style={styles.productDetailHeaderText}>Origin</Text>
-
-                    <Text style={styles.productDetailHeaderText}>Farm</Text>
-                    <Text style={styles.productDetailHeaderText}>Altitude</Text>
-                    <Text style={styles.productDetailHeaderText}>Notes</Text>
-                    <Text style={styles.productDetailHeaderText}>Process</Text>
-                  </View>
-                  <View style={styles.productDetail}>
-                    <Text style={styles.productDetailText}>
-                      : {this.props.productData.verityname}
-                    </Text>
-                    <Text style={styles.productDetailText}>
-                      : {this.props.productData.originsname}
-                    </Text>
-
-                    <Text style={styles.productDetailText}>
-                      : {this.props.productData.farm}
-                    </Text>
-                    <Text style={styles.productDetailText}>
-                      : {this.props.productData.altitude}
-                    </Text>
-                    <Text style={styles.productDetailText}>
-                      : {this.props.productData.note}
-                    </Text>
-                    {/* */}
-                    <Text style={styles.productDetailText}>
-                      : {this.props.productData.process}
-                    </Text>
-                  </View>
-                </View>
-              );
-            }}
-          />
+        <View style={{flex: 1.0}}>      
+                <View style={styles.productDetailsContainer}>                 
+                  <View style={styles.row1}><Text style={styles.col1}>Variety</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.verityname}</Text></View>
+                  <View style={styles.row2}><Text style={styles.col1}>Origin</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.originsname}</Text></View>
+                  <View style={styles.row3}><Text style={styles.col1}>Farm</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.farm}</Text></View>
+                  <View style={styles.row4}><Text style={styles.col1}>Altitude</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.altitude}</Text></View>
+                  <View style={styles.row5}><Text style={styles.col1}>Notes</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.note}</Text></View>
+                  <View style={styles.row6}><Text style={styles.col1}>Process</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.process}</Text></View>
+                </View>            
         </View>
       </View>
     );

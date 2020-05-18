@@ -28,6 +28,8 @@ import {SliderBox} from 'react-native-image-slider-box';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import StickyButton from '../../utils/stickyButtons';
 import * as api from '../../../assets/api/api';
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
 
 class ProductDescriptionTemplate extends Component {
   constructor(props) {
@@ -37,27 +39,19 @@ class ProductDescriptionTemplate extends Component {
       height: Dimensions.get('window').height,
       spinner: false,
       productData: [],
-      items: [
-        require('../../../assets/Images/coffeeFarms/img4.png'),
-        require('../../../assets/Images/coffeeFarms/img5.png'),
-        // require('../../../assets/Images/coffeeFarms/img6.png'),
-        // require('../../../assets/Images/coffeeFarms/img7.png'),
-        // require('../../../assets/Images/coffeeFarms/img1.png'),
+      thumbnailImages: [
+        require('../../../assets/Images/coffeeFarms/img4.png')
+          
       ],
     };
   }
 
   componentDidMount() {
     this.fetchProduct();
+    this.props.onBuyProduct(true);
   }
 
-  // componentDidUpdate(prevProps,prevState){
-  //   if(prevState.productData !== this.state.productData){
-  //     this.setState({productData:this.state.productData})
-  //   }
-
-  // }
-
+  
   fetchProduct = async () => {
     this.setState({spinner: true});
     let data = JSON.stringify({
@@ -83,11 +77,7 @@ class ProductDescriptionTemplate extends Component {
   };
 
   render() {
-    // let images = [];
-    // this.state.productData.map(item => {
-    //   images.push(item.thumbnail_image);
-    // });
-
+   
     const styles = StyleSheet.create({
       outerContaier: {
         flex: 1.0,
@@ -161,7 +151,15 @@ class ProductDescriptionTemplate extends Component {
         fontFamily: 'Gotham Black Regular',
       },
     });
-
+    let imageList=[]
+    if(this.state.productData.images){
+        this.state.productData.images.length >=1 
+          ? this.state.productData.images.map(i=>{
+            imageList.push(i.url_image)
+          })
+          :null
+        }
+    
     return (
       <View style={styles.outerContaier}>
         <KeyboardAwareScrollView resetScrollToCoords={{x: 10, y: 0}}  scrollEnabled={true}>
@@ -174,7 +172,7 @@ class ProductDescriptionTemplate extends Component {
 
             <View style={styles.productImageContainer}>
               <SliderBox
-                images={this.state.items}
+                images={this.state.productData.images ? imageList : this.state.thumbnailImages}
                 sliderBoxHeight={190}
                 onCurrentImagePressed={index =>
                   console.warn(`image ${index} pressed`)
@@ -194,9 +192,24 @@ class ProductDescriptionTemplate extends Component {
             </View>
           </View>
         </KeyboardAwareScrollView>
-        <StickyButton cancel="Add to Cart" proceed="Buy Now" {...this.props}/>
+        <StickyButton cancel="Add to Cart" proceed="Buy Now" {...this.props} buy={this.props.buyProduct} buyer={true}/>
       </View>
     );
   }
 }
-export default ProductDescriptionTemplate;
+
+const mapStateToProps = state => {
+  return {
+    buyProduct: state.reducer.buyProduct,
+  };
+};
+const mapDispatchToProps = dispatch => {
+  return {   
+      onBuyProduct:value =>
+      dispatch({type: actionTypes.BUY_PRODUCT, payload: value}), 
+  };
+};
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)( ProductDescriptionTemplate);

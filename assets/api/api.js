@@ -34,6 +34,9 @@ export const buyerProductByIdAPI = URL+'getBuyerProductsById';
 export const buyerWishlistAPI = URL+'getBuyerWishlist';
 export const buyerWishlistAddOrRemoveAPI = URL+'buyerProductWishList';
 export const buyerWishlistRemoveAll = URL+'clearBuyerWishlist';
+export const buyerAddProductToCart = URL+'buyerAddProductToCart';
+export const buyerProductsCartData = URL+'buyerProductCartData';
+export const buyerDeleteProductFromCart = URL+'buyerDeleteProductFromCart';
 
 //////////////////////// Seller API's //////////////////////////
 

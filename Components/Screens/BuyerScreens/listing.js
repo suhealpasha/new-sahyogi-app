@@ -312,7 +312,7 @@ class Listing extends Component {
                         uri: item.thumbnail_image,
                       }}
                       style={{
-                        width: 130,
+                        width: 150,
                         height: 100,
                         borderTopLeftRadius: 5,
                         borderBottomLeftRadius: 5,

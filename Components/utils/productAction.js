@@ -16,6 +16,8 @@ import axios from 'axios';
 import * as api from '../../assets/api/api';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
+import * as actionTypes from '../../Store/action';
+import {connect} from 'react-redux';
 
 class ProductAction extends Component {
   constructor(props) {
@@ -29,16 +31,26 @@ class ProductAction extends Component {
       favouriteColor: 'grey',
       activeButton: '',
       activeSwitch: 1,
-      price: null,
+      price: 0,
       value: 1,
-      availableQuantity: null,
+      availableQuantity: 0,
+      productId: null,
     };
   }
 
-   componentDidMount() {
-   this.setState({productData: this.props.productData});
-   }
+  componentDidMount() {
+    this.setState({productData: this.props.productData});
+  }
 
+  componentDidUpdate(prevProps, prevState) {
+    this.props.onProductAddToCartDetails([
+      this.state.productId,
+      this.state.activeButton,
+      this.state.price,
+      this.state.value,      
+      this.state.value * this.state.price
+     ]);
+  }
 
   favoutiteClicked = async () => {
     this.setState({spinner: true});
@@ -77,11 +89,12 @@ class ProductAction extends Component {
       });
   };
 
-  activateUnitsButton = (param1, param2, param3) => {
+  activateUnitsButton = (param1, param2, param3, param4) => {
     this.setState({
       activeButton: param1,
       price: param2,
       availableQuantity: param3,
+      productId: param4,
     });
   };
 
@@ -109,6 +122,12 @@ class ProductAction extends Component {
         width: '50%',
         paddingBottom: 10,
         paddingTop: 10,
+      },
+      unavailableText: {
+        color: 'red',
+        fontSize: 12,
+        paddingTop: 5,
+        paddingBottom: 5,
       },
 
       quantityContainer: {
@@ -183,54 +202,80 @@ class ProductAction extends Component {
     });
 
     let microUnits, nanoUnits;
+
     if (this.props.productData.nano) {
-      nanoUnits = this.props.productData.nano.map(i => {
-        return (
-          <TouchableOpacity
-            style={
-              this.state.activeButton === i.unit_Id
-                ? styles.unitsActiveButton
-                : styles.unitsButton
-            }
-            onPress={() =>
-              this.activateUnitsButton(i.unit_Id, i.price, i.available_quantity)
-            }>
-            <Text
-              style={
-                this.state.activeButton === i.unit_Id
-                  ? styles.unitsActiveButtonText
-                  : styles.unitsButtonText
-              }>
-              {i.unit_Id} lbs
-            </Text>
-          </TouchableOpacity>
-        );
-      });
+      {
+        this.props.productData.nano.length >= 1
+          ? (nanoUnits = this.props.productData.nano.map(i => {
+              return (
+                <TouchableOpacity
+                  style={
+                    this.state.activeButton === i.unit_Id
+                      ? styles.unitsActiveButton
+                      : styles.unitsButton
+                  }
+                  onPress={() =>
+                    this.activateUnitsButton(
+                      i.unit_Id,
+                      i.price,
+                      i.available_quantity,
+                      i.product_Id,
+                    )
+                  }>
+                  <Text
+                    style={
+                      this.state.activeButton === i.unit_Id
+                        ? styles.unitsActiveButtonText
+                        : styles.unitsButtonText
+                    }>
+                    {i.unit_Id} lbs
+                  </Text>
+                </TouchableOpacity>
+              );
+            }))
+          : this.setState({unavailableNanoUnits: true});
+      }
     }
+
     if (this.props.productData.micro) {
-      microUnits = this.props.productData.micro.map(i => {
-        return (
-          <TouchableOpacity
-            style={
-              this.state.activeButton === i.unit_Id
-                ? styles.unitsActiveButton
-                : styles.unitsButton
-            }
-            onPress={() =>
-              this.activateUnitsButton(i.unit_Id, i.price, i.available_quantity)
-            }>
-            <Text
-              style={
-                this.state.activeButton === i.unit_Id
-                  ? styles.unitsActiveButtonText
-                  : styles.unitsButtonText
-              }>
-              {i.unit_Id} lbs
-            </Text>
-          </TouchableOpacity>
-        );
-      });
+      {
+        this.props.productData.micro.length >= 1
+          ? (microUnits = this.props.productData.micro.map(i => {
+              return (
+                <TouchableOpacity
+                  style={
+                    this.state.activeButton === i.unit_Id
+                      ? styles.unitsActiveButton
+                      : styles.unitsButton
+                  }
+                  onPress={() =>
+                    this.activateUnitsButton(
+                      i.unit_Id,
+                      i.price,
+                      i.available_quantity,
+                      i.product_Id,
+                    )
+                  }>
+                  <Text
+                    style={
+                      this.state.activeButton === i.unit_Id
+                        ? styles.unitsActiveButtonText
+                        : styles.unitsButtonText
+                    }>
+                    {i.unit_Id} lbs
+                  </Text>
+                </TouchableOpacity>
+              );
+            }))
+          : this.setState({unavailableMicroUnits: true});
+      }
     }
+
+    this.state.activeButton
+      ? this.props.onBuyProduct(false)
+      : this.props.onBuyProduct(true);
+
+    let noItem = <Text style={styles.unavailableText}>No Item available</Text>;    
     return (
       <View style={styles.productActionsContainer}>
         <Spinner
@@ -241,20 +286,10 @@ class ProductAction extends Component {
         <View style={styles.actionsContainer}>
           <View style={{width: '60%'}}>
             <Text style={styles.priceText}>
-          ${' '}{this.state.activeButton === '' ? 
-          this.props.productData.nano ?
-          
-           this.props.productData.nano ? this.props.productData.nano[0].price : null 
-          : 
-          this.props.productData.micro ? this.props.productData.micro[0] : null
-          :           
-            this.state.availableQuantity
-              ? this.state.value * this.state.price
-              : 0
-            
-            }
-
-             
+              $ {''}
+              {this.state.activeButton === '' 
+                ? 0
+                : this.state.value * this.state.price}
             </Text>
           </View>
           <View style={{flexDirection: 'row', width: '40%'}}>
@@ -307,7 +342,15 @@ class ProductAction extends Component {
                 justifyContent: 'flex-start',
                 alignItems: 'center',
               }}>
-              {this.state.activeSwitch === 1 ? nanoUnits : microUnits}
+              {this.state.activeSwitch === 1
+                ? this.props.productData.nano &&
+                  this.props.productData.nano.length >= 1
+                  ? nanoUnits
+                  : noItem
+                : this.props.productData.micro &&
+                  this.props.productData.micro.length >= 1
+                ? microUnits
+                : noItem}
             </View>
           </View>
           <View style={styles.lotsPageSwitchContainer}>
@@ -319,28 +362,31 @@ class ProductAction extends Component {
                       this.setState({
                         availableQuantity: null,
                         activeButton: '',
-                        value: 0,
+                        value: 1,
                         activeSwitch: val,
                       });
                     } else {
-                      this.setState({activeSwitch:''}) 
-                      Toast.show('No Nano Lots');
+                      this.setState({activeButton: '',activeSwitch:1});
+                      this.setState({unavailableNanoUnits: true});
+                      // Toast.show('No Nano Lots');
                     }
                   } else {
                     if (this.props.productData.micro.length >= 1) {
                       this.setState({
                         availableQuantity: null,
                         activeButton: '',
-                        value: 0,
+                        value: 1,
                         activeSwitch: val,
                       });
-                    } else {                   
-                      this.setState({activeSwitch:''})           
-                      Toast.show('No Micro Lots');
-                      return
+                    } else {
+                      this.setState({activeButton: '',activeSwitch:2});
+                      this.setState({unavailableMicroUnits: true});
+                      // Toast.show('No Micro Lots');
+                      return;
                     }
                   }
-                }} // this is necessary for this component
+                }}
+                // this is necessary for this component
                 text1="N" // optional: first text in switch button --- default ON
                 text2="M" // optional: second text in switch button --- default OFF
                 switchWidth={80} // optional: switch width --- default 44
@@ -381,10 +427,9 @@ class ProductAction extends Component {
                   : 1
               }
               onLimitReached={(isMax, msg) => {
-                this.state.activeButton === '' ?
-                Toast.show('Select the units.')
-                :
-                Toast.show('Quantity is not available.');
+                this.state.activeButton === ''
+                  ? Toast.show('Select the units.')
+                  : Toast.show('Quantity is not available.');
               }}
             />
           </View>
@@ -408,4 +453,15 @@ class ProductAction extends Component {
   }
 }
 
-export default ProductAction;
+const mapDispatchToProps = dispatch => {
+  return {
+    onBuyProduct: value =>
+      dispatch({type: actionTypes.BUY_PRODUCT, payload: value}),
+    onProductAddToCartDetails: value =>
+      dispatch({type: actionTypes.PRODUCT_CART_DETAILS, payload: value}),
+  };
+};
+export default connect(
+  null,
+  mapDispatchToProps,
+)(ProductAction);

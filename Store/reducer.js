@@ -3,26 +3,28 @@ import * as actionTypes from './action';
 const initialState = {
   sellerUser: false,
   active: 'home',
-  listingTitle:null,
-  userType: null,  
+  listingTitle: null,
+  userType: null,
   sellerUserType: null,
   forgotPassword: null,
   name: null,
   mobile: null,
   email: null,
-  company:null,
-  ein:null,
-  alternatePhone:null,
-  address:null,
+  company: null,
+  ein: null,
+  alternatePhone: null,
+  address: null,
   otp: null,
   addressId: null,
   regionName: null,
   varietyName: null,
-  filterFeaturedData:null,
-  filterOriginsData:[],
-  filterMicroLotData:false,
-  filterNanoLotData:false,
+  filterFeaturedData: null,
+  filterOriginsData: [],
+  filterMicroLotData: false,
+  filterNanoLotData: false,
   filterVaritiesData: [],
+  buyProduct: true,
+  cartProductData:[],
 };
 
 const reducer = (state = initialState, action) => {
@@ -32,7 +34,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         active: action.payload,
       };
-    case actionTypes.USER_TYPE:      
+    case actionTypes.USER_TYPE:
       return {
         ...state,
         userType: action.payload,
@@ -60,7 +62,7 @@ const reducer = (state = initialState, action) => {
         email: action.payload3,
         otp: action.payload4,
       };
-    case actionTypes.REGISTER_SELLER_DETAILS:    
+    case actionTypes.REGISTER_SELLER_DETAILS:
       return {
         ...state,
         name: action.payload,
@@ -92,7 +94,7 @@ const reducer = (state = initialState, action) => {
         mobile: action.payload,
         otp: action.payload1,
       };
-      case actionTypes.LISTING_TITLE:
+    case actionTypes.LISTING_TITLE:
       return {
         ...state,
         listingTitle: action.payload,
@@ -102,35 +104,45 @@ const reducer = (state = initialState, action) => {
         ...state,
         regionName: action.payload,
       };
-      case actionTypes.DISPLAY_VARIETY_NAME:
+    case actionTypes.DISPLAY_VARIETY_NAME:
       return {
         ...state,
         varietyName: action.payload,
       };
-      case actionTypes.FILTER_FEATURED_DATA:
+    case actionTypes.FILTER_FEATURED_DATA:
       return {
         ...state,
         filterFeaturedData: action.payload,
       };
-      case actionTypes.FILTER_ORIGINS_DATA:       
+    case actionTypes.FILTER_ORIGINS_DATA:
       return {
         ...state,
         filterOriginsData: action.payload,
       };
-      case actionTypes.FILTER_MICRO_LOT_DATA:        
+    case actionTypes.FILTER_MICRO_LOT_DATA:
       return {
         ...state,
         filterMicroLotData: action.payload,
-      }; 
-      case actionTypes.FILTER_NANO_LOT_DATA:        
+      };
+    case actionTypes.FILTER_NANO_LOT_DATA:
       return {
         ...state,
         filterNanoLotData: action.payload,
-      };   
-    case actionTypes.FILTER_VARITIES_DATA:   
+      };
+    case actionTypes.FILTER_VARITIES_DATA:
       return {
         ...state,
         filterVaritiesData: action.payload,
+      };
+    case actionTypes.BUY_PRODUCT:
+      return {
+        ...state,
+        buyProduct: action.payload,
+      };
+    case actionTypes.PRODUCT_CART_DETAILS:   
+      return {
+        ...state,
+        cartProductData: action.payload,
       };
     default:
       return state;

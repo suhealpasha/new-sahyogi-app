@@ -24,13 +24,12 @@ class StickyButton extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      spinner: false,
+     
     }
   }
 
-  addToCart = async() => {
-
- 
+  addToCart = async() => {    
+    this.props.onSpinner(true) 
     const data = JSON.stringify({     
      product_id:this.props.cartProductData[0],
      unit_id:this.props.cartProductData[1],
@@ -38,7 +37,6 @@ class StickyButton extends Component {
      quantity:this.props.cartProductData[3],     
      total_price:this.props.cartProductData[4]
     });
-console.log(data)
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
       .post(api.buyerAddProductToCart, data, {
@@ -51,12 +49,13 @@ console.log(data)
       })
       .then(res => {
         if (res.status) {
-          this.setState({ spinner: false });
+          this.props.onSpinner(false) 
+          this.props.onfetchBuyerCart();
           Toast.show('Added to the cart.')
         }
       })
       .catch(err => {
-        this.setState({ spinner: false });
+        this.props.onSpinner(false) 
         console.log(err);
       });
   }
@@ -143,7 +142,15 @@ const mapStateToProps = state => {
   };
 };
 
+const mapDispatchToProps = dispatch => {
+  return {
+    onSpinner: value =>
+      dispatch({type: actionTypes.SPINNER_SWITCH, payload: value}),
+  };
+};
+
+
 export default connect(
   mapStateToProps,
-  null,
+  mapDispatchToProps,
 )( StickyButton);

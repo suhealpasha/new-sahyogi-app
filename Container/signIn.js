@@ -36,6 +36,9 @@ class Login extends Component {
       password: null,
       mobileNumberError: false,
       passwordError: false,
+      emailId: null,
+      emailIdError: false,
+      emailValidationError: false,
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -58,14 +61,27 @@ class Login extends Component {
     return true;
   }
 
-  _handleLogin = async () => {   
-    if (this.state.mobileNumber !== null && this.state.password !== null) {
+  emailValidate = () => {
+    if (this.state.emailId === '') {
+      this.setState({emailId: null});
+    } else {
+      const emailReg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      if (emailReg.test(this.state.emailId) === false) {
+        this.setState({emailValidationError: true});
+      } else {
+        this.setState({emailIdError: false, emailValidationError: false});
+      }
+    }
+  };
+
+  _handleLogin = async () => {
+    if (this.state.emailId !== null && this.state.password !== null) {
       let data;
       this.setState({spinner: true});
       data = JSON.stringify({
-        user_id: this.state.mobileNumber,
+        email_id: this.state.emailId,
         password: this.state.password,
-      });      
+      });
       await axios
         .post(api.signInAPI, data, {
           headers: {
@@ -74,13 +90,13 @@ class Login extends Component {
             'content-type': 'application/x-www-form-urlencoded',
           },
         })
-        .then(res => {         
+        .then(res => {
           if (res.data.status === 'success' && res.data.user_type === 'Buyer') {
             AsyncStorage.setItem('isLoggedIn', res.data.access_token);
             AsyncStorage.setItem('userType', res.data.user_type);
             this.props.onBottomTabClicked('home');
             this.props.onSignIn();
-            this.setState({spinner: false, mobileNumber: null, password: null});
+            this.setState({spinner: false, emailId: null, password: null});
           } else if (
             res.data.status === 'success' &&
             res.data.user_type === 'Seller'
@@ -89,7 +105,7 @@ class Login extends Component {
             AsyncStorage.setItem('userType', res.data.user_type);
             this.props.onBottomTabClicked('home');
             this.props.onSellerSignIn();
-            this.setState({spinner: false, mobileNumber: null, password: null});
+            this.setState({spinner: false, emailId: null, password: null});
           } else {
             this.setState({spinner: false});
             alert('Invalid Credentials!');
@@ -99,10 +115,10 @@ class Login extends Component {
           console.log(err);
         });
     } else {
-      if (this.state.mobileNumber === null ) {
-        this.setState({mobileNumberError: true});
+      if (this.state.emailId === null) {
+        this.setState({emailIdError: true});
       } else {
-        this.setState({mobileNumberError: false});
+        this.setState({emailIdError: false});
       }
       if (this.state.password === null) {
         this.setState({passwordError: true});
@@ -118,9 +134,9 @@ class Login extends Component {
         alignItems: 'center',
         paddingLeft: 10,
         paddingRight: 10,
-        paddingTop:10,
-        justifyContent:'center',        
-        height:this.state.height
+        paddingTop: 10,
+        justifyContent: 'center',
+        height: this.state.height,
       },
       spinnerTextStyle: {
         color: '#00aa00',
@@ -134,7 +150,6 @@ class Login extends Component {
       },
       signInFormContainer: {
         width: '100%',
-        
       },
       inputStyle: {
         fontFamily: 'Gotham Black Regular',
@@ -153,8 +168,10 @@ class Login extends Component {
     });
 
     return (
-      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea'}}
-      scrollEnabled={false}>
+      <KeyboardAwareScrollView
+        resetScrollToCoords={{x: 0, y: 0}}
+        style={{backgroundColor: '#efebea'}}
+        scrollEnabled={false}>
         <View style={styles.container}>
           <Spinner
             visible={this.state.spinner}
@@ -173,7 +190,7 @@ class Login extends Component {
               }}>
               Login
             </Text>
-            <Input
+            {/* <Input
               placeholder="Mobile Number"
               style={{fontFamily: 'Gotham Black Regular'}}
               keyboardType="numeric"
@@ -208,13 +225,42 @@ class Login extends Component {
                   : false
               }
               value={this.state.mobileNumber}
+            /> */}
+            <Input
+              placeholder="Email"
+              spellCheck={false}
+              autoCorrect={false}
+              style={styles.inputStyle}
+              onChangeText={emailId =>
+                this.setState({
+                  emailId,
+                  emailIdError: false,
+                  emailValidationError: false,
+                })
+              }
+              onBlur={this.emailValidate}
+              autoCapitalize="none"
+              errorMessage={
+                this.state.emailIdError === true
+                  ? 'Enter the emailId'
+                  : this.state.emailValidationError
+                  ? 'Invalid Email address'
+                  : null
+              }
+              value={this.state.emailId}
             />
-            <Input            
+            <Input
               secureTextEntry={true}
               placeholder="Password"
               style={{fontFamily: 'Gotham Black Regular'}}
-              onChangeText={password => this.setState({password,passwordError:false})}
-              onBlur={this.state.password === '' ? this.setState({password:null}):null}
+              onChangeText={password =>
+                this.setState({password, passwordError: false})
+              }
+              onBlur={
+                this.state.password === ''
+                  ? this.setState({password: null})
+                  : null
+              }
               errorMessage={
                 this.state.passwordError === true ? 'Enter the Password' : false
               }

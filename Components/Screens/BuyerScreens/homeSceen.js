@@ -270,7 +270,7 @@ class HomeScreen extends Component {
               <Text style={styles.featuredalign}>Featured Crops</Text>
               <TouchableWithoutFeedback 
                 onPress={()=>this.onSeeAll('All Featured Crops')}>
-                <Text style={styles.viewallfeatured}>View All Featured Crops</Text>
+                <Text style={styles.viewallfeatured}>View All</Text>
                 </TouchableWithoutFeedback>
             </View>
             <FeaturedItems {...this.props} featuredProductsData = {this.state.featuredProductsData}/>

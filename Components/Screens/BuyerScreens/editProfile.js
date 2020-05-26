@@ -46,8 +46,10 @@ class EditProfile extends Component {
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  async componentDidMount() {
-    const name = this.props.name;
+
+
+  componentDidMount() {
+    const name = this.props.name;    
     const mobile = this.props.mobile;
     const email = this.props.email;
     const profilePic = this.props.profilePic;
@@ -59,9 +61,6 @@ class EditProfile extends Component {
       profilePic: profilePic,
       checked: checked,
     });
-  }
-
-  componentDidMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,

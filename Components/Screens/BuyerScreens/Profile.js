@@ -246,7 +246,8 @@ class Profile extends Component {
                 <Image
                   style={{
                     width: 120,
-                    height: 120,
+                    // height: undefined,
+                    aspectRatio:2/2,
                     borderWidth: 0.25,
                     borderColor: '#95A5A6',
                     borderRadius: 100,

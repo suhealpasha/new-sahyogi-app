@@ -30,9 +30,6 @@ class HomeScreen extends Component {
     if (isLoggedIn === '2') {
       this.setState({sellerHomeScreen: true});
     }
-    
-  }
-  componentWillMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,

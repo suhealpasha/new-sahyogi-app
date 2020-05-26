@@ -313,7 +313,8 @@ class Listing extends Component {
                       }}
                       style={{
                         width: 150,
-                        height: 100,
+                        height: undefined,
+                        aspectRatio:3/2,
                         borderTopLeftRadius: 5,
                         borderBottomLeftRadius: 5,
                       }}

@@ -61,26 +61,67 @@ class Register extends Component {
       if (String(this.state.mobileNumber).length !== 12) {
         this.setState({mobileValidationError: true});
         return;
+      } 
+      // else {
+      //   if (this.state.mobileNumber !== null) {
+      //     let data = JSON.stringify({
+      //       mobile_no: this.state.mobileNumber,
+      //     });
+      //     await axios
+      //       .post(api.mobileCheckAPI, data, {
+      //         headers: {
+      //           accept: 'application/json',
+      //           'content-type': 'application/x-www-form-urlencoded',
+      //         },
+      //       })
+      //       .then(res => {
+      //         if (res.data.message === 'Mobile exist') {
+      //           this.setState({
+      //             mobileExist: true,
+      //           });
+      //         } else {
+      //           this.setState({
+      //             mobileExist: false,
+      //           });
+      //         }
+      //       })
+      //       .catch(err => {
+      //         console.log(err);
+      //       });
+      //   }
+      // }
+    }
+  };
+
+  checkEmailExist = async () => {
+    if (this.state.emailId === '') {
+      this.setState({emailId: null});
+    } else {
+      const emailReg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+      if (emailReg.test(this.state.emailId) === false) {
+        this.setState({emailValidationError: true});
+        return;
       } else {
-        if (this.state.mobileNumber !== null) {
+        this.setState({emailIdError: false, emailValidationError: false});
+          if (this.state.emailId !== null) {
           let data = JSON.stringify({
-            mobile_no: this.state.mobileNumber,
-          });
+            email_id: this.state.emailId,
+          });        
           await axios
-            .post(api.mobileCheckAPI, data, {
+            .post(api.emailCheckAPI, data, {
               headers: {
                 accept: 'application/json',
                 'content-type': 'application/x-www-form-urlencoded',
               },
             })
-            .then(res => {
+            .then(res => {              
               if (res.data.message === 'Mobile exist') {
                 this.setState({
-                  mobileExist: true,
+                  emailExist: true,
                 });
               } else {
                 this.setState({
-                  mobileExist: false,
+                  emailExist: false,
                 });
               }
             })
@@ -92,18 +133,7 @@ class Register extends Component {
     }
   };
 
-  emailValidate = () => {
-    if (this.state.emailId === '') {
-      this.setState({emailId: null});
-    } else {
-      const emailReg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-      if (emailReg.test(this.state.emailId) === false) {
-        this.setState({emailValidationError: true});
-      } else {
-        this.setState({emailIdError: false, emailValidationError: false});
-      }
-    }
-  };
+ 
 
   handleRegister = async () => {
     if (
@@ -246,11 +276,37 @@ class Register extends Component {
                   : false
               }
             />
+             <Input
+              placeholder="Email"
+              spellCheck={false}
+              autoCorrect={false}
+              style={styles.inputStyle}
+              onChangeText={emailId =>
+                this.setState({
+                  emailId,
+                  emailIdError: false,
+                  emailValidationError: false,
+                  emailExist:false
+                })
+              }
+              onBlur={this.checkEmailExist}
+              autoCapitalize="none"
+              errorMessage={
+                this.state.emailIdError === true
+                  ? 'Enter the emailId'
+                  : this.state.emailValidationError
+                  ? 'Invalid Email address'
+                  : this.state.emailExist
+                  ? 'Email already registered'
+                  : null
+              }
+            />
             <Input
               placeholder="Mobile Number"
               style={styles.inputStyle}
+              value={this.state.mobileNumber}
               keyboardType="numeric"
-              maxLength={10}
+              maxLength={12}
               onBlur={this.checkMobileExist}
               onChangeText={mobileNumber => {
                 const input = mobileNumber.replace(/\D/g, '').substring(0, 10);
@@ -262,7 +318,7 @@ class Register extends Component {
                   this.setState({
                     mobileNumber: `${first}-${middle}-${last}`,
                     mobileNumberError: false,
-                    mobileValidationError: false,
+                    mobileValidationError: false,                    
                   });
                 } else if (input.length > 3) {
                   this.setState({
@@ -275,6 +331,7 @@ class Register extends Component {
                     mobileNumber: input,
                     mobileNumberError: false,
                     mobileValidationError: false,
+                    mobileExist:false
                   });
                 }
               }}
@@ -287,27 +344,7 @@ class Register extends Component {
                   ? 'Mobile number already registered'
                   : null
               }
-            />
-            <Input
-              placeholder="Email"
-              style={styles.inputStyle}
-              onChangeText={emailId =>
-                this.setState({
-                  emailId,
-                  emailIdError: false,
-                  emailValidationError: false,
-                })
-              }
-              onBlur={this.emailValidate}
-              autoCapitalize="none"
-              errorMessage={
-                this.state.emailIdError === true
-                  ? 'Enter the emailId'
-                  : this.state.emailValidationError
-                  ? 'Invalid Email address'
-                  : null
-              }
-            />
+            />           
           </View>
           <NextButton click={() => this.handleRegister()} {...this.state} />
         </View>

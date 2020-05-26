@@ -7,6 +7,7 @@ import {
   Text,
   Image,
   ScrollView,
+  Dimensions
 } from 'react-native';
 import {
   Card,
@@ -24,7 +25,9 @@ class AllRegions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      regionsData:[]
+      regionsData:[],
+      height: Dimensions.get('window').height,
+      width: Dimensions.get('window').width,
     };
   }
 

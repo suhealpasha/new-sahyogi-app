@@ -41,7 +41,10 @@ class ForgotPassword extends Component {
       height: Dimensions.get('window').height,
       mobileNumber: null,
       mobileNumberError: false,
-      mobileValidationError:false
+      mobileValidationError:false,      
+      emailId:null,
+      emailIdError:false,
+      emailValidationError:false
     };
   }
 validateMobile = () =>{
@@ -56,11 +59,24 @@ validateMobile = () =>{
 }
 }
 
+emailValidate = () => {
+  if (this.state.emailId === '') {
+    this.setState({emailId: null});
+  } else {
+    const emailReg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (emailReg.test(this.state.emailId) === false) {
+      this.setState({emailValidationError: true});
+    } else {
+      this.setState({emailIdError: false, emailValidationError: false});
+    }
+  }
+};
+
   handleForgotPassword = async () => {
-    console.log(this.state.mobileNumber)
-    if (this.state.mobileNumber !== null && this.state.mobileValidationError === false) {     
+   
+    if (this.state.emailId !== null && this.state.mobileValidationError === false) {     
       let data = JSON.stringify({
-        mobile_no: this.state.mobileNumber,
+        email_id: this.state.emailId,
       });
       this.setState({spinner: true});  
       await axios
@@ -71,11 +87,11 @@ validateMobile = () =>{
             'content-type': 'application/x-www-form-urlencoded',
           },
         })
-        .then(res => {
+        .then(res => {          
           if (res.status) {
             this.setState({spinner: false})
             this.props.onForgotPasswordDetails(
-              this.state.mobileNumber,
+              this.state.emailId,
               String(res.data.data.otp),
             );
             this.props.navigation.navigate('OTP');
@@ -89,10 +105,10 @@ validateMobile = () =>{
         });
       this.props.navigation.navigate('OTP');
     } else {
-      if (this.state.mobileNumber === null) {
-        this.setState({mobileNumberError: true});
+      if (this.state.emailId === null) {
+        this.setState({emailIdError: true});
       } else {
-        this.setState({mobileNumberError: false});
+        this.setState({emailIdError: false});
       }
     }
   };
@@ -145,7 +161,7 @@ validateMobile = () =>{
               Forgot Your password?
             </Text>
 
-            <Input
+            {/* <Input
               placeholder="Mobile Number"
               style={styles.inputStyle}
               keyboardType="numeric"
@@ -182,6 +198,28 @@ validateMobile = () =>{
                   ? 'Enter the mobile number'
                   : this.state.mobileValidationError
                   ? 'Invalid mobile number'
+                  : null
+              }
+            /> */}
+             <Input
+              placeholder="Email"
+              style={styles.inputStyle}
+              spellCheck={false}
+              autoCorrect={false}
+              onChangeText={emailId =>
+                this.setState({
+                  emailId,
+                  emailIdError: false,
+                  emailValidationError: false,
+                })
+              }
+              onBlur={this.emailValidate}
+              autoCapitalize="none"
+              errorMessage={
+                this.state.emailIdError === true
+                  ? 'Enter the emailId'
+                  : this.state.emailValidationError
+                  ? 'Invalid Email address'
                   : null
               }
             />

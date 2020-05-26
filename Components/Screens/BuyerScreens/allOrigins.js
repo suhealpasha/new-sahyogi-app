@@ -158,7 +158,7 @@ class AllOrigins extends Component {
       itemContainer: {
         marginBottom: 10,
         backgroundColor: 'white',      
-        width:this.state.width / 2 - 20,
+        width:this.state.width / 2 - 15,
         shadowColor: '#000',
         shadowOffset: {
           width: 0,
@@ -167,7 +167,6 @@ class AllOrigins extends Component {
         shadowOpacity: 0.23,
         shadowRadius: 2.62,
         elevation: 4,
-
         paddingBottom: 10,
       },
       itemData: {
@@ -199,6 +198,7 @@ class AllOrigins extends Component {
           title={'Select All'}
           fontFamily={'GothamMedium'}
           iconRight
+          size={25}
           checked={this.state.checked}
           containerStyle={{
             paddingLeft:0,
@@ -225,25 +225,30 @@ class AllOrigins extends Component {
                   ? this.state.originsData
                   : this.state.searchedData
               }
-              columnWrapperStyle={{justifyContent: 'space-between'}}
+              columnWrapperStyle={{marginLeft:10,marginRight:10,justifyContent:'space-between'}}
+              
               numColumns={2}
               keyExtractor={items => {
                 items.origin_Id;
               }}
-              renderItem={({item}) => {
+              renderItem={({item}) => {               
                 return (
-                  <View style={{paddingLeft: 10, paddingRight: 10}}>
+                  <View style={{}}>
+                    <TouchableNativeFeedback onPress={() => this.selectOrigins(item.origin_Id)}>
                     <View style={styles.itemContainer}>
                       <ImageBackground
                         source={{
                           uri: item.url_thumbnail_image,
                         }}
-                        style={{width: this.state.width / 2 - 20, height: 120}}
-                        resizeMode='stretch'
+                        style={{width: this.state.width / 2 - 15,
+                          height: undefined,
+                          aspectRatio: 2/1,
+                           }}
+                        // resizeMode='stretch'
                         >
                         <CheckBox
                           checked={this.state.checked || item.checked}
-                          right
+                          right                          
                           checkedColor={'#00aa00'}
                           onPress={() => this.selectOrigins(item.origin_Id)}
                           containerStyle={{
@@ -259,6 +264,7 @@ class AllOrigins extends Component {
                         <Text style={styles.textData}>{item.name}</Text>
                       </View>
                     </View>
+                    </TouchableNativeFeedback>
                   </View>
                 );
               }}

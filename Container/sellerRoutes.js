@@ -12,6 +12,7 @@ import {
   AsyncStorage,
   Image,
   Animated,
+  TouchableWithoutFeedback
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -39,7 +40,7 @@ import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
 import KeyboardShift from '../Components/utils/keyboardShift';
 import {StatusBar} from 'react-native';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+
 import axios from 'axios';
 import * as api from '../assets/api/api' 
 
@@ -87,8 +88,9 @@ class SellerRoutes extends Component {
     };
 
   goBack = ({navigation}, path) => {
-    navigation.goBack(null);
-    // this.setState({filterOn:false})
+    if (path === 'Home') {
+      navigation.navigate('Home');
+    }
     this.setState({home: true});
   };
 
@@ -198,22 +200,22 @@ class SellerRoutes extends Component {
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Seller Notification')}>
                     <Icon
                       name="notifications-none"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Search')}>
                     <Icon
                       name="search"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}
@@ -241,15 +243,15 @@ class SellerRoutes extends Component {
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Seller Notification')}>
                     <Icon
                       name="notifications-none"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
                   // onPress={() => this.sortClicked({navigation})}
                   >
                     <Icon
@@ -257,7 +259,7 @@ class SellerRoutes extends Component {
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}
@@ -284,15 +286,15 @@ class SellerRoutes extends Component {
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Notification')}>
                     <Icon
                       name="notifications-none"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
                   // onPress={() => this.sortClicked({navigation})}
                   >
                     <Icon
@@ -300,7 +302,7 @@ class SellerRoutes extends Component {
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}
@@ -323,9 +325,9 @@ class SellerRoutes extends Component {
               headerTitle: null,
               headerRightContainerStyle: styles.headerRightContainerStyle,
               headerLeft: () => (
-                <TouchableOpacity onPress={() => this.goBack({navigation})}>
+                <TouchableWithoutFeedback onPress={() => this.goBack({navigation})}>
                   <Icon name="chevron-left" size={35} color="black" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
 
               headerRight: () => (
@@ -369,10 +371,10 @@ class SellerRoutes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
+                <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation}, 'Home')}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
             })}
           />
@@ -395,19 +397,19 @@ class SellerRoutes extends Component {
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
-                <TouchableOpacity
-                  onPress={() => this.goBack({navigation}, 'Home')}>
+                <TouchableWithoutFeedback
+                  onPress={() => this.props.navigation.navigate.goBack(null)}>
                   <Icon name="chevron-left" size={35} color="white" />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
               headerRight: () => (
-                <TouchableOpacity onPress={() => navigation.navigate('Search')}>
+                <TouchableWithoutFeedback onPress={() => navigation.navigate('Search')}>
                   <Icon
                     name="search"
                     size={24}
                     style={{padding: 10, color: '#ffffff'}}
                   />
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
               ),
             })}
             {...this.props}
@@ -432,15 +434,15 @@ class SellerRoutes extends Component {
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                  <TouchableOpacity
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Notification')}>
                     <Icon
                       name="notifications-none"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
-                  <TouchableOpacity
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
                   // onPress={() => this.sortClicked({navigation})}
                   >
                     <Icon
@@ -448,7 +450,7 @@ class SellerRoutes extends Component {
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
-                  </TouchableOpacity>
+                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}           
@@ -477,10 +479,10 @@ class SellerRoutes extends Component {
                   headerStyle: {backgroundColor: '#00aa00'},
                   headerTintColor: '#ffffff',
                   headerLeft: () => (
-                    <TouchableOpacity
+                    <TouchableWithoutFeedback
                       onPress={() => this.goBack({navigation}, 'My Address')}>
                       <Icon name="chevron-left" size={35} color="white" />
-                    </TouchableOpacity>
+                    </TouchableWithoutFeedback>
                   ),
                   headerRight: () => (
                     <TouchableWithoutFeedback onPress={() => this.clickedSave()}>
@@ -520,14 +522,14 @@ class SellerRoutes extends Component {
                   headerTintColor: '#ffffff',
                   headerRightContainerStyle: styles.headerRightContainerStyle,
                   headerLeft: () => (
-                    <TouchableOpacity
+                    <TouchableWithoutFeedback
                       onPress={() => this.goBack({navigation}, 'Profile')}>
                       <Icon name="chevron-left" size={35} color="white" />
-                    </TouchableOpacity>
+                    </TouchableWithoutFeedback>
                   ),
                   headerRight: () => (
                     <View style={{width: 300}}>
-                      <TouchableOpacity
+                      <TouchableWithoutFeedback
                         onPress={() => navigation.navigate('Add Address')}>
                         <Icon
                           style={{textAlign: 'right'}}
@@ -535,7 +537,7 @@ class SellerRoutes extends Component {
                           color={'white'}
                           size={24}
                         />
-                      </TouchableOpacity>
+                      </TouchableWithoutFeedback>
                     </View>
                   ),
                 })}    
@@ -566,10 +568,10 @@ class SellerRoutes extends Component {
                   headerStyle: {backgroundColor: '#00aa00'},
                   headerTintColor: '#ffffff',
                   headerLeft: () => (
-                    <TouchableOpacity
+                    <TouchableWithoutFeedback
                       onPress={() => this.goBack({navigation}, 'My Address')}>
                       <Icon name="chevron-left" size={35} color="white" />
-                    </TouchableOpacity>
+                    </TouchableWithoutFeedback>
                   ),
                   headerRight: () => (
                     <TouchableWithoutFeedback onPress={() => this.clickedSaveAddress()}>
@@ -603,10 +605,10 @@ class SellerRoutes extends Component {
                   headerStyle: {backgroundColor: '#00aa00'},
                   headerTintColor: '#ffffff',
                   headerLeft: () => (
-                    <TouchableOpacity
+                    <TouchableWithoutFeedback
                       onPress={() => this.goBack({navigation}, 'My Address')}>
                       <Icon name="chevron-left" size={35} color="white" />
-                    </TouchableOpacity>
+                    </TouchableWithoutFeedback>
                   ),
                   headerRight: () => (
                     <TouchableWithoutFeedback onPress={() => this.clickedSaveEditAddress()}>

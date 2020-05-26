@@ -23,13 +23,21 @@ import {connect} from 'react-redux';
 import Toast from 'react-native-simple-toast';
 import Spinner from 'react-native-loading-spinner-overlay';
 import * as api from '../assets/api/api';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 class AddAddress extends Component {
   constructor(props) {
     super(props);
     this.state = {
       height: Dimensions.get('window').height,
+      width: Dimensions.get('window').width,
       spinner: false,
+      defaultContryColor: '#969291',
+      defaultStateColor: '#969291',
+      countriesData: [],
+      statesData:[],      
+      countryId:null,
+      countryError:false,      
       userName: null,
       userNameError: false,
       userNameValidationError: false,
@@ -39,13 +47,14 @@ class AddAddress extends Component {
       phoneNumberError: false,
       phoneNumberValidationError: false,
       street: null,
-      streetError: false,
-      state: null,
+      streeError: false,
       city: null,
       cityError: false,
+      stateId:null,
       stateError: false,
       zipCode: null,
       zipCodeError: false,
+      zipCodeValidationError: false,
       addressData: [],
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
@@ -53,6 +62,11 @@ class AddAddress extends Component {
 
   componentDidMount() {
     this.fetchEditAddress();
+    this.setState({ countriesData: this.props.countriesData })
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
   fetchEditAddress = async () => {
@@ -85,13 +99,7 @@ class AddAddress extends Component {
         console.log(err);
       });
   };
-  componentWillMount() {
-    BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick,
-    );
-  }
-
+ 
   componentWillUnmount() {
     BackHandler.removeEventListener(
       'hardwareBackPress',
@@ -114,6 +122,51 @@ class AddAddress extends Component {
       }
     }
   };
+
+  zipCodeValidate = () => {
+    if (this.state.zipCode === '') {
+      this.setState({ zipCode: null });
+      return;
+    } else {
+      if (String(this.state.zipCode).length !== 5) {
+        this.setState({ zipCodeValidationError: true });
+        return;
+      }
+    }
+  }
+
+  onContrySelect = async (args) => {
+    this.setState({ defaultContryColor: 'black' ,countryId:args+1,countryError:false})
+    const data = JSON.stringify({
+      country_Id: args + 1
+    });
+
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+
+    await axios
+      .post(api.statesAPI, data, {
+        headers: {
+          access_token: access_token,
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        console.log(res.data.data)
+        if (res.status) {
+          this.setState({ statesData: res.data.data })
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+  }
+
+  onStateSelect = async (args) => {
+    this.setState({ defaultStateColor: 'black',stateError:false, stateId:args+1})
+  }
 
   async UNSAFE_componentWillReceiveProps() {
     let name, street, door_number, city, state, zip, contact_no;
@@ -139,11 +192,11 @@ class AddAddress extends Component {
       city = this.state.addressData.city;
     } else {
       city = this.state.city;
-    }
-    if (this.state.state === null) {
-      state = this.state.addressData.state;
+    }    
+    if (this.state.stateId === null) {
+      state = this.state.addressData.state_Id;
     } else {
-      state = this.state.state;
+      state = this.state.stateId;
     }
     if (this.state.zipCode === null) {
       zip = this.state.addressData.zip;
@@ -165,7 +218,7 @@ class AddAddress extends Component {
       street: street,
       door_number: door_number,
       city: city,
-      state: state,
+      state_Id: state,
       zip: zip,
       contact_no: contact_no,
     });
@@ -215,6 +268,11 @@ class AddAddress extends Component {
         color: '#00aa00',
       },
     });
+
+    let countriesList = [],stateList=[];    
+    countriesList = this.state.countriesData.map(i => { return (i.country_name) })
+    stateList = this.state.statesData.map(i => { return (i.state_name) })
+
     return (
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
@@ -229,6 +287,8 @@ class AddAddress extends Component {
           <View style={styles.registerFormContainer}>
             <Input
               placeholder={this.state.addressData.name}
+              spellCheck={false}
+              autoCorrect={false}
               style={styles.inputStyle}
               onChangeText={userName => {
                 if (/[^a-zA-Z\s]/.test(userName)) {
@@ -255,6 +315,8 @@ class AddAddress extends Component {
               }
             />
             <Input
+             spellCheck={false}
+             autoCorrect={false}
               placeholder={this.state.addressData.door_number}
               style={styles.inputStyle}
               onChangeText={doorNumber =>
@@ -267,6 +329,8 @@ class AddAddress extends Component {
               // }
             />
             <Input
+             spellCheck={false}
+             autoCorrect={false}
               placeholder={this.state.addressData.address}
               style={styles.inputStyle}
               onChangeText={street => this.setState({street})}
@@ -277,6 +341,8 @@ class AddAddress extends Component {
               // }
             />
             <Input
+             spellCheck={false}
+             autoCorrect={false}
               placeholder={this.state.addressData.city}
               style={styles.inputStyle}
               onChangeText={city => this.setState({city})}
@@ -286,31 +352,47 @@ class AddAddress extends Component {
               //     : false
               // }
             />
-            <Input
-              placeholder={this.state.addressData.state}
-              style={styles.inputStyle}
-              onChangeText={state => this.setState({state})}
-              // errorMessage={
-              //   this.state.userNameError === true
-              //     ? 'Enter the User Name'
-              //     : false
-              // }
+             <ModalDropdown
+              options={countriesList}
+              defaultValue="Country"
+              textStyle={{ color: this.state.defaultContryColor, fontSize: 18, fontWeight: '100', paddingLeft: 5, }}
+              style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
+              dropdownStyle={{ width: this.state.width - 40}}
+              dropdownTextStyle={{fontSize:18}}
+              onSelect={i => { this.onContrySelect(i) }}            
+            />
+            <ModalDropdown
+              options={stateList}
+              defaultValue={this.state.addressData.state_name}
+              disabled={stateList.length >=1 ? false:true}
+              textStyle={{ color: this.state.defaultStateColor, fontSize: 18, fontWeight: '100', paddingLeft: 5, }}
+              style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
+              dropdownStyle={{ width: this.state.width - 40 }}
+              dropdownTextStyle={{fontSize:18}}
+              onSelect={i => { this.onStateSelect(i) }}
             />
             <Input
               placeholder={this.state.addressData.zip}
               style={styles.inputStyle}
+              maxLength={5}
               keyboardType="numeric"
-              onChangeText={zipCode => this.setState({zipCode})}
-              // errorMessage={
-              //   this.state.userNameError === true
-              //     ? 'Enter the User Name'
-              //     : false
-              // }
+              onChangeText={zipCode => this.setState({zipCode,zipCodeValidationError:false,zipCodeError:false})}
+              onBlur={
+                this.zipCodeValidate
+              }
+              errorMessage={
+                this.state.zipCodeError === true
+                  ? 'Enter the Zip Code'
+                  : this.state.zipCodeValidationError
+                  ? 'Enter the valid Zip Code'
+                  : false
+              }
             />
             <Input
               placeholder={this.state.addressData.contact_no}
               style={styles.inputStyle}
-              maxLength={10}
+              maxLength={12}
+              value={this.state.phoneNumber}
               onChangeText={phoneNumber => {
                 const input = phoneNumber.replace(/\D/g, '').substring(0, 10);
                 const first = input.substring(0, 3);

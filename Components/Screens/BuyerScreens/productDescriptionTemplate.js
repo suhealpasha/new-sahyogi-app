@@ -48,7 +48,7 @@ class ProductDescriptionTemplate extends Component {
 
   componentDidMount() {
     this.fetchProduct();
-    this.props.onBuyProduct(true);
+    this.props.onBuyProduct(true);  
   }
 
   
@@ -172,7 +172,7 @@ class ProductDescriptionTemplate extends Component {
 
             <View style={styles.productImageContainer}>
               <SliderBox
-                images={this.state.productData.images ? imageList : this.state.thumbnailImages}
+                images={this.state.productData.images && this.state.productData.images.length >=1  ? imageList : this.state.thumbnailImages}
                 sliderBoxHeight={190}
                 onCurrentImagePressed={index =>
                   console.warn(`image ${index} pressed`)
@@ -188,11 +188,11 @@ class ProductDescriptionTemplate extends Component {
 
             <View style={styles.container}>
               <ProductDescription {...this.state}/>
-              <ProductAction {...this.state} onFetchProduct = {this.fetchProduct}/>
+              <ProductAction {...this.state} onFetchProduct = {this.fetchProduct} />
             </View>
           </View>
         </KeyboardAwareScrollView>
-        <StickyButton cancel="Add to Cart" proceed="Buy Now" {...this.props} buy={this.props.buyProduct} buyer={true}/>
+        <StickyButton cancel="Add to Cart" proceed="Buy Now" {...this.props} buy={this.props.buyProduct} buyer={true}   onfetchBuyerCart={this.props.onfetchBuyerCart}/>
       </View>
     );
   }

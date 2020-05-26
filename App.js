@@ -13,18 +13,10 @@ import {
   Image,
   Animated,
 } from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
 import {COLOR, ThemeContext, getTheme} from 'react-native-material-ui';
-import {HeaderBackground} from 'react-navigation-stack';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
 import {Provider} from 'react-redux';
 import {createStore, applyMiddleware, compose} from 'redux';
 import Reducer from './Store/reducer';
-import * as actionTypes from './Store/action';
-import {connect} from 'react-redux';
-import ProductDescriptionTemplate from './Components/Screens/BuyerScreens/productDescriptionTemplate';
 import KeyboardShift from './Components/utils/keyboardShift';
 import {StatusBar} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
@@ -46,6 +38,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      animation : new Animated.Value(1),
       isLoggedIn: false,
       isSignedIn: false,
       isSellerSignedIn:false,
@@ -56,6 +49,19 @@ class App extends Component {
     };
   }
 
+  startAnimation=()=>{
+    Animated.timing(this.state.animation, {
+      toValue : 1,
+      timing : 3000
+    }).start(()=>{
+      Animated.timing(this.state.animation,{
+        toValue : 0,
+        duration :1000
+      }).start();
+    })
+  }
+
+
   Hide_Splash_Screen = () => {
     this.setState({
       isVisible: false,
@@ -63,6 +69,7 @@ class App extends Component {
   };
 
   async componentDidMount() {
+    this.startAnimation();
     const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
     const user = await AsyncStorage.getItem('userType');  
     if (isLoggedIn) {
@@ -70,9 +77,9 @@ class App extends Component {
     }
 
     var that = this;
-    setTimeout(function() {
+    setTimeout(function() {      
       that.Hide_Splash_Screen();
-    }, 5000);
+    }, 4000);
   }
 
   onLogoutSession = () => {
@@ -90,6 +97,12 @@ class App extends Component {
   };
 
   render() {
+    
+    const animatedStyle ={
+      opacity : this.state.animation,
+    
+    }
+
     const styles = StyleSheet.create({
       headerRightContainerStyle: {
         width: this.state.width - 20,
@@ -104,7 +117,6 @@ class App extends Component {
       SplashScreen_RootView: {
         justifyContent: 'center',
         flex: 1,
-
         position: 'absolute',
         width: '100%',
         height: '100%',
@@ -121,7 +133,7 @@ class App extends Component {
     const store = createStore(Reducer);
 
     let Splash_Screen = (
-      <Animated.View style={styles.SplashScreen_RootView}>
+      <Animated.View style={[styles.SplashScreen_RootView,animatedStyle]}>
         <View style={styles.SplashScreen_ChildView}>
           <Image
             source={require('./assets/Images/logos/Logo_Microffee.png')}

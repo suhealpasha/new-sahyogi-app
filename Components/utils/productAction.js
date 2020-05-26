@@ -23,11 +23,9 @@ class ProductAction extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      spinner: false,
       width: Dimensions.get('window').width,
       height: Dimensions.get('window').height,
       productData: [],
-      lbs: null,
       favouriteColor: 'grey',
       activeButton: '',
       activeSwitch: 1,
@@ -47,9 +45,9 @@ class ProductAction extends Component {
       this.state.productId,
       this.state.activeButton,
       this.state.price,
-      this.state.value,      
-      this.state.value * this.state.price
-     ]);
+      this.state.value,
+      this.state.value * this.state.price,
+    ]);
   }
 
   favoutiteClicked = async () => {
@@ -228,7 +226,7 @@ class ProductAction extends Component {
                         ? styles.unitsActiveButtonText
                         : styles.unitsButtonText
                     }>
-                    {i.unit_Id} lbs
+                    {i.unit_name}
                   </Text>
                 </TouchableOpacity>
               );
@@ -262,7 +260,7 @@ class ProductAction extends Component {
                         ? styles.unitsActiveButtonText
                         : styles.unitsButtonText
                     }>
-                    {i.unit_Id} lbs
+                    {i.unit_name}
                   </Text>
                 </TouchableOpacity>
               );
@@ -275,11 +273,11 @@ class ProductAction extends Component {
       ? this.props.onBuyProduct(false)
       : this.props.onBuyProduct(true);
 
-    let noItem = <Text style={styles.unavailableText}>No Item available</Text>;    
+    let noItem = <Text style={styles.unavailableText}>No Item available</Text>;
     return (
       <View style={styles.productActionsContainer}>
         <Spinner
-          visible={this.state.spinner}
+          visible={this.props.spinner}
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}
         />
@@ -287,7 +285,7 @@ class ProductAction extends Component {
           <View style={{width: '60%'}}>
             <Text style={styles.priceText}>
               $ {''}
-              {this.state.activeButton === '' 
+              {this.state.activeButton === ''
                 ? 0
                 : this.state.value * this.state.price}
             </Text>
@@ -366,7 +364,7 @@ class ProductAction extends Component {
                         activeSwitch: val,
                       });
                     } else {
-                      this.setState({activeButton: '',activeSwitch:1});
+                      this.setState({activeButton: '', activeSwitch: 1});
                       this.setState({unavailableNanoUnits: true});
                       // Toast.show('No Nano Lots');
                     }
@@ -379,7 +377,7 @@ class ProductAction extends Component {
                         activeSwitch: val,
                       });
                     } else {
-                      this.setState({activeButton: '',activeSwitch:2});
+                      this.setState({activeButton: '', activeSwitch: 2});
                       this.setState({unavailableMicroUnits: true});
                       // Toast.show('No Micro Lots');
                       return;
@@ -452,6 +450,11 @@ class ProductAction extends Component {
     );
   }
 }
+const mapStateToProps = state => {
+  return {
+    spinner: state.reducer.spinner,
+  };
+};
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -462,6 +465,6 @@ const mapDispatchToProps = dispatch => {
   };
 };
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps,
 )(ProductAction);

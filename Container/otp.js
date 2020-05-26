@@ -54,14 +54,15 @@ class Otp extends Component {
 
   resendOTP = async() =>{
      let data = JSON.stringify({
-      mobile_no:this.props.mobile,
+      email_id: this.props.email,
       otp:this.props.otp
-    })
+    })   
     await axios.post(api.otpAPI,data,
     {headers:{'accept': 'application/json',
     'accept-language': 'en_US',
     'content-type': 'application/x-www-form-urlencoded'}} )
-    .then(res =>{         
+    .then(res =>{ 
+      console.log(res.data.data)        
       if(res.status){             
         this.props.onResendOTP(String(res.data.data.otp));        
       }
@@ -207,7 +208,7 @@ class Otp extends Component {
 const mapStateToProps = state => {
   return {
     otp: state.reducer.otp,
-    mobile: state.reducer.mobile,
+    email: state.reducer.email,
   };
 };
 const mapDispatchToProps = dispatch => {

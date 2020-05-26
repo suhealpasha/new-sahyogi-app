@@ -13,14 +13,13 @@ import {
   TouchableHighlight,
   TouchableOpacity,
 } from 'react-native-gesture-handler';
-import {Card,CardTitle,CardContent,CardAction,CardButton,CardImage,} from 'react-native-material-cards';
+
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import BottomNavigation from '../../BottomNavigation/sellerBottomNavigation';
-import ProductAction from '../../utils/productAction';
-import RBSheet from 'react-native-raw-bottom-sheet';
-import Filter from '../../utils/filter';
-import Sort from '../../utils/sort';
-export default class Listing extends Component {
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
+
+class Listing extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -31,7 +30,7 @@ export default class Listing extends Component {
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -45,7 +44,8 @@ export default class Listing extends Component {
     );
   }
   handleBackButtonClick() {  
-    BackHandler.exitApp();   
+    this.props.onBottomTabClicked('home');
+    this.props.navigation.goBack(null);
     return true;
   }
   
@@ -254,5 +254,14 @@ export default class Listing extends Component {
     );
   }
 }
-
+const mapDispatchToProps = dispatch => {
+  return {
+    onBottomTabClicked: value =>
+      dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
+  };
+};
+export default connect(
+  null,
+  mapDispatchToProps,
+)(Listing); 
 

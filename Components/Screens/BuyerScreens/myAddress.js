@@ -151,7 +151,7 @@ import * as api from '../../../assets/api/api';
               <View style={styles.itemContainer}>
                 <View style={styles.itemContainerData}>
                   <Text style={styles.itemContainerName}>{item.name}</Text>
-            <Text style={styles.itemContainerAddress}>{item.door_number},{item.address},{item.city}, {item.state}-{item.zip}</Text>
+            <Text style={styles.itemContainerAddress}>{item.door_number},{item.address},{item.city}, {item.state_name}-{item.zip}</Text>
                   <Text style={styles.itemContainerMobile}>{item.contact_no}</Text>
                 </View>
                 <View style={styles.itemContainerActions}>

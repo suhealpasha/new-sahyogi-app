@@ -31,12 +31,14 @@ import {
 import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
 import * as api from '../assets/api/api';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 class SellerDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
       height: Dimensions.get('window').height,
+      spinner: false,
       company: null,
       ein: null,
       alternatePhone: null,
@@ -85,9 +87,11 @@ class SellerDetails extends Component {
       this.state.einValidationError === false &&
       this.state.alternatePhoneValidationError === false
     ) {
+      this.setState({spinner: true});
       let data = JSON.stringify({
-        mobile_no: this.props.mobile,
+        email_id: this.props.email,
       });
+
       await axios
         .post(api.otpAPI, data, {
           headers: {
@@ -98,6 +102,7 @@ class SellerDetails extends Component {
         })
         .then(res => {
           if (res.status) {
+            this.setState({spinner: false});
             this.props.onRegisterSellerAdditionalDetails(
               this.state.company,
               this.state.ein,
@@ -109,6 +114,7 @@ class SellerDetails extends Component {
           }
         })
         .catch(err => {
+          this.setState({spinner: false});
           console.log(err);
         });
     } else {
@@ -146,6 +152,9 @@ class SellerDetails extends Component {
       registerFormContainer: {
         width: '100%',
       },
+      spinnerTextStyle: {
+        color: '#00aa00',
+      },
     });
 
     return (
@@ -153,6 +162,11 @@ class SellerDetails extends Component {
         resetScrollToCoords={{x: 0, y: 0}}
         style={{backgroundColor: '#efebea'}}
         scrollEnabled={true}>
+           <Spinner
+            visible={this.state.spinner}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
         <BackButton {...this.props} />
         <View style={styles.container}>
           <Logo />
@@ -169,6 +183,8 @@ class SellerDetails extends Component {
             </Text>
             <Input
               placeholder="Company"
+              spellCheck={false}
+              autoCorrect={false}
               style={styles.inputStyle}
               onChangeText={company => {
                 if (/[^0-9a-zA-Z\s]/.test(company)) {
@@ -198,7 +214,8 @@ class SellerDetails extends Component {
               placeholder="EIN"
               style={styles.inputStyle}
               keyboardType="numeric"
-              maxLength={11}
+              value={this.state.ein}
+              maxLength={12}
               onChangeText={ein => {
                 const input = ein.replace(/\D/g, '').substring(0, 11);
                 const first = input.substring(0, 2);
@@ -230,7 +247,8 @@ class SellerDetails extends Component {
             <Input
               placeholder="Alternate Phone"
               keyboardType="numeric"
-              maxLength={10}
+              value={this.state.alternatePhone}
+              maxLength={12}
               style={styles.inputStyle}
               onChangeText={alternatePhone => {
                 const input = alternatePhone
@@ -294,7 +312,7 @@ class SellerDetails extends Component {
 
 const mapStateToProps = state => {
   return {
-    mobile: state.reducer.mobile,
+    email: state.reducer.email,
   };
 };
 

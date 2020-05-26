@@ -8,6 +8,7 @@ import {
   ScrollView,
   Button,
   TouchableOpacity,
+  Dimensions
 } from 'react-native';
 import {
   Card,
@@ -26,6 +27,8 @@ class Regions extends Component {
     super(props);
     this.state = {
       filterOn: null,
+      width: Dimensions.get('window').width,
+      height: Dimensions.get('window').height,
     };
   }
 
@@ -46,14 +49,14 @@ class Regions extends Component {
           renderItem={({item}) => {
             return (
               <TouchableNativeFeedback
-                style={{width: 175}}
+                style={{width:this.state.width/ 2 }}
                 onPress={() => this.fetchOrigins(item.region_Id, item.name)}>
                 <Card style={{backgroundColor: 'white'}}>
                   <CardImage
                     source={{
                       uri: item.url_thumbnail_image,
                     }}
-                    style={{resizeMode: 'contain'}}
+                    style={{width:this.state.width/ 2 - 10 ,height:this.state.height/7}}
                   />
 
                   <CardTitle
@@ -76,7 +79,7 @@ class Regions extends Component {
 
 const styles = StyleSheet.create({
   regionstyles: {
-    marginHorizontal: 5,
+    // marginHorizontal: 5,
     justifyContent: 'center',
     alignItems: 'center',
     textAlignVertical: 'center',

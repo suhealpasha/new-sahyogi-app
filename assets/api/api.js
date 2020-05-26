@@ -8,12 +8,15 @@ export const otpAPI = URL+'otp';
 export const changePasswordAPI = URL+'changepassword';
 export const resetPasswordAPI = URL+'resetPassword';
 export const mobileCheckAPI = URL+'checkmobile';
+export const emailCheckAPI = URL+'checkEmail';
 export const regionsAPI = URL+'getregions';
 export const varitiesAPI = URL+'getVariety';
 export const originsByIdAPI = URL+'getOriginsById';
 export const lotsAPI = URL+'getLots';
 export const unitsAPI = URL+'getUnits';
 export const productsAPI = URL+'getproducts';
+export const countriesAPI = URL+'getCountries';
+export const statesAPI = URL+'getStates';
 
 
 

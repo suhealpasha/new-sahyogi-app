@@ -99,7 +99,7 @@ class SetPassword extends Component {
             });
         } else {
           let data = JSON.stringify({
-            mobile_no: this.props.mobile,
+            email_id: this.props.email,
             password: this.state.password,
           });
           let resetPasswordAPI;

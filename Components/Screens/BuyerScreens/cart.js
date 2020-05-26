@@ -48,48 +48,30 @@ export default class Cart extends Component {
       active20Button: false,
       active50Button: true,
       buyerCartData: [],
+      addressData:[],
+      cartCount:null
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   componentDidMount() {
-    this.fetchBuyerCart();
+  this.setState({buyerCartData:this.props.buyerCartData,cartCount:this.props.cartCount,addressData:this.props.addressData})
+
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
 
-  fetchBuyerCart = async () => {
-    this.setState({spinner: true});
-    const access_token = await AsyncStorage.getItem('isLoggedIn');
-    axios
-      .get(api.buyerProductsCartData, {
-        headers: {
-          accept: 'application/json',
-          access_token: access_token,
-          'accept-language': 'en_US',
-          'content-type': 'application/x-www-form-urlencoded',
-        },
-      })
-      .then(res => {
-        console.log(res.data.data);
-        if (res.status) {
-          if (res.data.data.length <= 0) {
-            this.setState({noDataAvailable: true, spinner: false});
-          } else {
-            this.setState({
-              spinner: false,
-              buyerCartData: res.data.data,
-            });
-          }
-        }
-      })
-      .catch(err => {
-        this.setState({spinner: false});
-        console.log(err);
-      });
-  };
+  componentDidUpdate(prevProps,prevState){
+    if(prevState.buyerCartData!==this.props.buyerCartData){
+      this.setState({buyerCartData:this.props.buyerCartData,cartCount:this.props.cartCount})
+    }
+    if(prevState.addressData !== this.props.addressData){
+      this.setState({addressData:this.props.addressData})
+    }
+  }
+ 
 
   componentWillUnmount() {
     BackHandler.removeEventListener(
@@ -105,8 +87,9 @@ export default class Cart extends Component {
 
  deleteItem = async (args)=>{  
   const data = JSON.stringify({     
-  cart_Id:args
-   });   
+    Id:args
+   }); 
+ 
    const access_token = await AsyncStorage.getItem('isLoggedIn');
  
    await axios
@@ -118,11 +101,10 @@ export default class Cart extends Component {
          'content-type': 'application/x-www-form-urlencoded',
        },
      })
-     .then(res => {
-       console.log(res)
+     .then(res => {       
        if (res.status) {
          this.setState({ spinner: false });
-         this.fetchBuyerCart();
+         this.props.onfetchBuyerCart();
          Toast.show('Removed from cart.')
        }
      })
@@ -170,10 +152,16 @@ export default class Cart extends Component {
         paddingLeft: 10,
         paddingRight: 10,
       },
-      itemTextOrigin: {
+      itemTextVariety:{
         fontFamily: 'Gotham Black Regular',
         fontSize: 14,
         paddingTop: 5,
+      },
+      itemTextOrigin: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#95A5A6',       
       },
       itemTextFarm: {
         fontSize: 12,
@@ -211,10 +199,15 @@ export default class Cart extends Component {
         fontFamily: 'Gotham Black Regular',
       },
       orderPlacementContainerText: {
-        paddingBottom: 10,
-        paddingTop: 10,
-        fontFamily: 'GothamBook',
+        paddingBottom: 10,      
+        fontFamily: 'GothamLight',
         lineHeight: 20,
+      },
+      orderPlacementContainerTextName:{
+        paddingTop: 10,
+        fontFamily: 'GothamMedium',
+        lineHeight: 20,
+        fontSize:16
       },
       orderPlaceButton: {
         backgroundColor: '#004561',
@@ -287,231 +280,280 @@ export default class Cart extends Component {
       spinnerTextStyle: {
         color: '#00aa00',
       },
+      noData: {
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: this.state.height - 150,
+      },
+      noDataText: {
+        fontSize: 20,
+        fontFamily: 'GothamBold',
+      },
     });
 
+    let cartList=[];   
+   
+   this.state.buyerCartData.map(i=>{
+      if(i.cart_list.length >= 1){
+      i.cart_list.map( j=>{
+        cartList.push(j)
+      })    
+    }
+    })  
+    let amount,tax,shipping,totalAmount,address,addressName;
+    amount = this.state.buyerCartData.map(i=>{
+      return i.amount
+    })
+    console.log(this.state.addressData)
+    tax = this.state.buyerCartData.map(i=>{
+      return i.tax
+    })
+    shipping = this.state.buyerCartData.map(i=>{
+      return i.shipping_charge
+    })
+    totalAmount  = this.state.buyerCartData.map(i=>{
+      return i.total_amount
+    })
+    address = this.state.addressData.map(i=>{
+      return i.door_number+','+i.address+','+i.city+','+i.state_name+','+i.mobile_no
+    })
+    addressName = this.state.addressData.map(i=>{
+      return i.name
+    })
     return (
-      <View style={{flex: 1.0}}>
-        <Spinner
-          visible={this.state.spinner}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}
-        />
-        <ScrollView>
-          <View style={styles.container}>
-            <View style={styles.itemListContainer}>
-              <FlatList
-                data={this.state.buyerCartData}
-                numColumns={1}
-                // keyExtractor = {(items)=>{items.key}}
+      <View style={{flex: 1.0}}>    
+      {this.state.cartCount >=1 ?
+      <View  style={{flex: 1.0}}>
+      <ScrollView>
+      <View style={styles.container}>
 
-                renderItem={({item}) => {
-                  let ratingIcon = (
-                    <View style={{flexDirection: 'row'}}>
-                      <Text style={styles.ratingStyle}>
-                        {'  '}
-                        {item.ratings}{' '}
-                        <Icon
-                          name="star"
-                          size={12}
-                          style={{
-                            justifyContent: 'center',
-                            textAlignVertical: 'center',
-                          }}
-                        />
-                        {'  '}
-                      </Text>
-                      <Text
+        <View style={styles.itemListContainer}>
+          <FlatList
+            data={ cartList}
+            numColumns={1}
+            // keyExtractor = {(items)=>{items.key}}
+
+            renderItem={({item}) => {
+              let ratingIcon = (
+                <View style={{flexDirection: 'row'}}>
+                  <Text style={styles.ratingStyle}>
+                    {'  '}
+                    {item.ratings}{' '}
+                    <Icon
+                      name="star"
+                      size={12}
+                      style={{
+                        justifyContent: 'center',
+                        textAlignVertical: 'center',
+                      }}
+                    />
+                    {'  '}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: 'GothamLight',
+                      fontSize: 10,
+                      textAlignVertical: 'center',
+                      paddingLeft: 10,
+                      paddingRight: 10,
+                    }}>
+                    100:ratings
+                  </Text>
+                </View>
+              );
+              return (
+                <TouchableOpacity
+                  onPress={() => console.log('parent')}
+                  pointerEvents={'box-none'}>
+                  <View style={styles.itemContainer}>
+                    <View style={{flexDirection: 'column'}}>
+                      <View
                         style={{
-                          fontFamily: 'GothamLight',
-                          fontSize: 10,
-                          textAlignVertical: 'center',
-                          paddingLeft: 10,
-                          paddingRight: 10,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
                         }}>
-                        100:ratings
-                      </Text>
-                    </View>
-                  );
-                  return (
-                    <TouchableOpacity
-                      onPress={() => console.log('parent')}
-                      pointerEvents={'box-none'}>
-                      <View style={styles.itemContainer}>
-                        <View style={{flexDirection: 'column'}}>
+                        <View style={styles.itemDetailContainer}>
                           <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'space-between',
-                            }}>
-                            <View style={styles.itemDetailContainer}>
-                              <View
-                                style={{flexDirection: 'row', paddingTop: 10}}>
-                                <Text style={styles.itemTextOrigin}>
-                                  {item.origin}
-                                </Text>
-                              </View>
-
-                              <Text style={styles.itemTextFarm}>
-                                {item.farm}
-                              </Text>
-                              <View style={styles.quantityContainer}>
-                                <Text
-                                  style={{
-                                    fontFamily: 'GothamLight',
-                                    fontSize: 15,
-                                    textAlignVertical: 'center',
-                                    paddingRight: 10,
-                                  }}>
-                                  Quantity:{' '}
-                                </Text>
-                                <NumericInput
-                                  totalWidth={80}
-                                  totalHeight={30}
-                                  minValue={1}
-                                />
-                              </View>
-                              <View style={styles.unitsContainer}>
-                                <View
-                                  style={{
-                                    flexDirection: 'row',
-                                    flexWrap: 'wrap',
-                                    justifyContent: 'flex-start',
-                                  }}>
-                                  <Text
-                                    style={{
-                                      fontFamily: 'GothamLight',
-                                      fontSize: 15,
-                                      textAlignVertical: 'center',
-                                    }}>
-                                    Units:
-                                  </Text>
-                                  <Text style={styles.unitsText}>10lbs</Text>
-                                </View>
-                              </View>
-                            </View>
-                            <View style={styles.thumbnailImageContainer}>
-                              <Image
-                                source={item.name}
-                                style={{
-                                  width: 130,
-                                  resizeMode: 'cover',
-                                  height: 125,
-
-                                  borderTopRightRadius: 5,
-                                  borderBottomRightRadius: 5,
-                                }}
-                              />
-                            </View>
+                            style={{flexDirection: 'row', paddingTop: 10}}>
+                            <Text style={styles.itemTextVariety}>
+                              {item.verityname}
+                            </Text>
                           </View>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              borderColor: '#95A5A6',
-                              borderTopWidth: 0.25,
-                              justifyContent: 'space-between',
-                            }}>
-                            <View style={styles.AddToCartButton}>
-                              <Text style={styles.cartText}>$360</Text>
-                            </View>
-
-                            <TouchableOpacity
+                          <Text style={styles.itemTextOrigin}>
+                            {item.originsname}
+                          </Text>
+                          <Text style={styles.itemTextFarm}>
+                            {item.farm}
+                          </Text>
+                          <View style={styles.quantityContainer}>
+                            <Text
                               style={{
-                                width: '50%',
-                                borderLeftWidth: 0.25,
-                                color: '#95A5A6',
-                                justifyContent: 'center',
-                              }}
-                              onPress={() => this.deleteItem(item.cart_Id)}>
-                              <Text style={styles.placeOrderButtonText}>
-                                Remove
+                                fontFamily: 'GothamLight',
+                                fontSize: 15,
+                                textAlignVertical: 'center',
+                                paddingRight: 10,
+                              }}>
+                              Quantity:{' '}
+                            </Text>
+                            <NumericInput
+                              totalWidth={80}
+                              totalHeight={30}
+                              minValue={1}
+
+                            />
+                          </View>
+                          <View style={styles.unitsContainer}>
+                            <View
+                              style={{
+                                flexDirection: 'row',
+                                flexWrap: 'wrap',
+                                justifyContent: 'flex-start',
+                              }}>
+                              <Text
+                                style={{
+                                  fontFamily: 'GothamLight',
+                                  fontSize: 15,
+                                  textAlignVertical: 'center',
+                                }}>
+                                Units:
                               </Text>
-                            </TouchableOpacity>
+                              <Text style={styles.unitsText}>{item.unit_name}</Text>
+                            </View>
                           </View>
                         </View>
+                        <View style={styles.thumbnailImageContainer}>
+                          <Image
+                           source={{
+                            uri: item.thumbnail_image_url,
+                          }}
+                            style={{
+                              width: 130,
+                              resizeMode: 'cover',
+                              height: 125,
+                              borderTopRightRadius: 5,
+                              borderBottomRightRadius: 5,
+                            }}
+                          />
+                        </View>
                       </View>
-                    </TouchableOpacity>
-                  );
-                }}
-              />
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          borderColor: '#95A5A6',
+                          borderTopWidth: 0.25,
+                          justifyContent: 'space-between',
+                        }}>
+                        <View style={styles.AddToCartButton}>
+                      <Text style={styles.cartText}>$ {item.total_price}</Text>
+                        </View>
+
+                        <TouchableOpacity
+                          style={{
+                            width: '50%',
+                            borderLeftWidth: 0.25,
+                            color: '#95A5A6',
+                            justifyContent: 'center',
+                          }}
+                          onPress={() => this.deleteItem(item.Id)}>
+                          <Text style={styles.placeOrderButtonText}>
+                            Remove
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            }}
+          />
+        </View>
+        <View style={styles.orderPlacementContainer}>
+          <View style={{flexDirection: 'column'}}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <View style={{width: '50%'}}>
+                <Text style={styles.orderPlacementContainerHeaderText}>
+                  Address
+                </Text>
+                <Text style={styles.orderPlacementContainerTextName}>
+                  {addressName}
+                </Text>
+                <Text style={styles.orderPlacementContainerText}>
+                  {address}
+                </Text>
+              </View>
+              <View>
+                <TouchableOpacity
+                  style={styles.loginButton}
+                  onPress={this.props.click}>
+                  <Text style={styles.buttonTextStyle}>Change</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={styles.orderPlacementContainer}>
-              <View style={{flexDirection: 'column'}}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                  }}>
-                  <View style={{width: '50%'}}>
-                    <Text style={styles.orderPlacementContainerHeaderText}>
-                      Address
-                    </Text>
-                    <Text style={styles.orderPlacementContainerText}>
-                      #268/5,xrz,street, pqr city, 123 state,US-560106.
-                    </Text>
-                  </View>
-                  <View>
-                    <TouchableOpacity
-                      style={styles.loginButton}
-                      onPress={this.props.click}>
-                      <Text style={styles.buttonTextStyle}>Change</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <View style={{}}>
-                  <Text style={styles.orderPlacementContainerHeaderText}>
-                    Price Details
+            <View style={{}}>
+              <Text style={styles.orderPlacementContainerHeaderText}>
+                Price Details
+              </Text>
+              <View style={{flexDirection: 'row'}}>
+                <View style={{width: '50%'}}>
+                  <Text style={styles.orderPlacementContainerText}>
+                    Total
                   </Text>
-                  <View style={{flexDirection: 'row'}}>
-                    <View style={{width: '50%'}}>
-                      <Text style={styles.orderPlacementContainerText}>
-                        Total
-                      </Text>
-                      <Text style={styles.orderPlacementContainerText}>
-                        Tax
-                      </Text>
-                      <Text style={styles.orderPlacementContainerText}>
-                        Shipping
-                      </Text>
-                      <Text style={styles.orderPlacementContainerText}>
-                        Total Amt
-                      </Text>
-                    </View>
-                    <View style={{width: '50%'}}>
-                      <Text style={styles.orderPlacementContainerText}>
-                        $340
-                      </Text>
-                      <Text style={styles.orderPlacementContainerText}>0</Text>
-                      <Text style={styles.orderPlacementContainerText}>
-                        $20
-                      </Text>
-                      <Text style={styles.orderPlacementContainerText}>
-                        $360
-                      </Text>
-                    </View>
-                  </View>
+                  <Text style={styles.orderPlacementContainerText}>
+                    Tax
+                  </Text>
+                  <Text style={styles.orderPlacementContainerText}>
+                    Shipping
+                  </Text>
+                  <Text style={styles.orderPlacementContainerText}>
+                    Total Amt
+                  </Text>
+                </View>
+                <View style={{width: '50%'}}>
+                  <Text style={styles.orderPlacementContainerText}>
+                    $ {amount}
+                  </Text>
+                  <Text style={styles.orderPlacementContainerText}>$ {tax}</Text>
+                  <Text style={styles.orderPlacementContainerText}>
+                    $ {shipping}
+                  </Text>
+                  <Text style={styles.orderPlacementContainerText}>
+                    $ {totalAmount}
+                  </Text>
                 </View>
               </View>
             </View>
           </View>
-        </ScrollView>
-        <View
-          style={{
-            flexDirection: 'row',
-            borderColor: '#95A5A6',
-            borderTopWidth: 0.25,
-            justifyContent: 'space-between',
-            backgroundColor: 'white',
-          }}>
-          <View style={styles.totalAmount}>
-            <Text style={styles.totalAmountText}>$360</Text>
-          </View>
-          <TouchableOpacity
-            style={styles.buyButton}
-            onPress={() => navigate('HomeScreen')}
-            underlayColor="#fff">
-            <Text style={styles.buyText}>Place order</Text>
-          </TouchableOpacity>
         </View>
+      </View>
+    </ScrollView>
+    <View
+      style={{
+        flexDirection: 'row',
+        borderColor: '#95A5A6',
+        borderTopWidth: 0.25,
+        justifyContent: 'space-between',
+        backgroundColor: 'white',
+      }}>
+      <View style={styles.totalAmount}>
+        <Text style={styles.totalAmountText}>$ {totalAmount}</Text>
+      </View>
+      <TouchableOpacity
+        style={styles.buyButton}
+        onPress={() => navigate('HomeScreen')}
+        underlayColor="#fff">
+        <Text style={styles.buyText}>Place order</Text>
+      </TouchableOpacity>
+    </View>
+    </View>
+      : <View style={styles.noData}>
+      <Text style={styles.noDataText}>No Data</Text>
+    </View>}    
+       
       </View>
     );
   }

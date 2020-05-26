@@ -9,7 +9,8 @@ import {
   Button,
   TouchableOpacity,
   BackHandler,
-  AsyncStorage
+  AsyncStorage,
+  TouchableNativeFeedback
 } from 'react-native';
 import {CheckBox} from 'react-native-elements';
 import {
@@ -26,6 +27,7 @@ import {connect} from 'react-redux';
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+
 
 let filteredData =[]
 class Varities extends Component {
@@ -158,6 +160,7 @@ class Varities extends Component {
           <CheckBox
             title="Select All"
             iconRight
+            size={25}
             checked={this.state.checked}
             containerStyle={{         
               marginLeft: 0,
@@ -178,6 +181,7 @@ class Varities extends Component {
 
             renderItem={({item}) => {
               return (
+                  <TouchableNativeFeedback  onPress={() => this.selectVarities(item.verity_Id)}>
                 <View
                   style={{
                     paddingTop: 5,
@@ -201,6 +205,7 @@ class Varities extends Component {
                     {item.name}
                   </Text>
                 </View>
+                </TouchableNativeFeedback>
               );
             }}
           />

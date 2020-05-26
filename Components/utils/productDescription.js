@@ -109,12 +109,17 @@ class ProductDescription extends Component {
       <View style={styles.productDescriptionContainer}>
         <View style={{flex: 1.0}}>      
                 <View style={styles.productDetailsContainer}>                 
-                  <View style={styles.row1}><Text style={styles.col1}>Variety</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.verityname}</Text></View>
-                  <View style={styles.row2}><Text style={styles.col1}>Origin</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.originsname}</Text></View>
-                  <View style={styles.row3}><Text style={styles.col1}>Farm</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.farm}</Text></View>
-                  <View style={styles.row4}><Text style={styles.col1}>Altitude</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.altitude}</Text></View>
-                  <View style={styles.row5}><Text style={styles.col1}>Notes</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.note}</Text></View>
-                  <View style={styles.row6}><Text style={styles.col1}>Process</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.process}</Text></View>
+                  {this.props.productData.originsname ? <View style={styles.row2}><Text style={styles.col1}>Origin</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.originsname}</Text></View> : null}
+                  {this.props.productData.farm ? <View style={styles.row3}><Text style={styles.col1}>Farm</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.farm}</Text></View> : null}
+                  {this.props.productData.altitude ? <View style={styles.row4}><Text style={styles.col1}>Altitude</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.altitude}</Text></View> : null}
+                  {this.props.productData.note ? <View style={styles.row5}><Text style={styles.col1}>Notes</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.note}</Text></View>: null}
+                  {this.props.productData.process ?<View style={styles.row6}><Text style={styles.col1}>Process</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.process}</Text></View>: null}
+                  {this.props.productData.dry_method ?<View style={styles.row6}><Text style={styles.col1}>Dry Method</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.dry_method}</Text></View>: null}
+                  {this.props.productData.certification ?<View style={styles.row6}><Text style={styles.col1}>Certification</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.certification}</Text></View>: null}
+                  {this.props.productData.grade ?<View style={styles.row6}><Text style={styles.col1}>Grade</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.grade}</Text></View>: null}
+                  {this.props.productData.appearance ?<View style={styles.row6}><Text style={styles.col1}>Appearance</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.appearance}</Text></View>: null}
+                  {this.props.productData.seller_comment ?<View style={styles.row6}><Text style={styles.col1}>Comments</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.seller_comment}</Text></View>: null}
+                
                 </View>            
         </View>
       </View>

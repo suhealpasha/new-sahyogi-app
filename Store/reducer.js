@@ -25,6 +25,7 @@ const initialState = {
   filterVaritiesData: [],
   buyProduct: true,
   cartProductData:[],
+  spinner:false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -91,7 +92,7 @@ const reducer = (state = initialState, action) => {
     case actionTypes.FORGOT_PASSWORD_DETAILS:
       return {
         ...state,
-        mobile: action.payload,
+        email: action.payload,
         otp: action.payload1,
       };
     case actionTypes.LISTING_TITLE:
@@ -143,6 +144,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         cartProductData: action.payload,
+      };
+      case actionTypes.SPINNER_SWITCH:   
+      return {
+        ...state,
+        spinner: action.payload,
       };
     default:
       return state;

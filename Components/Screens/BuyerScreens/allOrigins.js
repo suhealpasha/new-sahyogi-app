@@ -159,6 +159,7 @@ class AllOrigins extends Component {
         marginBottom: 10,
         backgroundColor: 'white',      
         width:this.state.width / 2 - 15,
+        
         shadowColor: '#000',
         shadowOffset: {
           width: 0,

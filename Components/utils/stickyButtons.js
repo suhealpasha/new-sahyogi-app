@@ -32,11 +32,11 @@ class StickyButton extends Component {
     this.props.onSpinner(true) 
     const data = JSON.stringify({     
      product_id:this.props.cartProductData[0],
-     unit_id:this.props.cartProductData[1],
-     unit_price:this.props.cartProductData[2],
+     unit_id:this.props.cartProductData[1],     
      quantity:this.props.cartProductData[3],     
-     total_price:this.props.cartProductData[4]
+     unit_price:this.props.cartProductData[2]
     });
+    console.log(data)
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
       .post(api.buyerAddProductToCart, data, {

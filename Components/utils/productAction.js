@@ -43,10 +43,9 @@ class ProductAction extends Component {
   componentDidUpdate(prevProps, prevState) {
     this.props.onProductAddToCartDetails([
       this.state.productId,
-      this.state.activeButton,
-      this.state.price,
+      this.state.activeButton,     
       this.state.value,
-      this.state.value * this.state.price,
+      this.state.price
     ]);
   }
 

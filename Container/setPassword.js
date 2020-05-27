@@ -68,7 +68,12 @@ class SetPassword extends Component {
               document: '',
               password: this.state.password,
               user_type: userType,
+              street:this.props.sellerStreet,
+              city: this.props.sellerCity,
+              state_Id: this.props.sellerState,
+              zip_code:this.props.sellerZipcode,
             });
+          
           } else {
             userType = 'Buyer';
             signUp = api.buyerSignupAPI;
@@ -310,7 +315,10 @@ const mapStateToProps = state => {
     company: state.reducer.company,
     ein: state.reducer.ein,
     alternatePhone: state.reducer.alternatePhone,
-    address: state.reducer.address,
+    sellerStreet: state.reducer.sellerStreet,
+    sellerCity: state.reducer.sellerCity,
+    sellerState: state.reducer.sellerState,
+    sellerZipcode: state.reducer.sellerZipcode,
   };
 };
 const mapDispatchToProps = dispatch => {

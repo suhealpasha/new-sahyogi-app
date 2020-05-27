@@ -13,7 +13,10 @@ const initialState = {
   company: null,
   ein: null,
   alternatePhone: null,
-  address: null,
+  sellerStreet: null,
+  sellerCity:null,
+  sellerState:null,
+  sellerZipcode:null,
   otp: null,
   addressId: null,
   regionName: null,
@@ -76,8 +79,11 @@ const reducer = (state = initialState, action) => {
         company: action.payload,
         ein: action.payload2,
         alternatePhone: action.payload3,
-        address: action.payload4,
-        otp: action.payload5,
+        sellerStreet: action.payload4,
+        sellerCity:action.payload5,
+        sellerState:action.payload6,
+        sellerZipcode:action.payload7,
+        otp: action.payload8,
       };
     case actionTypes.RESEND_OTP:
       return {

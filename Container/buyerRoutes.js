@@ -277,7 +277,7 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {        
+      .then(res => {              
         let count = res.data.data.map(i=>{return(i.cart_list.length)})        
         if (res.status) {
           if (res.data.data.length <= 0) {

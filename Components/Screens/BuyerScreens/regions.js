@@ -49,14 +49,14 @@ class Regions extends Component {
           renderItem={({item}) => {
             return (
               <TouchableNativeFeedback
-                style={{width:this.state.width/ 2 }}
+                style={{width:this.state.width/ 2.2 }}
                 onPress={() => this.fetchOrigins(item.region_Id, item.name)}>
                 <Card style={{backgroundColor: 'white'}}>
                   <CardImage
                     source={{
                       uri: item.url_thumbnail_image,
                     }}
-                    style={{width:this.state.width/ 2 - 10 ,height:this.state.height/7}}
+                    style={{width:this.state.width/ 2.2 - 10 }}
                   />
 
                   <CardTitle
@@ -65,6 +65,7 @@ class Regions extends Component {
                       borderTopWidth: 1,
                       marginTop: 10,
                       paddingBottom: 10,
+                      paddingTop:5,
                     }}
                   />
                 </Card>

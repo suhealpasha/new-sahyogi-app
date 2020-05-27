@@ -12,9 +12,10 @@ import {
   TochableOpacity,
   Alert,
   Dimensions,
+  AsyncStorage
 } from 'react-native';
 import {Input} from 'react-native-elements';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {TouchableOpacity, ScrollView} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import NextButton from '../Components/utils/nextButton';
@@ -32,25 +33,44 @@ import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
 import * as api from '../assets/api/api';
 import Spinner from 'react-native-loading-spinner-overlay';
+import ModalDropdown from 'react-native-modal-dropdown';
 
 class SellerDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
       height: Dimensions.get('window').height,
+      width:Dimensions.get('window').height,
       spinner: false,
       company: null,
       ein: null,
-      alternatePhone: null,
-      address: null,
+      alternatePhone: null,      
       companyError: false,
       companyValidationError: false,
       einError: false,
       einValidationError: false,
       alternatePhoneError: false,
-      alternatePhoneValidationError: false,
-      addressError: false,
+      alternatePhoneValidationError: false,      
+      defaultContryColor: '#969291',
+      defaultStateColor: '#969291',
+      countriesData: [],
+      statesData:[],   
+      countryId:null,
+      countryError:false,        
+      street: null,
+      streeError: false,  
+      city: null,
+      cityError: false, 
+      stateId:null,
+      stateError: false,
+      zipCode: null,
+      zipCodeError: false,
+      zipCodeValidationError: false, 
     };
+  }
+
+  componentDidMount(){
+    this.setState({ countriesData: this.props.countriesData })
   }
 
   einValidate = () => {
@@ -77,15 +97,65 @@ class SellerDetails extends Component {
     }
   };
 
+  zipCodeValidate = () => {
+    if (this.state.zipCode === '') {
+      this.setState({ zipCode: null });
+      return;
+    } else {
+      if (String(this.state.zipCode).length !== 5) {
+        this.setState({ zipCodeValidationError: true });
+        return;
+      }
+    }
+  }
+
+  onContrySelect = async (args) => {
+    this.setState({ defaultContryColor: 'black' ,countryId:args+1,countryError:false})
+    const data = JSON.stringify({
+      country_Id: args + 1
+    });
+
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+
+    await axios
+      .post(api.statesAPI, data, {
+        headers: {
+          access_token: access_token,
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {       
+        if (res.status) {
+          this.setState({ statesData: res.data.data })
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+  }
+
+  onStateSelect = async (args) => {
+    this.setState({ defaultStateColor: 'black',stateError:false, stateId:args+1})
+  }
+
   handleRegister = async () => {
     if (
       this.state.company !== null &&
       this.state.ein !== null &&
       this.state.alternatePhone !== null &&
-      this.state.address !== null &&
+      this.state.street !== null &&
+      this.state.countryId !== null &&
+      this.state.stateId !== null &&
+      this.state.city !== null &&
+      this.state.zipCode !== null &&
       this.state.companyValidationError === false &&
       this.state.einValidationError === false &&
-      this.state.alternatePhoneValidationError === false
+      this.state.alternatePhoneValidationError === false &&
+      this.state.zipCodeValidationError === false
+      
     ) {
       this.setState({spinner: true});
       let data = JSON.stringify({
@@ -107,7 +177,10 @@ class SellerDetails extends Component {
               this.state.company,
               this.state.ein,
               this.state.alternatePhone,
-              this.state.address,
+              this.state.street,
+              this.state.city,
+              this.state.stateId,
+              this.state.zipCode,
               String(res.data.data.otp),
             );
             this.props.navigation.navigate('OTP');
@@ -133,10 +206,30 @@ class SellerDetails extends Component {
       } else {
         this.setState({alternatePhoneError: false});
       }
-      if (this.state.address === null) {
-        this.setState({addressError: true});
+      if (this.state.street === null) {
+        this.setState({ streetError: true });
       } else {
-        this.setState({addressError: false});
+        this.setState({ streetError: false });
+      }
+      if (this.state.countryId === null) {
+        this.setState({ countryError: true });
+      } else {
+        this.setState({ countryError: false });
+      }
+      if (this.state.stateId === null) {
+        this.setState({ stateError: true });
+      } else {
+        this.setState({ stateError: false });
+      }
+      if (this.state.city === null) {
+        this.setState({ cityError: true });
+      } else {
+        this.setState({ cityError: false });
+      }
+      if (this.state.zipCode === null) {
+        this.setState({ zipCodeError: true });
+      } else {
+        this.setState({ zipCodeError: false });
       }
     }
   };
@@ -157,11 +250,17 @@ class SellerDetails extends Component {
       },
     });
 
+    let countriesList = [],stateList=[];    
+    countriesList = this.state.countriesData.map(i => { return (i.country_name) })
+    stateList = this.state.statesData.map(i => { return (i.state_name) })
+ 
+
     return (
+     
       <KeyboardAwareScrollView
-        resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: '#efebea'}}
-        scrollEnabled={true}>
+      resetScrollToCoords={{ x: 0, y: 0 }}
+      style={{ backgroundColor: '#efebea' }}
+      scrollEnabled={true}>
            <Spinner
             visible={this.state.spinner}
             textContent={'Loading...'}
@@ -288,24 +387,97 @@ class SellerDetails extends Component {
               }
             />
             <Input
-              placeholder="Address"
+              placeholder="Street"
               style={styles.inputStyle}
-              onChangeText={address =>
-                this.setState({address, addressError: false})
+              onChangeText={street =>
+                this.setState({ street, streetError: false })
               }
               onBlur={
-                this.state.address === ''
-                  ? this.setState({address: null})
-                  : null
+                this.state.street === '' ? this.setState({ street: null }) : null
               }
               errorMessage={
-                this.state.addressError === true ? 'Enter the Address' : false
+                this.state.streetError === true ? 'Enter the Street' : false
+              }
+            />
+            <Input
+              placeholder="City"
+              style={styles.inputStyle}
+              onChangeText={city => this.setState({ city, cityError: false })}
+              onBlur={
+                this.state.city === '' ? this.setState({ city: null }) : null
+              }
+              errorMessage={
+                this.state.cityError === true ? 'Enter the City' : false
+              }
+            />
+
+            <ModalDropdown
+              options={countriesList}
+              defaultValue="Country"
+              textStyle={{ color: this.state.defaultContryColor, fontSize: 18, fontWeight: '100', paddingLeft: 5, }}
+              style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
+              dropdownStyle={{ width: this.state.width - 40}}
+              dropdownTextStyle={{fontSize:18}}
+              onSelect={i => { this.onContrySelect(i) }}            
+            />
+            {this.state.countryError ?<Text
+                style={{
+                  color: 'red',
+                  fontSize: 12,
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                }}>
+                Please Select the Country!
+              </Text> :null}
+
+            <ModalDropdown
+              options={stateList}
+              defaultValue="State"
+              disabled={stateList.length >=1 ? false:true}
+              textStyle={{ color: this.state.defaultStateColor, fontSize: 18, fontWeight: '100', paddingLeft: 5, }}
+              style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
+              dropdownStyle={{ width: this.state.width - 40 }}
+              dropdownTextStyle={{fontSize:18}}
+              onSelect={i => { this.onStateSelect(i) }}
+            />
+             {this.state.stateError ?<Text
+                style={{
+                  color: 'red',
+                  fontSize: 12,
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  paddingTop: 5,
+                  paddingBottom: 5,
+                }}>
+                Please Select the State!
+              </Text> :null}
+           
+            <Input
+              placeholder="Zip Code"
+              maxLength={5}
+              style={styles.inputStyle}
+              keyboardType="numeric"
+              onChangeText={zipCode =>
+                this.setState({ zipCode, zipCodeError: false,zipCodeValidationError:false })
+              }
+              onBlur={
+                this.zipCodeValidate
+              }
+              errorMessage={
+                this.state.zipCodeError === true
+                ? 'Enter the Zip code'
+                : this.state.zipCodeValidationError
+                  ? 'Invalid Zip Code'
+                  : null
               }
             />
           </View>
           <NextButton click={() => this.handleRegister()} />
         </View>
-      </KeyboardAwareScrollView>
+        </KeyboardAwareScrollView>
+        
     );
   }
 }
@@ -324,6 +496,9 @@ const mapDispatchToProps = dispatch => {
       value3,
       value4,
       value5,
+      value6,
+      value7,
+      value8
     ) =>
       dispatch({
         type: actionTypes.REGISTER_SELLER_ADDITIONAL_DETAILS,
@@ -332,6 +507,10 @@ const mapDispatchToProps = dispatch => {
         payload3: value3,
         payload4: value4,
         payload5: value5,
+        payload6: value6,
+        payload7: value7,
+        payload8: value8,
+        
       }),
   };
 };

@@ -20,6 +20,8 @@ import {connect} from 'react-redux';
 import KeyboardShift from '../Components/utils/keyboardShift';
 import {StatusBar} from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
+import * as api from '../assets/api/api';
+import axios from 'axios';
 
 const Stack = createStackNavigator();
 const uiTheme = {
@@ -45,8 +47,32 @@ class AuthRoutes extends Component {
       filterOn: false,
       sortOn: null,
       searchIcon: true,
+      countriesData:[],
     };
   }
+
+  componentDidMount(){
+    this.fetchCountries();
+  }
+
+  fetchCountries = async () => {
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .get(api.countriesAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {       
+        this.setState({countriesData: res.data.data});
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
 
   goBack = ({navigation}, path) => {
     navigation.goBack(null);
@@ -128,14 +154,17 @@ class AuthRoutes extends Component {
             {...this.props}
           />
           <Stack.Screen
-            name="Seller Details"
-            component={SellerDetails}
+            name="Seller Details"          
             options={({navigation, route}) => ({
               animationEnabled: false,
               header: () => null,
             })}
-            {...this.props}
-          />
+          
+          >
+            {props => (
+              <SellerDetails {...props} countriesData = {this.state.countriesData} />
+            )}
+          </Stack.Screen>
           <Stack.Screen
             name="Register"
             component={Register}

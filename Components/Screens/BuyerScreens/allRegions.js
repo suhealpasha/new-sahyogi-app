@@ -7,7 +7,6 @@ import {
   Text,
   Image,
   ScrollView,
-  Dimensions
 } from 'react-native';
 import {
   Card,
@@ -25,9 +24,7 @@ class AllRegions extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      regionsData:[],
-      height: Dimensions.get('window').height,
-      width: Dimensions.get('window').width,
+      regionsData:[]
     };
   }
 
@@ -59,7 +56,7 @@ class AllRegions extends Component {
                         style={{resizeMode: 'contain'}}
                         />
              
-                 <CardTitle subtitle={item.name}  style={{borderTopWidth:1,paddingBottom:5}}/>                            
+                 <CardTitle subtitle={item.name}  style={{borderTopWidth:1,paddingBottom:10,paddingTop:5}}/>                            
                 </Card>
                 </TouchableNativeFeedback>
                  

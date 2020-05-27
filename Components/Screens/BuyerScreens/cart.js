@@ -305,7 +305,6 @@ export default class Cart extends Component {
     amount = this.state.buyerCartData.map(i=>{
       return i.amount
     })
-    console.log(this.state.addressData)
     tax = this.state.buyerCartData.map(i=>{
       return i.tax
     })

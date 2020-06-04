@@ -492,37 +492,21 @@ class Cart extends Component {
                                         paddingRight: 10,
                                       }}>
                                       Quantity:{' '}
-                                    </Text>
+                                    </Text>                                   
                                     <NumericInput
+                                      value={item.cart_quantity}
+                                      // onChange={value =>
+                                      //   this.setState({value: value})
+                                      // }
                                       totalWidth={80}
                                       totalHeight={30}
                                       minValue={1}
-                                      value={5}
-                                    />
-                                    {/* <NumericInput
-                                      value={this.state.value}
-                                      onChange={value =>
-                                        this.setState({value: value})
-                                      }
-                                      totalWidth={80}
-                                      totalHeight={30}
-                                      minValue={1}
-                                      maxValue={
-                                        this.state.activeButton !== ''
-                                          ? Number.parseInt(
-                                              this.state.availableQuantity,
-                                              10,
-                                            )
-                                          : 1
-                                      }
+                                      maxValue={item.available_quantity}
                                       onLimitReached={(isMax, msg) => {
-                                        this.state.activeButton === ''
-                                          ? Toast.show('Select the units.')
-                                          : Toast.show(
-                                              'Quantity is not available.',
-                                            );
+                                        Toast.show(
+                                              'Quantity is not available.');
                                       }}
-                                    /> */}
+                                    />
                                   </View>
                                   <View style={styles.unitsContainer}>
                                     <View

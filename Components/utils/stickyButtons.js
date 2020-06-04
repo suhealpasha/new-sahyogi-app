@@ -33,8 +33,8 @@ class StickyButton extends Component {
     const data = JSON.stringify({     
      product_id:this.props.cartProductData[0],
      unit_id:this.props.cartProductData[1],     
-     quantity:this.props.cartProductData[3],     
-     unit_price:this.props.cartProductData[2]
+     quantity:this.props.cartProductData[2],     
+     unit_price:this.props.cartProductData[3]
     });
     console.log(data)
     const access_token = await AsyncStorage.getItem('isLoggedIn');
@@ -60,8 +60,9 @@ class StickyButton extends Component {
       });
   }
 
-  placeOrder = () =>{
-    
+ buyNow = async() =>{
+  await this.addToCart();
+  this.props.navigation.navigate('Cart')
   }
 
 
@@ -131,7 +132,7 @@ class StickyButton extends Component {
         <TouchableOpacity
           disabled={this.props.buy}
           style={styles.buyButton}
-          onPress={this.props.buyer ? this.placeOrder : null}
+          onPress={this.props.buyer ? this.buyNow : null}
           underlayColor='#fff'>
           <Text style={styles.buyText}>{this.props.proceed}</Text>
         </TouchableOpacity>

@@ -214,20 +214,36 @@ class SetPassword extends Component {
       },
       webView: {
         paddingTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 10,
+        alignItems: 'center',
       },
       webViewChild: {
         paddingLeft: 10,
         paddingRight: 10,
+        
+        height: this.state.height - 60,
+        width: this.state.width - 30,
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 10,
+        },
+        shadowOpacity: 0.44,
+        shadowRadius: 10.32,
+        elevation: 5,
       },
       tc: {
         textAlign: 'center',
         fontFamily: 'GothamMedium',
       },
       tcDetail: {
-        padding:10,
-        justifyContent:'center',
+        padding: 10,
+        justifyContent: 'center',
         fontFamily: 'GothamLight',
-        textAlign:'justify'
+        textAlign: 'justify',
       },
     });
 
@@ -243,12 +259,21 @@ class SetPassword extends Component {
             }}
             scrollEnabled={true}>
             <View style={styles.webView}>
-              <CloseButton {...this.props} onClose={this.close} />
               <View style={styles.webViewChild}>
-                <Text style={styles.tc}>Terms & Conditions</Text>
-                <Text style={styles.tcDetail}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </Text>
+                <CloseButton {...this.props} onClose={this.close} />
+                <View>
+                  <Text style={styles.tc}>Terms & Conditions</Text>
+                  <Text style={styles.tcDetail}>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    Duis aute irure dolor in reprehenderit in voluptate velit
+                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+                    occaecat cupidatat non proident, sunt in culpa qui officia
+                    deserunt mollit anim id est laborum.
+                  </Text>
+                </View>
               </View>
             </View>
           </KeyboardAwareScrollView>

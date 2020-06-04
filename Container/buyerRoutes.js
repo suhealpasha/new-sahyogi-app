@@ -277,20 +277,23 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {    
-        console.log(res.data.data)
-        let count = res.data.data.cart_list.length      
+      .then(res => {           
         if (res.status) {
-          if (res.data.data.cart_list.length <= 0) {
-            this.setState({noDataAvailable: true, spinner: false,cartCount:null});
-          } else {
-            this.setState({
-              spinner: false,
-              cartCount:count,
-              buyerCartData: res.data.data,
-            });
-          }
-        }
+          if(res.data.data === null){ this.setState({noDataAvailable: true, spinner: false,cartCount:null});}
+          else{
+            if (res.data.data.cart_list.length <= 0) {
+              this.setState({noDataAvailable: true, spinner: false,cartCount:null});
+            } else {  
+              console.log(res.data.data)
+              let count = res.data.data.cart_list.length;            
+              this.setState({
+                spinner: false,
+                cartCount:count,
+                buyerCartData: res.data.data,
+              });
+            }
+          } 
+           }
       })
       .catch(err => {
         this.setState({spinner: false});

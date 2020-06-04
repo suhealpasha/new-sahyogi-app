@@ -24,8 +24,7 @@ class CloseButton extends Component{
 
 export default CloseButton;
 const styles = StyleSheet.create({
-    actionBarContainer:{
-        paddingTop:40,
+    actionBarContainer:{       
         paddingLeft:10,
         width:'100%',     
       },

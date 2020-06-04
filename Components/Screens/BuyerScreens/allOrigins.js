@@ -171,7 +171,7 @@ class AllOrigins extends Component {
         paddingBottom: 10,
       },
       itemData: {
-        borderTopWidth: 0.25,
+        borderTopWidth: 1,
         borderColor: '#95A5A6',
       },
       textData: {

@@ -51,12 +51,29 @@ navigationHandler = (arg) =>{
   this.props.navigation.navigate('Order Listing')
 }
 
+intToString = (value)=>{
+  var newValue = value;
+  if (value >= 1000) {
+      var suffixes = ["", "k", "m", "b","t"];
+      var suffixNum = Math.floor( (""+value).length/3 );
+      var shortValue = '';
+      for (var precision = 2; precision >= 1; precision--) {
+          shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+          var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+          if (dotLessShortValue.length <= 2) { break; }
+      }
+      if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+      newValue = shortValue+suffixes[suffixNum];
+  }
+  return newValue;
+}
+
   render() {
     const items = [
-      {name: 'Total Orders', background: '#3498db', value: '$25000'},
-      {name: 'Total Revenue', background: '#ef0202', value: '500'},
-      {name: 'Refunds', background: '#efcf02', value: '$300'},
-      {name: 'Average Revenue', background: '#02ef1d', value: '$1500'},
+      {name: 'Total Orders', background: '#3498db', value: 25000},
+      {name: 'Total Revenue', background: '#ef0202', value: 500},
+      {name: 'Refunds', background: '#efcf02', value: 300},
+      {name: 'Average Revenue', background: '#02ef1d', value: 1500},
     ];
 
     const orders = [
@@ -248,17 +265,16 @@ navigationHandler = (arg) =>{
                     }}>
                     <View
                       style={{
-                        flexDirection: 'column',
+                        borderRadius: Math.round(Dimensions.get('window').width + Dimensions.get('window').height) / 2 ,
+                        width: Dimensions.get('window').width / 2 - 20,
+                        height: Dimensions.get('window').width / 2 - 20,
+                        backgroundColor:item.background,
+                        justifyContent: 'center',
                         alignItems: 'center',
-                        backgroundColor: item.background,
-                        borderRadius: 10,
-                        height: 100,
                         marginTop: 20,
-                        width: this.state.width / 2 - 20,
                       }}>
                       <Text style={styles.textData}>{item.name}</Text>
-                      <Text style={styles.textDataValue}>{item.value}</Text>
-                      <Text>{item.orderDate}</Text>
+                    <Text style={styles.textDataValue}>{item.name !== 'Total Orders' ? '$':null }{this.intToString(item.value)}</Text>                    
                     </View>
                   </View>
                 );

@@ -65,14 +65,7 @@ const reducer = (state = initialState, action) => {
         mobile: action.payload2,
         email: action.payload3,
         otp: action.payload4,
-      };
-    case actionTypes.REGISTER_SELLER_DETAILS:
-      return {
-        ...state,
-        name: action.payload,
-        mobile: action.payload2,
-        email: action.payload3,
-      };
+      };   
     case actionTypes.REGISTER_SELLER_ADDITIONAL_DETAILS:
       return {
         ...state,

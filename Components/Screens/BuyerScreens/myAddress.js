@@ -68,7 +68,6 @@ import * as api from '../../../assets/api/api';
     const data = JSON.stringify({
       address_Id:args,      
     });
-
     const access_token = await AsyncStorage.getItem('isLoggedIn')
       await axios.post(api.buyerAddressDeleteAPI,data,
       {headers:{
@@ -80,11 +79,38 @@ import * as api from '../../../assets/api/api';
       if(res.status) {
         Toast.show('Address Deleted')
         this.props.onFetchAddress();
+        this.props.onfetchBuyerCart();
       }
 
       })
       .catch(err =>{console.log(err)})
   
+  }
+
+  setDefaultAddress = async (args) =>{
+    const data = JSON.stringify({     
+      new_default_address_id:args     
+    });
+
+    console.log(data)
+    const access_token = await AsyncStorage.getItem('isLoggedIn')
+      await axios.post(api.buyerAddressUpdateDefaultAPI,data,
+      {headers:{
+        "access_token" : access_token,
+        'accept': 'application/json',
+      'accept-language': 'en_US',
+      'content-type': 'application/x-www-form-urlencoded'}} )
+      .then(res =>{
+      if(res.status) {
+        Toast.show('Default address set.')       
+        this.props.onFetchAddress();
+        this.props.onfetchBuyerCart();
+        this.props.navigation.goBack(null);
+      }
+
+      })
+      .catch(err =>{console.log(err)}) 
+
   }
 
   render() {    
@@ -97,18 +123,26 @@ import * as api from '../../../assets/api/api';
         paddingLeft: 10,
         paddingRight: 10,   
         backgroundColor: '#efebea',
+        paddingTop:10
       },
       itemContainer: {
         flexDirection: 'row',
         borderBottomWidth: 0.25,
         borderBottomColor: '#95A5A6',
-        width: this.state.width - 20,
-        height: 120,
+        width: this.state.width - 20,       
         paddingTop: 10,
       },
-      itemContainerData: {
-        width: this.state.width - 100,
+      itemContainerActive: {
+        flexDirection: 'row',
+        borderWidth: 1,
+        borderColor: '#00aa00',
+        width: this.state.width - 20,     
+        paddingTop: 10,
         
+      },
+      itemContainerData: {
+        width: this.state.width - 110,
+        marginLeft:5
       },
       itemContainerName: {
         fontSize: 20,
@@ -132,29 +166,43 @@ import * as api from '../../../assets/api/api';
       itemContainerActions: {   
          flexDirection:'column',
          height:120,        
-         width:80
+         width:80,
+         marginRight:5
       },
       actions:{
-          height:60,         
+          height:50,         
           justifyContent:'center',
           alignItems:'center'
-      }
-    });
+      },
+      viewall: {
+        color: '#3e708f',
+        borderRadius: 10,
+        fontSize: 12,
+        fontFamily: 'GothamMedium',
+        // paddingTop: 10,
+        // paddingBottom: 10,
+        // paddingLeft: 10,
+        // paddingRight: 10,
+        textAlign: 'center',
+      },
+
+    });  
     return (
       <View style={styles.container}>
         <FlatList
           data={this.state.addressData}
           keyExtractor = {(items)=>{items.address_Id}}
           numColumns={1}
-          renderItem={({item}) => {
+          renderItem={({item}) => {           
             return (
-              <View style={styles.itemContainer}>
-                <View style={styles.itemContainerData}>
-                  <Text style={styles.itemContainerName}>{item.name}</Text>
+              <View style={item.is_default === '1' ? styles. itemContainerActive :styles.itemContainer}>
+                <View style={styles.itemContainerData}>              
+                 <Text style={styles.itemContainerName}>{item.name}</Text>                
             <Text style={styles.itemContainerAddress}>{item.door_number},{item.address},{item.city}, {item.state_name}-{item.zip}</Text>
                   <Text style={styles.itemContainerMobile}>{item.contact_no}</Text>
                 </View>
                 <View style={styles.itemContainerActions}>
+                  <Text style={styles.viewall} onPress={()=>{this.setDefaultAddress(item.address_Id)}}>Set as defult</Text>
                     <View style={styles.actions}>
                   <Icon  name='edit' size={25} color={'#95A5A6'} onPress={()=>{this.editAddress(item.address_Id)}}/>
                   </View>

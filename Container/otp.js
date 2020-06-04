@@ -39,7 +39,13 @@ class Otp extends Component {
     //  let otpCheck = String(this.state.otp).length     
     //  if(otpCheck === 4){
       // this.setState({invalidOTP:false})
-      this.props.navigation.navigate('Set Password');
+      if(this.props.userType === null){
+        this.props.navigation.navigate('Set Password');
+      }
+      else{
+        this.props.navigation.navigate('Seller Details');
+      }
+   
     //  } 
     //  else{
       //  this.setState({invalidOTP:true})
@@ -129,7 +135,7 @@ class Otp extends Component {
 
     return (
       <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
-      scrollEnabled={false}>
+      scrollEnabled={true}>
          <BackButton {...this.props} />
         <View style={styles.container}>         
           <Logo />
@@ -209,6 +215,7 @@ const mapStateToProps = state => {
   return {
     otp: state.reducer.otp,
     email: state.reducer.email,
+    userType: state.reducer.userType,
   };
 };
 const mapDispatchToProps = dispatch => {

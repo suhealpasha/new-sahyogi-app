@@ -281,13 +281,55 @@ class ProductAction extends Component {
           textStyle={styles.spinnerTextStyle}
         />
         <View style={styles.actionsContainer}>
-          <View style={{width: '60%'}}>
-            <Text style={styles.priceText}>
-              $ {''}
-              {this.state.activeButton === ''
-                ? 0
-                : this.state.value * this.state.price}
-            </Text>
+          <View style={{width: '60%'}}>           
+            <View>
+              <SwitchButton
+                onValueChange={val => {
+                  if (val === 1) {
+                    if (this.props.productData.nano.length >= 1) {
+                      this.setState({
+                        availableQuantity: null,
+                        activeButton: '',
+                        value: 1,
+                        activeSwitch: val,
+                      });
+                    } else {
+                      this.setState({activeButton: '', activeSwitch: 1});
+                      this.setState({unavailableNanoUnits: true});
+                      // Toast.show('No Nano Lots');
+                    }
+                  } else {
+                    if (this.props.productData.micro.length >= 1) {
+                      this.setState({
+                        availableQuantity: null,
+                        activeButton: '',
+                        value: 1,
+                        activeSwitch: val,
+                      });
+                    } else {
+                      this.setState({activeButton: '', activeSwitch: 2});
+                      this.setState({unavailableMicroUnits: true});
+                      // Toast.show('No Micro Lots');
+                      return;
+                    }
+                  }
+                }}
+                // this is necessary for this component
+                text1="N" // optional: first text in switch button --- default ON
+                text2="M" // optional: second text in switch button --- default OFF
+                switchWidth={80} // optional: switch width --- default 44
+                switchHeight={30} // optional: switch height --- default 100
+                switchdirection="ltl" // optional: switch button direction ( ltr and rtl ) --- default ltr
+                switchBorderRadius={0} // optional: switch border radius --- default oval
+                switchSpeedChange={100} // optional: button change speed --- default 100
+                switchBorderColor="#95A5A6" // optional: switch border color --- default #d4d4d4
+                switchBackgroundColor="white" // optional: switch background color --- default #fff
+                btnBorderColor="#004561" // optional: button border color --- default #00a4b9
+                btnBackgroundColor="#004561" // optional: button background color --- default #00bcd4
+                fontColor="#004561" // optional: text font color --- default #b1b1b1
+                activeFontColor="#fff" // optional: active font color --- default #fff
+              />
+            </View>
           </View>
           <View style={{flexDirection: 'row', width: '40%'}}>
             <View style={styles.ratingStyle}>
@@ -351,7 +393,7 @@ class ProductAction extends Component {
             </View>
           </View>
           <View style={styles.lotsPageSwitchContainer}>
-            <View>
+            {/* <View>
               <SwitchButton
                 onValueChange={val => {
                   if (val === 1) {
@@ -398,7 +440,13 @@ class ProductAction extends Component {
                 fontColor="#004561" // optional: text font color --- default #b1b1b1
                 activeFontColor="#fff" // optional: active font color --- default #fff
               />
-            </View>
+            </View> */}
+             <Text style={styles.priceText}>
+              $ {''}
+              {this.state.activeButton === ''
+                ? 0
+                : this.state.value * this.state.price}
+            </Text>
           </View>
         </View>
         <View style={styles.actionsContainer}>

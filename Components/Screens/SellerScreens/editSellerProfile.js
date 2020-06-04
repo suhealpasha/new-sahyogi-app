@@ -53,7 +53,10 @@ class EditSellerProfile extends Component {
       emailError: false,
       emailValidationError: false,
       companyError: false,
-      companyValidationError:false
+      companyValidationError:false,
+      mobileError:false,
+      mobileExist:false,
+      mobileValidationError:false
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -96,6 +99,46 @@ class EditSellerProfile extends Component {
     return true;
   }
 
+  checkMobileExist = async () => {
+    if (this.state.mobile === '') {
+      this.setState({mobile: null});
+      return;
+    } else {
+      if (String(this.state.mobile).length !== 12) {
+        this.setState({mobileValidationError: true});
+        return;
+      } 
+      // else {
+      //   if (this.state.mobileNumber !== null) {
+      //     let data = JSON.stringify({
+      //       mobile_no: this.state.mobileNumber,
+      //     });
+      //     await axios
+      //       .post(api.mobileCheckAPI, data, {
+      //         headers: {
+      //           accept: 'application/json',
+      //           'content-type': 'application/x-www-form-urlencoded',
+      //         },
+      //       })
+      //       .then(res => {
+      //         if (res.data.message === 'Mobile exist') {
+      //           this.setState({
+      //             mobileExist: true,
+      //           });
+      //         } else {
+      //           this.setState({
+      //             mobileExist: false,
+      //           });
+      //         }
+      //       })
+      //       .catch(err => {
+      //         console.log(err);
+      //       });
+      //   }
+      // }
+    }
+  };
+
   emailValidate = () => {
     if (this.state.email === '') {
       this.setState({email: null});
@@ -112,15 +155,15 @@ class EditSellerProfile extends Component {
   async UNSAFE_componentWillReceiveProps() {
     if (
     this.state.name !== null &&
-    this.state.email !== null &&
+    this.state.mobile !== null &&
     this.state.company !== null &&
     this.state.nameValidationError === false &&
-    this.state.emailValidationError === false &&
+    this.state.mobileValidationError === false &&
     this.state.companyValidationError === false
   ) {
     let data = JSON.stringify({
       name: this.state.name,
-      email: this.state.email,
+      mobile_no: this.state.mobile,
       company: this.state.company,
     });  
     this.setState({spinner: true});
@@ -139,7 +182,7 @@ class EditSellerProfile extends Component {
           this.setState({
             spinner: false,
             name: this.state.name,
-            email: this.state.email,
+            mobile: this.state.mobile,
             company: this.state.company,
           });
           Toast.show('Profile updated Sucessfully.');
@@ -157,10 +200,10 @@ class EditSellerProfile extends Component {
     } else {
       this.setState({nameError: false});
     }
-    if (this.state.email === null) {
-      this.setState({emailError: true});
+    if (this.state.mobile === null) {
+      this.setState({mobileError: true});
     } else {
-      this.setState({emailError: false});
+      this.setState({mobileError: false});
     }
   }
 }
@@ -283,25 +326,55 @@ class EditSellerProfile extends Component {
              <Input
               placeholder="Email"
               style={styles.inputStyle}
+              disabled
+               readOnly
               autoCapitalize="none"
               value={this.state.email}
-              inputStyle={{fontFamily: 'GothamMedium', fontSize: 16}}
-              onChangeText={email => this.setState({email, emailError: false,emailValidationError:false})}
-              onBlur={this.emailValidate}
-              errorMessage={
-                this.state.emailError === true
-                 ? 'Enter the email'
-                 : this.state.emailValidationError
-                 ? 'Invalid Email address'
-                 : null
-              }
+              inputStyle={{fontFamily: 'GothamMedium', fontSize: 16}}             
             />
-            <Input
-              disabled
-              readOnly
+            <Input              
               value={this.state.mobile}
               style={styles.inputStyle}
               inputStyle={{fontFamily: 'GothamMedium', fontSize: 16}}
+              keyboardType="numeric"
+              maxLength={12}
+              onBlur={this.checkMobileExist}
+              onChangeText={mobile => {
+                const input = mobile.replace(/\D/g, '').substring(0, 10);
+                const first = input.substring(0, 3);
+                const middle = input.substring(3, 6);
+                const last = input.substring(6, 10);
+
+                if (input.length > 6) {
+                  this.setState({
+                    mobile: `${first}-${middle}-${last}`,
+                    mobileError: false,
+                    mobileValidationError: false,                    
+                  });
+                } else if (input.length > 3) {
+                  this.setState({
+                    mobile: `${first}-${middle}`,
+                    mobileError: false,
+                    mobileValidationError: false,
+                  });
+                } else if (input.length >= 0) {
+                  this.setState({
+                    mobile: input,
+                    mobileError: false,
+                    mobileValidationError: false,
+                    mobileExist:false
+                  });
+                }
+              }}
+              errorMessage={
+                this.state.mobileError === true
+                  ? 'Enter the mobile number'
+                  : this.state.mobileValidationError
+                  ? 'Invalid mobile number'
+                  : this.state.mobileExist
+                  ? 'Mobile number already registered'
+                  : null
+              }
             />
             <Input
               placeholder="Company Name"

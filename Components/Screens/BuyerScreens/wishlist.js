@@ -203,7 +203,7 @@ class Wishlist extends Component {
         fontSize: 12,
         justifyContent: 'space-around',
         fontFamily: 'GothamMedium',
-        color: '#95A5A6',
+        color: '#5C5C5C',
       },
       itemTextFarm: {
         fontSize: 12,

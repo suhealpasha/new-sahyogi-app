@@ -60,6 +60,9 @@ class StickyButton extends Component {
       });
   }
 
+  placeOrder = () =>{
+    
+  }
 
 
   render() {
@@ -128,7 +131,7 @@ class StickyButton extends Component {
         <TouchableOpacity
           disabled={this.props.buy}
           style={styles.buyButton}
-          onPress={() => this.props.navigation.navigate('Cart')}
+          onPress={this.props.buyer ? this.placeOrder : null}
           underlayColor='#fff'>
           <Text style={styles.buyText}>{this.props.proceed}</Text>
         </TouchableOpacity>

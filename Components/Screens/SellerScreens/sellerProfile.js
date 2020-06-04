@@ -13,6 +13,7 @@ import {
   Image,
   Alert,
   TouchableHighlightBase,
+  ScrollView
 } from 'react-native';
 import {
   FormLabel,
@@ -198,7 +199,9 @@ class SellerProfile extends Component {
       },
     });
     return (
+     
       <View style={styles.container}>
+         <ScrollView>
         <View style={styles.container}>
           <View style={{borderBottomWidth: 1, borderBottomColor: '#95A5A6'}}>
             <View style={styles.editIconContainer}>
@@ -382,8 +385,10 @@ class SellerProfile extends Component {
             onPress={() => this.handleRegister()}
           />
         </Dialog.Container>
+        </ScrollView>
         <BottomNavigation {...this.props} />
       </View>
+    
     );
   }
 }

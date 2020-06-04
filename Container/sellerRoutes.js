@@ -131,8 +131,7 @@ class SellerRoutes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {    
-        console.log(res)
+      .then(res => {        
           if (res.status) {
           this.setState({
             userData: res.data.data            

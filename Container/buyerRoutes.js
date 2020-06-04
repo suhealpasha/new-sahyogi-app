@@ -219,7 +219,7 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {
+      .then(res => {        
         this.setState({addressData: res.data.data.buyer_addresses});
       })
       .catch(err => {
@@ -277,11 +277,12 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {              
-        let count = res.data.data.map(i=>{return(i.cart_list.length)})        
+      .then(res => {    
+        console.log(res.data.data)
+        let count = res.data.data.cart_list.length      
         if (res.status) {
-          if (res.data.data.length <= 0) {
-            this.setState({noDataAvailable: true, spinner: false});
+          if (res.data.data.cart_list.length <= 0) {
+            this.setState({noDataAvailable: true, spinner: false,cartCount:null});
           } else {
             this.setState({
               spinner: false,
@@ -751,7 +752,7 @@ class Routes extends Component {
               ),
             })}>
             {props => (
-              <Cart {...props} buyerCartData={this.state.buyerCartData} cartCount ={this.state.cartCount} addressData = {this.state.addressData} onfetchBuyerCart={this.fetchBuyerCart} />
+              <Cart {...props}  {...this.state} buyerCartData={this.state.buyerCartData} cartCount ={this.state.cartCount} onfetchBuyerCart={this.fetchBuyerCart} />
             )}
           </Stack.Screen>
           <Stack.Screen
@@ -949,6 +950,7 @@ class Routes extends Component {
                 {...props}
                 saveIcon={this.state.saveIcon}
                 onFetchDetails={this.fetchDetails}
+                onFetchAddress={this.fetchAddress}
                 name={this.state.user_name}
                 mobile={this.state.mobile}
                 email={this.state.email}
@@ -1000,6 +1002,7 @@ class Routes extends Component {
                 {...this.state}
                 onFetchAddress={this.fetchAddress}
                 onFetchEditAddress={this.fetchEditAddress}
+                onfetchBuyerCart={this.fetchBuyerCart}
               />
             )}
           </Stack.Screen>
@@ -1037,7 +1040,7 @@ class Routes extends Component {
               ),
             })}>
             {props => (
-              <AddAddress {...props} onFetchAddress={this.fetchAddress} countriesData={this.state.countriesData}/>
+              <AddAddress {...props} onFetchAddress={this.fetchAddress} saveIconAddress = {this.state.saveIconAddress} countriesData={this.state.countriesData} onfetchBuyerCart={this.fetchBuyerCart}/>
             )}
           </Stack.Screen>
           <Stack.Screen
@@ -1079,6 +1082,7 @@ class Routes extends Component {
                 saveEditIconAddress={this.state.saveEditIconAddress}
                 onFetchAddress={this.fetchAddress}
                 countriesData={this.state.countriesData}
+                onfetchBuyerCart={this.fetchBuyerCart}
               />
             )}
           </Stack.Screen>

@@ -168,7 +168,8 @@ class AddAddress extends Component {
     this.setState({ defaultStateColor: 'black',stateError:false, stateId:args+1})
   }
 
-  async UNSAFE_componentWillReceiveProps() {
+  async UNSAFE_componentWillReceiveProps(prevProps,prevState) {
+    if(prevProps.saveEditIconAddress  !== this.props.saveEditIconAddress){
     let name, street, door_number, city, state, zip, contact_no;
     if (
       this.state.userName === null &&
@@ -221,6 +222,7 @@ class AddAddress extends Component {
       state_Id: state,
       zip: zip,
       contact_no: contact_no,
+      is_default:this.state.addressData.is_default
     });
     this.setState({spinner: true});
     const userType = await AsyncStorage.getItem('userType');
@@ -246,12 +248,14 @@ class AddAddress extends Component {
           Toast.show('Address Updated');
           this.props.onFetchAddress();
           this.props.navigation.navigate('My Address');
+          this.props.onfetchBuyerCart();
         }
       })
       .catch(err => {
         this.setState({spinner: false});
         console.log(err);
       });
+    }
   }
   render() {
     const styles = StyleSheet.create({
@@ -276,7 +280,7 @@ class AddAddress extends Component {
     return (
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
-        scrollEnabled={false}
+        scrollEnabled={true}
         style={{backgroundColor: '#efebea'}}>
         <View style={styles.container}>
           <Spinner
@@ -287,6 +291,7 @@ class AddAddress extends Component {
           <View style={styles.registerFormContainer}>
             <Input
               placeholder={this.state.addressData.name}
+              maxLength={20}
               spellCheck={false}
               autoCorrect={false}
               style={styles.inputStyle}
@@ -317,6 +322,7 @@ class AddAddress extends Component {
             <Input
              spellCheck={false}
              autoCorrect={false}
+             maxLength={4}
               placeholder={this.state.addressData.door_number}
               style={styles.inputStyle}
               onChangeText={doorNumber =>
@@ -331,6 +337,7 @@ class AddAddress extends Component {
             <Input
              spellCheck={false}
              autoCorrect={false}
+             maxLength={20}
               placeholder={this.state.addressData.address}
               style={styles.inputStyle}
               onChangeText={street => this.setState({street})}
@@ -343,6 +350,7 @@ class AddAddress extends Component {
             <Input
              spellCheck={false}
              autoCorrect={false}
+             maxLength={20}
               placeholder={this.state.addressData.city}
               style={styles.inputStyle}
               onChangeText={city => this.setState({city})}

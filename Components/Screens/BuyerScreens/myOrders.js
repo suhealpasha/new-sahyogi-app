@@ -245,7 +245,8 @@ commentUpdate = () =>{
                     <Text style={styles.itemTextOrderText}>
                       Order#: {item.orderNumber}
                     </Text>
-                    <Text style={styles.itemTextOrigin}>{item.origin}</Text>
+                    <Text style={styles.itemTextVariety}>{item.verityname}</Text>
+                    <Text style={styles.itemTextOrigin}>{item.originsname}</Text>
                     <Text style={styles.itemTextFarm}>{item.farm}</Text>
                     <View style={{flexDirection: 'row'}}>
                       <Text
@@ -353,17 +354,23 @@ const styles = StyleSheet.create({
     fontFamily: 'GothamLight',
     paddingTop: 5,
   },
-  itemTextOrigin: {
+  itemTextVariety:{
     fontFamily: 'Gotham Black Regular',
     fontSize: 14,
     paddingTop: 5,
+  },
+  itemTextOrigin: {
+    fontSize: 12,
+    justifyContent: 'space-around',
+    fontFamily: 'GothamMedium',
+    color: '#5C5C5C',      
   },
   itemTextFarm: {
     fontSize: 12,
     justifyContent: 'space-around',
     fontFamily: 'GothamMedium',
     color: '#95A5A6',
-    paddingBottom: 5,
+    paddingBottom: 10,
   },
   ratingStyle: {
     backgroundColor: '#00ac00',

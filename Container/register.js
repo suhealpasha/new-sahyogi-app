@@ -146,8 +146,7 @@ class Register extends Component {
       this.state.mobileValidationError === false &&
       this.state.emailValidationError === false 
     ) {
-      if (this.props.userType === null) {
-        this.setState({spinner: true});
+       this.setState({spinner: true});
         let data = JSON.stringify({
           email_id: this.state.emailId,
         });
@@ -160,7 +159,6 @@ class Register extends Component {
             },
           })
           .then(res => {
-            console.log(res)
             if (res.status) {
               this.setState({spinner: false});
               this.props.onRegisterDetails(
@@ -175,16 +173,9 @@ class Register extends Component {
           .catch(err => {
             this.setState({spinner: false});
             console.log(err);
-          });
-      } else {
-        this.setState({spinner: false});
-        this.props.onRegisterSellerDetails(
-          this.state.userName,
-          this.state.mobileNumber,
-          this.state.emailId,
-        );
-        this.props.navigation.navigate('Seller Details');
-      }
+          });      
+        
+      
     } else {
       if (this.state.mobileNumber === null) {
         this.setState({mobileNumberError: true});
@@ -368,14 +359,7 @@ const mapDispatchToProps = dispatch => {
         payload2: value2,
         payload3: value3,
         payload4: value4,
-      }),
-    onRegisterSellerDetails: (value, value2, value3) =>
-      dispatch({
-        type: actionTypes.REGISTER_SELLER_DETAILS,
-        payload: value,
-        payload2: value2,
-        payload3: value3,
-      }),
+      }),   
   };
 };
 export default connect(

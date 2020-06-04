@@ -138,7 +138,7 @@ emailValidate = () => {
 
     return (
       <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
-      scrollEnabled={false}>
+      scrollEnabled={true}>
              <BackButton {...this.props} />
         <View style={styles.container}>
         <Spinner

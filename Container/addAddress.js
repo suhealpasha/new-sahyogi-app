@@ -34,7 +34,7 @@ class AddAddress extends Component {
       width: Dimensions.get('window').width,
       spinner: false,
       defaultContryColor: '#969291',
-      defaultStateColor: '#969291',
+      defaultStateColor: '#969291',     
       countriesData: [],
       statesData:[],      
       countryId:null,
@@ -60,15 +60,15 @@ class AddAddress extends Component {
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  componentDidMount() {
-    this.setState({ countriesData: this.props.countriesData })
+  componentDidMount() {    
+    this.setState({ countriesData: this.props.countriesData})
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
 
-  componentWillUnmount() {
+  componentWillUnmount() {    
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -103,7 +103,8 @@ class AddAddress extends Component {
     }
   }
 
-  async UNSAFE_componentWillReceiveProps() {
+  async UNSAFE_componentWillReceiveProps(prevProps,prevState) {
+    if(prevProps.saveIconAddress  !== this.props.saveIconAddress){
     if (
       this.state.doorNumber !== null &&
       this.state.userName !== null &&
@@ -125,6 +126,7 @@ class AddAddress extends Component {
         state_Id: this.state.stateId,
         zip: this.state.zipCode,
         contact_no: this.state.phoneNumber,
+        is_default:false
       });     
       this.setState({ spinner: true });
       const access_token = await AsyncStorage.getItem('isLoggedIn');
@@ -145,13 +147,13 @@ class AddAddress extends Component {
             'content-type': 'application/x-www-form-urlencoded',
           },
         })
-        .then(res => {
-          console.log(res)
+        .then(res => {         
           if (res.status) {
             this.setState({ spinner: false });
             this.props.onFetchAddress();
+            this.props.onfetchBuyerCart();
             Toast.show('Address Added');
-            this.props.navigation.navigate('My Address');
+            this.props.navigation.goBack(null);            
           }
         })
         .catch(err => {
@@ -201,15 +203,14 @@ class AddAddress extends Component {
       }
     }
   }
+  }
 
   onContrySelect = async (args) => {
     this.setState({ defaultContryColor: 'black' ,countryId:args+1,countryError:false})
     const data = JSON.stringify({
       country_Id: args + 1
     });
-
     const access_token = await AsyncStorage.getItem('isLoggedIn');
-
     await axios
       .post(api.statesAPI, data, {
         headers: {
@@ -270,6 +271,7 @@ class AddAddress extends Component {
             <Input
               placeholder="Name"
               style={styles.inputStyle}
+              maxLength={20}
               spellCheck={false}
               autoCorrect={false}
               onChangeText={userName => {
@@ -299,6 +301,7 @@ class AddAddress extends Component {
             <Input
               placeholder="Door Number"
               style={styles.inputStyle}
+              maxLength={4}
               onChangeText={doorNumber =>
                 this.setState({ doorNumber, doorNumberError: false })
               }
@@ -315,6 +318,7 @@ class AddAddress extends Component {
             />
             <Input
               placeholder="Street"
+              maxLength={20}
               style={styles.inputStyle}
               onChangeText={street =>
                 this.setState({ street, streetError: false })
@@ -329,6 +333,7 @@ class AddAddress extends Component {
             <Input
               placeholder="City"
               style={styles.inputStyle}
+              maxLength={20}
               onChangeText={city => this.setState({ city, cityError: false })}
               onBlur={
                 this.state.city === '' ? this.setState({ city: null }) : null

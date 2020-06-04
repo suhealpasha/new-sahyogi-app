@@ -13,7 +13,8 @@ import {
   Image,
   Alert,
   TouchableOpacity,
-  TouchableNativeFeedback  
+  TouchableNativeFeedback  ,
+  ScrollView
 } from 'react-native';
 import PhotoUpload from 'react-native-photo-upload';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -65,8 +66,8 @@ class Profile extends Component {
     if (prevProps.name !== this.props.name) {
       this.setState({name: this.props.name});
     }
-    if (prevProps.email !== this.props.email) {
-      this.setState({email: this.props.email});
+    if (prevProps.mobile !== this.props.mobile) {
+      this.setState({mobile: this.props.mobile});
     }
     if (prevProps.profilePic !== this.props.profilePic) {
       this.setState({profilePic: this.props.profilePic});
@@ -91,7 +92,7 @@ class Profile extends Component {
     this.props.onLogout();
   };
   handleRegister = async() => {
-    const passwordReg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+    const passwordReg =  /(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*\W)\w.{6,18}\w/;
     if (
       this.state.oldPassword !== null &&
       this.state.password !== null &&
@@ -99,7 +100,7 @@ class Profile extends Component {
     )
     {    
         if (passwordReg.test(this.state.password) === false) {
-          alert('Password should contain min 8 digits,atleast 1 number & 1 uppercase letter.')
+          alert('Password should contain min 8 digits,atleast 1 no, 1 uppercase letter & a special charater.')
         } else {       
           if(this.state.password === this.state.confirmPassword)
           {
@@ -199,7 +200,9 @@ class Profile extends Component {
     });
    
     return (
+     
       <View style={styles.container}>
+         <ScrollView>
         <View style={styles.container}>
           <View style={{borderBottomWidth: 1, borderBottomColor: '#95A5A6'}}>
             <View style={styles.editIconContainer}>
@@ -370,8 +373,11 @@ class Profile extends Component {
             onPress={() => this.handleRegister()}
           />
         </Dialog.Container>
+        </ScrollView>
         <BottomNavigation {...this.props} />
+       
       </View>
+     
     );
   }
 }

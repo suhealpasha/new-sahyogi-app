@@ -31,6 +31,7 @@ export const buyerAddressAPI = URL+'getBuyerAddress';
 export const buyerAddressDeleteAPI = URL+'deleteBuyerAddress';
 export const buyerAddressByIdAPI = URL+'getBuyerAddressById';
 export const buyerAddressUpdateAPI = URL+'updateBuyerAddressById';
+export const buyerAddressUpdateDefaultAPI = URL+'updateBuyerDefaultAddress';
 export const buyerHomeAPI = URL+'getBuyerHomeData';
 export const buyerAllProductAPI = URL+'getBuyerProducts';
 export const buyerProductByIdAPI = URL+'getBuyerProductsById';
@@ -40,6 +41,7 @@ export const buyerWishlistRemoveAll = URL+'clearBuyerWishlist';
 export const buyerAddProductToCart = URL+'buyerAddProductToCart';
 export const buyerProductsCartData = URL+'buyerProductCartData';
 export const buyerDeleteProductFromCart = URL+'buyerDeleteProductFromCart';
+export const buyerOrderAPI = URL+'addBuyerOrder';
 
 //////////////////////// Seller API's //////////////////////////
 

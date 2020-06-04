@@ -183,7 +183,7 @@ class SellerDetails extends Component {
               this.state.zipCode,
               String(res.data.data.otp),
             );
-            this.props.navigation.navigate('OTP');
+            this.props.navigation.navigate('Set Password');
           }
         })
         .catch(err => {
@@ -314,11 +314,11 @@ class SellerDetails extends Component {
               style={styles.inputStyle}
               keyboardType="numeric"
               value={this.state.ein}
-              maxLength={12}
+              maxLength={11}
               onChangeText={ein => {
-                const input = ein.replace(/\D/g, '').substring(0, 11);
+                const input = ein.replace(/\D/g, '').substring(0, 10);
                 const first = input.substring(0, 2);
-                const last = input.substring(2, 11);
+                const last = input.substring(2, 10);
 
                 if (input.length > 3) {
                   this.setState({
@@ -388,6 +388,8 @@ class SellerDetails extends Component {
             />
             <Input
               placeholder="Street"
+              spellCheck={false}
+              autoCorrect={false}
               style={styles.inputStyle}
               onChangeText={street =>
                 this.setState({ street, streetError: false })
@@ -401,6 +403,8 @@ class SellerDetails extends Component {
             />
             <Input
               placeholder="City"
+              spellCheck={false}
+              autoCorrect={false}
               style={styles.inputStyle}
               onChangeText={city => this.setState({ city, cityError: false })}
               onBlur={

@@ -16,6 +16,7 @@ import {
 import {Input} from 'react-native-elements';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import BackButton from '../Components/utils/backButton';
+import CloseButton from '../Components/utils/closeButton';
 import Logo from '../Components/utils/logo';
 import ConfirmButton from '../Components/utils/confirmButton';
 import Dialog from 'react-native-dialog';
@@ -25,11 +26,17 @@ import {connect} from 'react-redux';
 import Toast from 'react-native-simple-toast';
 import Spinner from 'react-native-loading-spinner-overlay';
 import * as api from '../assets/api/api';
+import {CheckBox} from 'react-native-elements';
+import {TouchableNativeFeedback} from 'react-native-gesture-handler';
+import HTMLView from 'react-native-htmlview';
+import {ceil} from 'react-native-reanimated';
+
 class SetPassword extends Component {
   constructor(props) {
     super(props);
     this.state = {
       height: Dimensions.get('window').height,
+      width: Dimensions.get('window').width,
       spinner: false,
       password: null,
       confirmPassword: null,
@@ -38,6 +45,9 @@ class SetPassword extends Component {
       confirmPasswordError: false,
       passwordMatchError: false,
       dailogBoxOpen: false,
+      webView: false,
+      checked: false,
+      checkedError: false,
     };
   }
 
@@ -45,7 +55,9 @@ class SetPassword extends Component {
     if (
       this.state.password !== null &&
       this.state.confirmPassword !== null &&
-      this.state.passwordValidationError === false
+      this.state.checked &&
+      this.state.passwordValidationError === false &&
+      this.state.checkedError === false
     ) {
       if (this.state.password === this.state.confirmPassword) {
         this.setState({spinner: true});
@@ -68,12 +80,11 @@ class SetPassword extends Component {
               document: '',
               password: this.state.password,
               user_type: userType,
-              street:this.props.sellerStreet,
+              street: this.props.sellerStreet,
               city: this.props.sellerCity,
               state_Id: this.props.sellerState,
-              zip_code:this.props.sellerZipcode,
+              zip_code: this.props.sellerZipcode,
             });
-          
           } else {
             userType = 'Buyer';
             signUp = api.buyerSignupAPI;
@@ -140,6 +151,11 @@ class SetPassword extends Component {
       } else {
         this.setState({confirmPasswordError: false});
       }
+      if (this.state.checked === false) {
+        this.setState({checkedError: true});
+      } else {
+        this.setState({checkedError: false});
+      }
     }
   };
 
@@ -153,13 +169,17 @@ class SetPassword extends Component {
     if (this.state.password === '') {
       this.setState({password: null});
     } else {
-      const passwordReg = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/;
+      const passwordReg = /(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*\W)\w.{6,18}\w/;
       if (passwordReg.test(this.state.password) === false) {
         this.setState({passwordValidationError: true});
       } else {
         this.setState({passwordError: false, passwordValidationError: false});
       }
     }
+  };
+
+  close = () => {
+    this.setState({webView: false});
   };
 
   render() {
@@ -182,128 +202,227 @@ class SetPassword extends Component {
       spinnerTextStyle: {
         color: '#00aa00',
       },
+      viewall: {
+        color: '#3e708f',
+        borderRadius: 10,
+        fontSize: 14,
+        fontFamily: 'GothamMedium',
+        paddingTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 10,
+      },
+      webView: {
+        paddingTop: 10,
+      },
+      webViewChild: {
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      tc: {
+        textAlign: 'center',
+        fontFamily: 'GothamMedium',
+      },
+      tcDetail: {
+        padding:10,
+        justifyContent:'center',
+        fontFamily: 'GothamLight',
+        textAlign:'justify'
+      },
     });
 
     return (
-      <KeyboardAwareScrollView
-        resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: '#efebea'}}
-        scrollEnabled={true}>
-        <BackButton {...this.props} />
-        <View style={styles.container}>
-          <Spinner
-            visible={this.state.spinner}
-            textContent={'Loading...'}
-            textStyle={styles.spinnerTextStyle}
-          />
-
-          <Logo />
-          <View style={styles.registerFormContainer}>
-            <Text
-              style={{
-                fontFamily: 'Gotham Black Regular',
-                color: '#004561',
-                fontSize: 24,
-                paddingLeft: 10,
-                paddingRight: 10,
-              }}>
-              Set Your Password
-            </Text>
-            <Input
-              placeholder="Enter Your Password"
-              style={styles.inputStyle}
-              secureTextEntry={true}
-              onChangeText={password =>
-                this.setState({
-                  password,
-                  passwordError: false,
-                  passwordValidationError: false,
-                })
-              }
-              onBlur={this.passwordValidate}
-              errorMessage={
-                this.state.passwordError === true
-                  ? 'Enter the Password'
-                  : this.state.passwordValidationError
-                  ? 'Should contain min 8 digits,atleast 1 number & 1 uppercase letter.'
-                  : null
-              }
-            />
-            <Input
-              placeholder="Confirm Your password"
-              style={styles.inputStyle}
-              secureTextEntry={true}
-              onChangeText={confirmPassword =>
-                this.setState({
-                  confirmPassword,
-                  confirmPasswordError: false,
-                  passwordMatchError: false,
-                })
-              }
-              onBlur={
-                this.state.confirmPassword === ''
-                  ? this.setState({confirmPassword: null})
-                  : null
-              }
-              errorMessage={
-                this.state.confirmPasswordError === true
-                  ? 'Confirm the password'
-                  : this.state.passwordMatchError
-                  ? 'Password Mismatch'
-                  : false
-              }
-            />
-          </View>
-          <ConfirmButton
-            buttonName={
-              this.props.forgotPassword === null
-                ? 'Complete Registration'
-                : 'Reset Password'
-            }
-            click={this.handleRegister}
-          />
-          <Dialog.Container
-            contentStyle={{
-              alignItems: 'center',
-              paddingBottom: 0,
-              paddingRight: 0,
-              paddingLeft: 0,
+      <View style={{flex: 1.0}}>
+        {this.state.webView ? (
+          <KeyboardAwareScrollView
+            resetScrollToCoords={{x: 0, y: 0}}
+            style={{
+              backgroundColor: '#efebea',
+              paddingTop: 10,
+              paddingBottom: 10,
             }}
-            visible={this.state.dailogBoxOpen}>
-            <Dialog.Title style={{textAlign: 'center'}}>
-              <Icon name="done" size={25} />
-            </Dialog.Title>
-            <Dialog.Title
-              style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
-              Thank you
-            </Dialog.Title>
-            <Dialog.Description
-              style={{textAlign: 'center', fontFamily: 'GothamLight'}}>
-              Your account is registered and it will be activated after your
-              verification is done by our Executive.
-            </Dialog.Description>
-            <Dialog.Button
-              style={{
-                paddingTop: 10,
-                paddingBottom: 10,
-                color: '#004561',
-                fontFamily: 'GothamBold',
-                paddingLeft: 0,
-                paddingRight: 0,
-                borderColor: 'grey',
+            scrollEnabled={true}>
+            <View style={styles.webView}>
+              <CloseButton {...this.props} onClose={this.close} />
+              <View style={styles.webViewChild}>
+                <Text style={styles.tc}>Terms & Conditions</Text>
+                <Text style={styles.tcDetail}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </Text>
+              </View>
+            </View>
+          </KeyboardAwareScrollView>
+        ) : (
+          <KeyboardAwareScrollView
+            resetScrollToCoords={{x: 0, y: 0}}
+            style={{backgroundColor: '#efebea'}}
+            scrollEnabled={true}>
+            <BackButton {...this.props} />
+            <View style={styles.container}>
+              <Spinner
+                visible={this.state.spinner}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+              />
+              <Logo />
+              <View style={styles.registerFormContainer}>
+                <Text
+                  style={{
+                    fontFamily: 'Gotham Black Regular',
+                    color: '#004561',
+                    fontSize: 24,
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                  }}>
+                  Set Your Password
+                </Text>
+                <Input
+                  placeholder="Enter Your Password"
+                  style={styles.inputStyle}
+                  secureTextEntry={true}
+                  onChangeText={password =>
+                    this.setState({
+                      password,
+                      passwordError: false,
+                      passwordValidationError: false,
+                    })
+                  }
+                  onBlur={this.passwordValidate}
+                  errorMessage={
+                    this.state.passwordError === true
+                      ? 'Enter the Password'
+                      : this.state.passwordValidationError
+                      ? 'Should contain min 8 digits,atleast 1 no, 1 uppercase letter & a special charater.'
+                      : null
+                  }
+                />
+                <Input
+                  placeholder="Confirm Your password"
+                  style={styles.inputStyle}
+                  secureTextEntry={true}
+                  onChangeText={confirmPassword =>
+                    this.setState({
+                      confirmPassword,
+                      confirmPasswordError: false,
+                      passwordMatchError: false,
+                    })
+                  }
+                  onBlur={
+                    this.state.confirmPassword === ''
+                      ? this.setState({confirmPassword: null})
+                      : null
+                  }
+                  errorMessage={
+                    this.state.confirmPasswordError === true
+                      ? 'Confirm the password'
+                      : this.state.passwordMatchError
+                      ? 'Password Mismatch'
+                      : false
+                  }
+                />
+              </View>
+              <ConfirmButton
+                buttonName={
+                  this.props.forgotPassword === null
+                    ? 'Complete Registration'
+                    : 'Reset Password'
+                }
+                click={this.handleRegister}
+              />
 
-                textAlign: 'center',
-                justifyContent: 'center',
-              }}
-              label="Ok"
-              onPress={this.handleOk}
-            />
-          </Dialog.Container>
-        </View>
-      </KeyboardAwareScrollView>
+              <CheckBox
+                title={'I have read and accepted'}
+                fontFamily={'GothamMedium'}
+                size={25}
+                containerStyle={{
+                  paddingLeft: 0,
+                  marginLeft: 0,
+                  marginTop: 0,
+                  marginBottom: 0,
+
+                  backgroundColor: '#efebea',
+                }}
+                checkedColor={'#00aa00'}
+                checked={this.state.checked}
+                onPress={() =>
+                  this.setState({
+                    checked: !this.state.checked,
+                    checkedError: false,
+                  })
+                }
+              />
+              <TouchableNativeFeedback
+                onPress={() => {
+                  this.setState({webView: true});
+                }}>
+                <Text style={styles.viewall}>Terms & Conditions!</Text>
+              </TouchableNativeFeedback>
+              {this.state.checkedError ? (
+                <Text
+                  style={{
+                    color: 'red',
+                    fontSize: 12,
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    paddingTop: 5,
+                    paddingBottom: 5,
+                  }}>
+                  Accept terms & conditions!
+                </Text>
+              ) : null}
+              <Dialog.Container
+                contentStyle={{
+                  alignItems: 'center',
+                  paddingBottom: 0,
+                  paddingRight: 0,
+                  paddingLeft: 0,
+                }}
+                visible={this.state.dailogBoxOpen}>
+                <Dialog.Title style={{textAlign: 'center'}}>
+                  <Icon name="done" size={25} />
+                </Dialog.Title>
+                <Dialog.Title
+                  style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
+                  Thank you
+                </Dialog.Title>
+                {this.props.userType === 'Seller' ? (
+                  <Dialog.Description
+                    style={{textAlign: 'center', fontFamily: 'GothamLight'}}>
+                    Your account is registered and it will be activated after
+                    your verification is done by our Executive.
+                  </Dialog.Description>
+                ) : (
+                  <Dialog.Description
+                    style={{textAlign: 'center', fontFamily: 'GothamLight'}}>
+                    Registration is complete and you can login.
+                  </Dialog.Description>
+                )}
+
+                <Dialog.Button
+                  style={{
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    color: '#004561',
+                    fontFamily: 'GothamBold',
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    borderColor: 'grey',
+
+                    textAlign: 'center',
+                    justifyContent: 'center',
+                  }}
+                  label="Ok"
+                  onPress={this.handleOk}
+                />
+              </Dialog.Container>
+            </View>
+          </KeyboardAwareScrollView>
+        )}
+      </View>
     );
   }
 }
+
 const mapStateToProps = state => {
   return {
     forgotPassword: state.reducer.forgotPassword,

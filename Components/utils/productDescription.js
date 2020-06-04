@@ -102,6 +102,10 @@ class ProductDescription extends Component {
       width:'60%',
       padding:5,
       fontFamily: 'GothamMedium',
+     },
+     commentText:{      
+      padding:5,
+      fontFamily: 'GothamLight',
      }
     });
 
@@ -118,7 +122,7 @@ class ProductDescription extends Component {
                   {this.props.productData.certification ?<View style={styles.row6}><Text style={styles.col1}>Certification</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.certification}</Text></View>: null}
                   {this.props.productData.grade ?<View style={styles.row6}><Text style={styles.col1}>Grade</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.grade}</Text></View>: null}
                   {this.props.productData.appearance ?<View style={styles.row6}><Text style={styles.col1}>Appearance</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.appearance}</Text></View>: null}
-                  {this.props.productData.seller_comment ?<View style={styles.row6}><Text style={styles.col1}>Comments</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.seller_comment}</Text></View>: null}
+                  {this.props.productData.seller_comment ?<View style={styles.row7}><Text style={styles.col1}>Comments</Text><Text style={styles.commentText}>{this.props.productData.seller_comment}</Text></View>: null}
                 
                 </View>            
         </View>

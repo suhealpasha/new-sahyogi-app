@@ -51,6 +51,7 @@ class Cart extends Component {
       active50Button: true,
       buyerCartData: [],
       cartCount: null,
+      updatedValue: null,
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -67,8 +68,11 @@ class Cart extends Component {
     );
   }
 
-  componentDidUpdate(prevProps, prevState) {   
-    if (this.state.cartCount !== this.props.cartCount) {
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.buyerCartData !== this.props.buyerCartData ||
+      this.state.cartCount !== this.props.cartCount
+    ) {
       this.setState({
         buyerCartData: this.props.buyerCartData,
         cartCount: this.props.cartCount,
@@ -132,13 +136,13 @@ class Cart extends Component {
     this.props.navigation.navigate('Product Description', {productId: args});
   };
 
-  placeOrder = async(args, args1)=>{
+  placeOrder = async (args, args1) => {
     const data = JSON.stringify({
-      cart_id:args,
-      shipping_address_Id:args1,
-      invoice_address_Id:args1
+      cart_id: args,
+      shipping_address_Id: args1,
+      invoice_address_Id: args1,
     });
-    this.setState({spinner:true})
+    this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
       .post(api.buyerOrderAPI, data, {
@@ -153,7 +157,7 @@ class Cart extends Component {
         if (res.status) {
           this.setState({spinner: false});
           this.props.onfetchBuyerCart();
-          this.props.navigation.navigate('Home')
+          this.props.navigation.navigate('Home');
           Toast.show('Orderd placed sucessfully!');
         }
       })
@@ -161,10 +165,43 @@ class Cart extends Component {
         this.setState({spinner: false});
         console.log(err);
       });
-  }
+  };
+
+  updateCart = async (args1, args2, args3, args4, args5) => {
+    await this.setState({updatedValue: args1});
+    const data = JSON.stringify({
+      product_id: args2,
+      unit_id: args3,
+      quantity: this.state.updatedValue,
+      unit_price: args4,
+      Id: args5,
+    });
+    console.log(data)
+    this.setState({spinner: true});
+   
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    await axios
+      .post(api.buyerUpdateProductFromCart, data, {
+        headers: {
+          access_token: access_token,
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        if (res.status) {
+          this.setState({spinner: false});
+          this.props.onfetchBuyerCart();       
+        }
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
+  };
 
   render() {
-   
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
@@ -367,7 +404,7 @@ class Cart extends Component {
     tax = this.state.buyerCartData.tax;
     shipping = this.state.buyerCartData.shipping_charge;
     totalAmount = this.state.buyerCartData.total_amount;
-    cartId = this.state.buyerCartData.cart_id;
+
 
     let button;
     if (this.state.buyerCartData.buyer_address) {
@@ -404,22 +441,20 @@ class Cart extends Component {
       }
     });
 
-  
-
     return (
       <View style={{flex: 1.0}}>
         <Spinner
-              visible={this.state.spinner}
-              textContent={'Loading...'}
-              textStyle={styles.spinnerTextStyle}
-            />
+          visible={this.state.spinner}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         {this.state.cartCount >= 1 ? (
           <View style={{flex: 1.0}}>
             <ScrollView ref={scrollView => (this.scrollView = scrollView)}>
               <View style={styles.container}>
                 <View style={styles.itemListContainer}>
                   <FlatList
-                    data={ this.state.buyerCartData.cart_list}
+                    data={this.state.buyerCartData.cart_list}
                     numColumns={1}
                     // keyExtractor = {(items)=>{items.key}}
 
@@ -492,19 +527,28 @@ class Cart extends Component {
                                         paddingRight: 10,
                                       }}>
                                       Quantity:{' '}
-                                    </Text>                                   
+                                    </Text>
                                     <NumericInput
-                                      value={item.cart_quantity}
-                                      // onChange={value =>
-                                      //   this.setState({value: value})
-                                      // }
+                                      value={
+                                        this.state.updatedValue === null
+                                          ? Number.parseInt(
+                                              item.cart_quantity,
+                                              10,
+                                            )
+                                          : this.state.updatedValue
+                                      }
+                                      onChange={value => this.updateCart(value,item.product_Id,item.unit_Id,item.price,item.cart_item_id)}
                                       totalWidth={80}
                                       totalHeight={30}
                                       minValue={1}
-                                      maxValue={item.available_quantity}
+                                      maxValue={Number.parseInt(
+                                        item.available_quantity,
+                                        10,
+                                      )}
                                       onLimitReached={(isMax, msg) => {
                                         Toast.show(
-                                              'Quantity is not available.');
+                                          'Quantity is not available.',
+                                        );
                                       }}
                                     />
                                   </View>
@@ -553,7 +597,7 @@ class Cart extends Component {
                                 }}>
                                 <View style={styles.AddToCartButton}>
                                   <Text style={styles.cartText}>
-                                    $ {item.price}
+                                    $ {item.total}
                                   </Text>
                                 </View>
 
@@ -564,7 +608,9 @@ class Cart extends Component {
                                     color: '#95A5A6',
                                     justifyContent: 'center',
                                   }}
-                                  onPress={() => this.deleteItem(item.cart_item_id)}>
+                                  onPress={() =>
+                                    this.deleteItem(item.cart_item_id)
+                                  }>
                                   <Text style={styles.placeOrderButtonText}>
                                     Remove
                                   </Text>
@@ -671,7 +717,7 @@ class Cart extends Component {
               </View>
               <TouchableOpacity
                 style={styles.buyButton}
-                onPress={() => this.placeOrder(cartId,addressId)}
+                onPress={() => this.placeOrder(cartId, addressId)}
                 underlayColor="#fff">
                 <Text style={styles.buyText}>Place order</Text>
               </TouchableOpacity>

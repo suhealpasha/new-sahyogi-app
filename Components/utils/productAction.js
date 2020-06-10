@@ -207,13 +207,13 @@ class ProductAction extends Component {
               return (
                 <TouchableOpacity
                   style={
-                    this.state.activeButton === i.unit_Id
+                    this.state.activeButton === i.inventory_id
                       ? styles.unitsActiveButton
                       : styles.unitsButton
                   }
                   onPress={() =>
                     this.activateUnitsButton(
-                      i.unit_Id,
+                      i.inventory_id,
                       i.price,
                       i.available_quantity,
                       i.product_Id,
@@ -221,7 +221,7 @@ class ProductAction extends Component {
                   }>
                   <Text
                     style={
-                      this.state.activeButton === i.unit_Id
+                      this.state.activeButton === i.inventory_id
                         ? styles.unitsActiveButtonText
                         : styles.unitsButtonText
                     }>
@@ -241,13 +241,13 @@ class ProductAction extends Component {
               return (
                 <TouchableOpacity
                   style={
-                    this.state.activeButton === i.unit_Id
+                    this.state.activeButton === i.inventory_id
                       ? styles.unitsActiveButton
                       : styles.unitsButton
                   }
                   onPress={() =>
                     this.activateUnitsButton(
-                      i.unit_Id,
+                      i.inventory_id,
                       i.price,
                       i.available_quantity,
                       i.product_Id,
@@ -255,7 +255,7 @@ class ProductAction extends Component {
                   }>
                   <Text
                     style={
-                      this.state.activeButton === i.unit_Id
+                      this.state.activeButton === i.inventory_id
                         ? styles.unitsActiveButtonText
                         : styles.unitsButtonText
                     }>

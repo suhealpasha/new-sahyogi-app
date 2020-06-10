@@ -61,10 +61,11 @@ class App extends Component {
   }
 
   render() {
+
     return (
       <ThemeContext.Provider value={getTheme(uiTheme)}>
         <View style={styles.container}>
-          <HomeScreen {...this.props} {...this.state} />
+          <HomeScreen {...this.props} {...this.state}  />
         </View>
         <BottomNavigation {...this.props} {...this.state} />
       </ThemeContext.Provider>

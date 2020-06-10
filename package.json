@@ -24,6 +24,7 @@
     "react-checkbox-tree": "^1.2.4-rc.0",
     "react-native": "0.61.5",
     "react-native-actionsheet": "^2.4.2",
+    "react-native-alert-prompt": "0.0.6",
     "react-native-bottom-drawer": "^1.0.2",
     "react-native-dashboard": "0.0.4",
     "react-native-dialog": "^5.6.0",

@@ -95,6 +95,7 @@ class Routes extends Component {
       allRegionsData: [],
       buyerCartData: [],
       cartCount: null,
+      buyerOrderData:[],
       notificationCount:null
     };
   }
@@ -106,6 +107,7 @@ class Routes extends Component {
     this.fetchAllRegions();
     this.fetchBuyerCart();
     this.fetchCountries();
+    this.fetchBuyerOrders();
   }
 
   goBack = ({navigation}, path) => {
@@ -283,8 +285,8 @@ class Routes extends Component {
           else{
             if (res.data.data.cart_list.length <= 0) {
               this.setState({noDataAvailable: true, spinner: false,cartCount:null});
-            } else {  
-              console.log(res.data.data)
+            } else { 
+              
               let count = res.data.data.cart_list.length;            
               this.setState({
                 spinner: false,
@@ -297,6 +299,26 @@ class Routes extends Component {
       })
       .catch(err => {
         this.setState({spinner: false});
+        console.log(err);
+      });
+  };
+
+  fetchBuyerOrders = async () => {
+    
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .get(api.buyerOrderListAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {          
+        this.setState({buyerOrderData: res.data.data});
+      })
+      .catch(err => {
         console.log(err);
       });
   };
@@ -906,7 +928,7 @@ class Routes extends Component {
             {props => (
               <Profile
                 {...props}
-                onFetchDetails={this.fetchDetails}
+                onFetchDetails={this.fetchDetails}               
                 onLogout={this.props.onLogoutSession}
                 saveIcon={this.state.saveIcon}
                 name={this.state.user_name}
@@ -1278,11 +1300,11 @@ class Routes extends Component {
                 </View>
               ),
             })}>
-            {props => <MyOrders {...props} {...this.state} />}
+            {props => <MyOrders {...props} {...this.state}  onFetchBuyerOrders={this.fetchBuyerOrders}
+                buyerOrderData={this.state.buyerOrderData}/>}
           </Stack.Screen>
           <Stack.Screen
-            name="Order Detail"
-            component={OrderDetail}
+            name="Order Detail"            
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -1292,7 +1314,7 @@ class Routes extends Component {
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
                   }}>
-                  Order #1214
+                  Order #{this.props.orderNumber}
                 </Text>
               ),
               headerStyle: {backgroundColor: '#00aa00'},
@@ -1304,8 +1326,9 @@ class Routes extends Component {
                 </TouchableWithoutFeedback>
               ),
             })}
-            {...this.state}
-          />
+          >
+            {props => <OrderDetail {...props} {...this.state}  />}
+          </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -1316,6 +1339,7 @@ const mapStateToProps = state => {
     addressId: state.reducer.addressId,
     regionName: state.reducer.regionName,
     varietyName: state.reducer.varietyName,
+    orderNumber: state.reducer.orderNumber,
     listingTitle: state.reducer.listingTitle,
   };
 };

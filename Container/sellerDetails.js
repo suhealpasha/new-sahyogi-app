@@ -78,7 +78,7 @@ class SellerDetails extends Component {
       this.setState({ein: null});
       return;
     } else {
-      if (String(this.state.ein).length !== 12) {
+      if (String(this.state.ein).length !== 10) {
         this.setState({einValidationError: true});
         return;
       }
@@ -109,14 +109,23 @@ class SellerDetails extends Component {
     }
   }
 
-  onContrySelect = async (args) => {
-    this.setState({ defaultContryColor: 'black' ,countryId:args+1,countryError:false})
-    const data = JSON.stringify({
-      country_Id: args + 1
+  onContrySelect = async (args, args1) => {
+    let country;
+    this.state.countriesData.filter(i => {
+      if (i.country_name === args1) {
+        country = i.country_Id;
+      }
     });
-
+    this.setState({
+      defaultContryColor: 'black',
+      countryId: country,
+      countryError: false,
+      statesData: [],
+    });
+    const data = JSON.stringify({
+      country_Id: country,
+    });
     const access_token = await AsyncStorage.getItem('isLoggedIn');
-
     await axios
       .post(api.statesAPI, data, {
         headers: {
@@ -126,20 +135,30 @@ class SellerDetails extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {       
+      .then(res => {
+        console.log(res.data.data);
         if (res.status) {
-          this.setState({ statesData: res.data.data })
+          this.setState({statesData: res.data.data});
         }
       })
       .catch(err => {
         console.log(err);
       });
+  };
 
-  }
-
-  onStateSelect = async (args) => {
-    this.setState({ defaultStateColor: 'black',stateError:false, stateId:args+1})
-  }
+  onStateSelect = async (args, args1) => {
+    let state;
+    this.state.statesData.filter(i => {
+      if (i.state_name === args1) {
+        state = i.state_Id;
+      }
+    });
+    this.setState({
+      defaultStateColor: 'black',
+      stateError: false,
+      stateId: state,
+    });
+  };
 
   handleRegister = async () => {
     if (
@@ -316,9 +335,9 @@ class SellerDetails extends Component {
               value={this.state.ein}
               maxLength={11}
               onChangeText={ein => {
-                const input = ein.replace(/\D/g, '').substring(0, 10);
+                const input = ein.replace(/\D/g, '').substring(0, 9);
                 const first = input.substring(0, 2);
-                const last = input.substring(2, 10);
+                const last = input.substring(2, 9);
 
                 if (input.length > 3) {
                   this.setState({
@@ -422,7 +441,9 @@ class SellerDetails extends Component {
               style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
               dropdownStyle={{ width: this.state.width - 40}}
               dropdownTextStyle={{fontSize:18}}
-              onSelect={i => { this.onContrySelect(i) }}            
+              onSelect={(i, j) => {
+                this.onContrySelect(i, j);
+              }}         
             />
             {this.state.countryError ?<Text
                 style={{
@@ -444,7 +465,9 @@ class SellerDetails extends Component {
               style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
               dropdownStyle={{ width: this.state.width - 40 }}
               dropdownTextStyle={{fontSize:18}}
-              onSelect={i => { this.onStateSelect(i) }}
+              onSelect={(i, j) => {
+                this.onStateSelect(i, j);
+              }}
             />
              {this.state.stateError ?<Text
                 style={{

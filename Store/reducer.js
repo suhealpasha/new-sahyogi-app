@@ -14,21 +14,22 @@ const initialState = {
   ein: null,
   alternatePhone: null,
   sellerStreet: null,
-  sellerCity:null,
-  sellerState:null,
-  sellerZipcode:null,
+  sellerCity: null,
+  sellerState: null,
+  sellerZipcode: null,
   otp: null,
   addressId: null,
   regionName: null,
   varietyName: null,
+  orderNumber:null,
   filterFeaturedData: null,
   filterOriginsData: [],
   filterMicroLotData: false,
   filterNanoLotData: false,
   filterVaritiesData: [],
   buyProduct: true,
-  cartProductData:[],
-  spinner:false,
+  cartProductData: [],
+  spinner: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -65,7 +66,7 @@ const reducer = (state = initialState, action) => {
         mobile: action.payload2,
         email: action.payload3,
         otp: action.payload4,
-      };   
+      };
     case actionTypes.REGISTER_SELLER_ADDITIONAL_DETAILS:
       return {
         ...state,
@@ -73,9 +74,9 @@ const reducer = (state = initialState, action) => {
         ein: action.payload2,
         alternatePhone: action.payload3,
         sellerStreet: action.payload4,
-        sellerCity:action.payload5,
-        sellerState:action.payload6,
-        sellerZipcode:action.payload7,
+        sellerCity: action.payload5,
+        sellerState: action.payload6,
+        sellerZipcode: action.payload7,
         otp: action.payload8,
       };
     case actionTypes.RESEND_OTP:
@@ -109,6 +110,11 @@ const reducer = (state = initialState, action) => {
         ...state,
         varietyName: action.payload,
       };
+    case actionTypes.DISPLAY_ORDER_NUMBER:
+      return {
+        ...state,
+        orderNumber: action.payload,
+      };
     case actionTypes.FILTER_FEATURED_DATA:
       return {
         ...state,
@@ -139,12 +145,12 @@ const reducer = (state = initialState, action) => {
         ...state,
         buyProduct: action.payload,
       };
-    case actionTypes.PRODUCT_CART_DETAILS:   
+    case actionTypes.PRODUCT_CART_DETAILS:
       return {
         ...state,
         cartProductData: action.payload,
       };
-      case actionTypes.SPINNER_SWITCH:   
+    case actionTypes.SPINNER_SWITCH:
       return {
         ...state,
         spinner: action.payload,

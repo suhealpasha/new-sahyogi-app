@@ -10,6 +10,7 @@ import {
   Button,
   Dimensions,
   TouchableOpacity,
+  AsyncStorage
 } from 'react-native';
 import {
   Card,
@@ -33,34 +34,41 @@ class ProductDescriptionTemplate extends Component {
     this.state = {
       width: Dimensions.get('window').width,
       height: Dimensions.get('window').height,
-      currentPosition: 0,
-      productOrigin: 'EL SALVADOR',
-      items: [
-        require('../../../assets/Images/coffeeFarms/img4.png'),
-        require('../../../assets/Images/coffeeFarms/img5.png'),
-        require('../../../assets/Images/coffeeFarms/img6.png'),
-        require('../../../assets/Images/coffeeFarms/img7.png'),
-        require('../../../assets/Images/coffeeFarms/img1.png'),
-      ],
+      currentPosition: 0,      
     };
   }
 
-  render() {
-    const items = [
-      {
-        name: require('../../../assets/Images/coffeeFarms/img1.png'),
-        key: '1',
-        origin: 'EL SALVADOR',
-        variety: 'Pacamara',
-        farm: 'Las Delicias',
-        altitude: '1500 Ft',
-        notes: 'Peach,Chocolate,Honey',
-        ratings: 5,
-        process: 'Natural',
-      },
-    ];
+  componentDidMount() {
+    this.fetchOrder();    
+  }
 
-    const styles = StyleSheet.create({
+  fetchOrder = async () => {
+    this.setState({spinner: true});
+    let data = JSON.stringify({
+      product_Id: this.props.route.params.productId,
+    });
+    console.log(data)
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    // axios
+    //   .post(api.buyerOrderDetailsAPI, data, {
+    //     headers: {
+    //       accept: 'application/json',
+    //       access_token: access_token,
+    //       'accept-language': 'en_US',
+    //       'content-type': 'application/x-www-form-urlencoded',
+    //     },
+    //   })
+    //   .then(res => {        
+    //    this.setState({spinner: false, productData: res.data.data});
+    //   })
+    //   .catch(err => {
+    //     this.setState({spinner: false});
+    //     console.log(err);
+    //   });
+  };
+
+  render() {
+      const styles = StyleSheet.create({
       parentContaier: {
         backgroundColor: '#efebea',
         paddingBottom:10
@@ -301,7 +309,7 @@ class ProductDescriptionTemplate extends Component {
 
     return (
       <View style={styles.parentContaier}>
-        <ScrollView>
+        {/* <ScrollView>
           <View style={styles.productImageContainer}>
             <SliderBox
               images={this.state.items}
@@ -471,7 +479,7 @@ class ProductDescriptionTemplate extends Component {
               </View>
             </View>
           </View>
-        </ScrollView>
+        </ScrollView> */}
       </View>
     );
   }

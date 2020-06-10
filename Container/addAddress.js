@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import axios from 'axios';
 import {
   AsyncStorage,
@@ -14,12 +14,12 @@ import {
   TochableOpacity,
   Alert,
   Dimensions,
-  Picker
+  Picker,
 } from 'react-native';
-import { Input } from 'react-native-elements';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {Input} from 'react-native-elements';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import NextButton from '../Components/utils/nextButton';
 import Toast from 'react-native-simple-toast';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -34,11 +34,11 @@ class AddAddress extends Component {
       width: Dimensions.get('window').width,
       spinner: false,
       defaultContryColor: '#969291',
-      defaultStateColor: '#969291',     
+      defaultStateColor: '#969291',
       countriesData: [],
-      statesData:[],      
-      countryId:null,
-      countryError:false,      
+      statesData: [],
+      countryId: null,
+      countryError: false,
       userName: null,
       userNameError: false,
       userNameValidationError: false,
@@ -51,7 +51,7 @@ class AddAddress extends Component {
       streeError: false,
       city: null,
       cityError: false,
-      stateId:null,
+      stateId: null,
       stateError: false,
       zipCode: null,
       zipCodeError: false,
@@ -60,15 +60,15 @@ class AddAddress extends Component {
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  componentDidMount() {    
-    this.setState({ countriesData: this.props.countriesData})
+  componentDidMount() {
+    this.setState({countriesData: this.props.countriesData});
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
 
-  componentWillUnmount() {    
+  componentWillUnmount() {
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -81,134 +81,144 @@ class AddAddress extends Component {
 
   mobileValidate = () => {
     if (this.state.phoneNumber === '') {
-      this.setState({ phoneNumber: null });
+      this.setState({phoneNumber: null});
       return;
     } else {
       if (String(this.state.phoneNumber).length !== 12) {
-        this.setState({ phoneNumberValidationError: true });
+        this.setState({phoneNumberValidationError: true});
         return;
       }
     }
-  }
+  };
 
   zipCodeValidate = () => {
     if (this.state.zipCode === '') {
-      this.setState({ zipCode: null });
+      this.setState({zipCode: null});
       return;
     } else {
       if (String(this.state.zipCode).length !== 5) {
-        this.setState({ zipCodeValidationError: true });
+        this.setState({zipCodeValidationError: true});
         return;
       }
     }
-  }
+  };
 
-  async UNSAFE_componentWillReceiveProps(prevProps,prevState) {
-    if(prevProps.saveIconAddress  !== this.props.saveIconAddress){
-    if (
-      this.state.doorNumber !== null &&
-      this.state.userName !== null &&
-      this.state.phoneNumber !== null &&
-      this.state.street !== null &&
-      this.state.countryId !== null &&
-      this.state.stateId !== null &&
-      this.state.city !== null &&
-      this.state.zipCode !== null &&
-      this.state.userNameValidationError === false &&
-      this.state.phoneNumberValidationError === false &&
-      this.state.zipCodeValidationError === false
-    ) {
-      const data = JSON.stringify({
-        name: this.state.userName,
-        street: this.state.street,
-        door_number: this.state.doorNumber,
-        city: this.state.city,
-        state_Id: this.state.stateId,
-        zip: this.state.zipCode,
-        contact_no: this.state.phoneNumber,
-        is_default:false
-      });     
-      this.setState({ spinner: true });
-      const access_token = await AsyncStorage.getItem('isLoggedIn');
-      const userType = await AsyncStorage.getItem('userType');
-      let addAddressAPI;
-      if (userType === 'Buyer') {
-        addAddressAPI = api.buyerAddAddressAPI
-      }
-      else {
-        addAddressAPI = api.sellerAddAddressAPI
-      }
-      await axios
-        .post(addAddressAPI, data, {
-          headers: {
-            access_token: access_token,
-            accept: 'application/json',
-            'accept-language': 'en_US',
-            'content-type': 'application/x-www-form-urlencoded',
-          },
-        })
-        .then(res => {         
-          if (res.status) {
-            this.setState({ spinner: false });
-            this.props.onFetchAddress();
-            this.props.onfetchBuyerCart();
-            Toast.show('Address Added');
-            this.props.navigation.goBack(null);            
-          }
-        })
-        .catch(err => {
-          this.setState({ spinner: false });
-          console.log(err);
+  async UNSAFE_componentWillReceiveProps(prevProps, prevState) {
+    if (prevProps.saveIconAddress !== this.props.saveIconAddress) {
+      if (
+        this.state.doorNumber !== null &&
+        this.state.userName !== null &&
+        this.state.phoneNumber !== null &&
+        this.state.street !== null &&
+        this.state.countryId !== null &&
+        this.state.stateId !== null &&
+        this.state.city !== null &&
+        this.state.zipCode !== null &&
+        this.state.userNameValidationError === false &&
+        this.state.phoneNumberValidationError === false &&
+        this.state.zipCodeValidationError === false
+      ) {
+        const data = JSON.stringify({
+          name: this.state.userName,
+          street: this.state.street,
+          door_number: this.state.doorNumber,
+          city: this.state.city,
+          state_Id: this.state.stateId,
+          zip: this.state.zipCode,
+          contact_no: this.state.phoneNumber,
+          is_default: false,
         });
-    } else {
-      if (this.state.doorNumber === null) {
-        this.setState({ doorNumberError: true });
+        this.setState({spinner: true});
+        const access_token = await AsyncStorage.getItem('isLoggedIn');
+        const userType = await AsyncStorage.getItem('userType');
+        let addAddressAPI;
+        if (userType === 'Buyer') {
+          addAddressAPI = api.buyerAddAddressAPI;
+        } else {
+          addAddressAPI = api.sellerAddAddressAPI;
+        }
+        await axios
+          .post(addAddressAPI, data, {
+            headers: {
+              access_token: access_token,
+              accept: 'application/json',
+              'accept-language': 'en_US',
+              'content-type': 'application/x-www-form-urlencoded',
+            },
+          })
+          .then(res => {
+            if (res.status) {
+              this.setState({spinner: false});
+              this.props.onFetchAddress();
+              this.props.onfetchBuyerCart();
+              Toast.show('Address Added');
+              this.props.navigation.goBack(null);
+            }
+          })
+          .catch(err => {
+            this.setState({spinner: false});
+            console.log(err);
+          });
       } else {
-        this.setState({ doorNumberError: false });
-      }
-      if (this.state.userName === null) {
-        this.setState({ userNameError: true });
-      } else {
-        this.setState({ userNameError: false });
-      }
-      if (this.state.phoneNumber === null) {
-        this.setState({ phoneNumberError: true });
-      } else {
-        this.setState({ phoneNumberError: false });
-      }
-      if (this.state.street === null) {
-        this.setState({ streetError: true });
-      } else {
-        this.setState({ streetError: false });
-      }
-      if (this.state.countryId === null) {
-        this.setState({ countryError: true });
-      } else {
-        this.setState({ countryError: false });
-      }
-      if (this.state.stateId === null) {
-        this.setState({ stateError: true });
-      } else {
-        this.setState({ stateError: false });
-      }
-      if (this.state.city === null) {
-        this.setState({ cityError: true });
-      } else {
-        this.setState({ cityError: false });
-      }
-      if (this.state.zipCode === null) {
-        this.setState({ zipCodeError: true });
-      } else {
-        this.setState({ zipCodeError: false });
+        if (this.state.doorNumber === null) {
+          this.setState({doorNumberError: true});
+        } else {
+          this.setState({doorNumberError: false});
+        }
+        if (this.state.userName === null) {
+          this.setState({userNameError: true});
+        } else {
+          this.setState({userNameError: false});
+        }
+        if (this.state.phoneNumber === null) {
+          this.setState({phoneNumberError: true});
+        } else {
+          this.setState({phoneNumberError: false});
+        }
+        if (this.state.street === null) {
+          this.setState({streetError: true});
+        } else {
+          this.setState({streetError: false});
+        }
+        if (this.state.countryId === null) {
+          this.setState({countryError: true});
+        } else {
+          this.setState({countryError: false});
+        }
+        if (this.state.stateId === null) {
+          this.setState({stateError: true});
+        } else {
+          this.setState({stateError: false});
+        }
+        if (this.state.city === null) {
+          this.setState({cityError: true});
+        } else {
+          this.setState({cityError: false});
+        }
+        if (this.state.zipCode === null) {
+          this.setState({zipCodeError: true});
+        } else {
+          this.setState({zipCodeError: false});
+        }
       }
     }
   }
-  }
 
-  onContrySelect = async (args) => {
-    this.setState({ defaultContryColor: 'black' ,countryId:args+1,countryError:false})
+  onContrySelect = async (args, args1) => {
+    let country;
+    this.state.countriesData.filter(i => {
+      if (i.country_name === args1) {
+        country = i.country_Id;
+      }
+    });
+    this.setState({
+      defaultContryColor: 'black',
+      countryId: country,
+      countryError: false,
+      statesData: [],
+    });
     const data = JSON.stringify({
-      country_Id: args + 1
+      country_Id: country,
     });
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
@@ -221,20 +231,29 @@ class AddAddress extends Component {
         },
       })
       .then(res => {
-        console.log(res.data.data)
+        console.log(res.data.data);
         if (res.status) {
-          this.setState({ statesData: res.data.data })
+          this.setState({statesData: res.data.data});
         }
       })
       .catch(err => {
         console.log(err);
       });
+  };
 
-  }
-
-  onStateSelect = async (args) => {
-    this.setState({ defaultStateColor: 'black',stateError:false, stateId:args+1})
-  }
+  onStateSelect = async (args, args1) => {
+    let state;
+    this.state.statesData.filter(i => {
+      if (i.state_name === args1) {
+        state = i.state_Id;
+      }
+    });
+    this.setState({
+      defaultStateColor: 'black',
+      stateError: false,
+      stateId: state,
+    });
+  };
 
   render() {
     const styles = StyleSheet.create({
@@ -252,14 +271,19 @@ class AddAddress extends Component {
       },
     });
 
-    let countriesList = [],stateList=[];    
-    countriesList = this.state.countriesData.map(i => { return (i.country_name) })
-    stateList = this.state.statesData.map(i => { return (i.state_name) })
- 
+    let countriesList = [],
+      stateList = [];
+    countriesList = this.state.countriesData.map(i => {
+      return i.country_name;
+    });
+    stateList = this.state.statesData.map(i => {
+      return i.state_name;
+    });
+
     return (
       <KeyboardAwareScrollView
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        style={{ backgroundColor: '#efebea' }}
+        resetScrollToCoords={{x: 0, y: 0}}
+        style={{backgroundColor: '#efebea'}}
         scrollEnabled={true}>
         <View style={styles.container}>
           <Spinner
@@ -276,7 +300,7 @@ class AddAddress extends Component {
               autoCorrect={false}
               onChangeText={userName => {
                 if (/[^a-zA-Z\s]/.test(userName)) {
-                  this.setState({ userNameValidationError: true });
+                  this.setState({userNameValidationError: true});
                 } else {
                   this.setState({
                     userName,
@@ -287,15 +311,15 @@ class AddAddress extends Component {
               }}
               onBlur={
                 this.state.userName === ''
-                  ? this.setState({ userName: null })
+                  ? this.setState({userName: null})
                   : null
               }
               errorMessage={
                 this.state.userNameError === true
                   ? 'Enter the User Name'
                   : this.state.userNameValidationError
-                    ? 'Invalid User Name'
-                    : false
+                  ? 'Invalid User Name'
+                  : false
               }
             />
             <Input
@@ -303,11 +327,11 @@ class AddAddress extends Component {
               style={styles.inputStyle}
               maxLength={4}
               onChangeText={doorNumber =>
-                this.setState({ doorNumber, doorNumberError: false })
+                this.setState({doorNumber, doorNumberError: false})
               }
               onBlur={
                 this.state.userName === ''
-                  ? this.setState({ userName: null })
+                  ? this.setState({userName: null})
                   : null
               }
               errorMessage={
@@ -321,10 +345,10 @@ class AddAddress extends Component {
               maxLength={20}
               style={styles.inputStyle}
               onChangeText={street =>
-                this.setState({ street, streetError: false })
+                this.setState({street, streetError: false})
               }
               onBlur={
-                this.state.street === '' ? this.setState({ street: null }) : null
+                this.state.street === '' ? this.setState({street: null}) : null
               }
               errorMessage={
                 this.state.streetError === true ? 'Enter the Street' : false
@@ -334,9 +358,9 @@ class AddAddress extends Component {
               placeholder="City"
               style={styles.inputStyle}
               maxLength={20}
-              onChangeText={city => this.setState({ city, cityError: false })}
+              onChangeText={city => this.setState({city, cityError: false})}
               onBlur={
-                this.state.city === '' ? this.setState({ city: null }) : null
+                this.state.city === '' ? this.setState({city: null}) : null
               }
               errorMessage={
                 this.state.cityError === true ? 'Enter the City' : false
@@ -346,13 +370,28 @@ class AddAddress extends Component {
             <ModalDropdown
               options={countriesList}
               defaultValue="Country"
-              textStyle={{ color: this.state.defaultContryColor, fontSize: 18, fontWeight: '100', paddingLeft: 5, }}
-              style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
-              dropdownStyle={{ width: this.state.width - 40}}
-              dropdownTextStyle={{fontSize:18}}
-              onSelect={i => { this.onContrySelect(i) }}            
+              textStyle={{
+                color: this.state.defaultContryColor,
+                fontSize: 18,
+                fontWeight: '100',
+                paddingLeft: 5,
+              }}
+              style={{
+                borderBottomColor: '#8c939a',
+                borderBottomWidth: 1,
+                marginLeft: 10,
+                marginRight: 10,
+                paddingBottom: 10,
+                paddingTop: 10,
+              }}
+              dropdownStyle={{width: this.state.width - 40}}
+              dropdownTextStyle={{fontSize: 18}}
+              onSelect={(i, j) => {
+                this.onContrySelect(i, j);
+              }}
             />
-            {this.state.countryError ?<Text
+            {this.state.countryError ? (
+              <Text
                 style={{
                   color: 'red',
                   fontSize: 12,
@@ -362,19 +401,35 @@ class AddAddress extends Component {
                   paddingBottom: 5,
                 }}>
                 Please Select the Country!
-              </Text> :null}
+              </Text>
+            ) : null}
 
             <ModalDropdown
               options={stateList}
               defaultValue="State"
-              disabled={stateList.length >=1 ? false:true}
-              textStyle={{ color: this.state.defaultStateColor, fontSize: 18, fontWeight: '100', paddingLeft: 5, }}
-              style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
-              dropdownStyle={{ width: this.state.width - 40 }}
-              dropdownTextStyle={{fontSize:18}}
-              onSelect={i => { this.onStateSelect(i) }}
+              disabled={stateList.length >= 1 ? false : true}
+              textStyle={{
+                color: this.state.defaultStateColor,
+                fontSize: 18,
+                fontWeight: '100',
+                paddingLeft: 5,
+              }}
+              style={{
+                borderBottomColor: '#8c939a',
+                borderBottomWidth: 1,
+                marginLeft: 10,
+                marginRight: 10,
+                paddingBottom: 10,
+                paddingTop: 10,
+              }}
+              dropdownStyle={{width: this.state.width - 40}}
+              dropdownTextStyle={{fontSize: 18}}
+              onSelect={(i, j) => {
+                this.onStateSelect(i, j);
+              }}
             />
-             {this.state.stateError ?<Text
+            {this.state.stateError ? (
+              <Text
                 style={{
                   color: 'red',
                   fontSize: 12,
@@ -384,23 +439,26 @@ class AddAddress extends Component {
                   paddingBottom: 5,
                 }}>
                 Please Select the State!
-              </Text> :null}
-           
+              </Text>
+            ) : null}
+
             <Input
               placeholder="Zip Code"
               maxLength={5}
               style={styles.inputStyle}
               keyboardType="numeric"
               onChangeText={zipCode =>
-                this.setState({ zipCode, zipCodeError: false,zipCodeValidationError:false })
+                this.setState({
+                  zipCode,
+                  zipCodeError: false,
+                  zipCodeValidationError: false,
+                })
               }
-              onBlur={
-                this.zipCodeValidate
-              }
+              onBlur={this.zipCodeValidate}
               errorMessage={
                 this.state.zipCodeError === true
-                ? 'Enter the Zip code'
-                : this.state.zipCodeValidationError
+                  ? 'Enter the Zip code'
+                  : this.state.zipCodeValidationError
                   ? 'Invalid Zip Code'
                   : null
               }
@@ -436,16 +494,14 @@ class AddAddress extends Component {
                   });
                 }
               }}
-              onBlur={
-                this.mobileValidate
-              }
+              onBlur={this.mobileValidate}
               keyboardType="numeric"
               errorMessage={
                 this.state.phoneNumberError === true
                   ? 'Enter the mobile number'
                   : this.state.phoneNumberValidationError
-                    ? 'Invalid mobile number'
-                    : null
+                  ? 'Invalid mobile number'
+                  : null
               }
             />
           </View>

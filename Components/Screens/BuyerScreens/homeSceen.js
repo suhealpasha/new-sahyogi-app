@@ -23,6 +23,7 @@ import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
 import {YellowBox} from 'react-native';
 
+
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
 
 
@@ -256,8 +257,8 @@ class HomeScreen extends Component {
     });
 
     return (
-      <ScrollView>
-        <View style={styles.container}>
+       <ScrollView>         
+        <View style={styles.container}>         
           <View style={styles.featuredItems}>
             <View
               style={{

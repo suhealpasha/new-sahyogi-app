@@ -212,14 +212,19 @@ class SetPassword extends Component {
         paddingRight: 10,
         paddingBottom: 10,
       },
-      webView: {
-        paddingTop: 10,
+      webView: {        
         paddingLeft: 10,
+        paddingTop:10,
+        paddingBottom:10,
+        marginTop:10,
         paddingRight: 10,
-        paddingBottom: 10,
+        flex:1.0,
+        justifyContent:'center',
         alignItems: 'center',
+       
       },
       webViewChild: {
+        marginTop: 20,
         paddingLeft: 10,
         paddingRight: 10,
         
@@ -410,7 +415,7 @@ class SetPassword extends Component {
                   style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
                   Thank you
                 </Dialog.Title>
-                {this.props.userType === 'Seller' ? (
+                {this.props.userType === 'seller' ? (
                   <Dialog.Description
                     style={{textAlign: 'center', fontFamily: 'GothamLight'}}>
                     Your account is registered and it will be activated after

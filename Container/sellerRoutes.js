@@ -12,7 +12,8 @@ import {
   AsyncStorage,
   Image,
   Animated,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -40,9 +41,9 @@ import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
 import KeyboardShift from '../Components/utils/keyboardShift';
 import {StatusBar} from 'react-native';
-
+import Dialog from 'react-native-dialog';
 import axios from 'axios';
-import * as api from '../assets/api/api' 
+import * as api from '../assets/api/api';
 
 const Tab = createMaterialTopTabNavigator();
 const Tab2 = createMaterialBottomTabNavigator();
@@ -61,18 +62,20 @@ class SellerRoutes extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      cashCheckout:false,
       isLogout: false,
       isLoggedIn: null,
       sellerHomeScreen: false,
       width: Dimensions.get('window').width,
       home: false,
       searchText: '',
-      saveIconAddress:false,
+      saveIconAddress: false,
       saveEditIconAddress: false,
-       searchIcon: true,
-      userData:[],
+      searchIcon: true,
+      userData: [],
       addressData: [],
       saveIcon: false,
+      countriesData:[]
     };
   }
 
@@ -80,12 +83,12 @@ class SellerRoutes extends Component {
     // this.fetchHomeScreenData();
     this.fetchDetails();
     this.fetchAddress();
-
+    this.fetchCountries();
   }
 
   clickedSave = () => {
     this.setState({saveIcon: !this.state.saveIcon});
-    };
+  };
 
   goBack = ({navigation}, path) => {
     if (path === 'Home') {
@@ -120,8 +123,8 @@ class SellerRoutes extends Component {
   };
 
   fetchDetails = async () => {
-    const access_token = await AsyncStorage.getItem('isLoggedIn');   
-    console.log(access_token)    
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    console.log(access_token);
     await axios
       .get(api.sellerDetailsAPI, {
         headers: {
@@ -131,10 +134,10 @@ class SellerRoutes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {        
-          if (res.status) {
+      .then(res => {
+        if (res.status) {
           this.setState({
-            userData: res.data.data            
+            userData: res.data.data,
           });
         }
       })
@@ -154,13 +157,40 @@ class SellerRoutes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {        
+      .then(res => {
         this.setState({addressData: res.data.data.seller_addresses});
       })
       .catch(err => {
         console.log(err);
       });
   };
+
+  fetchCountries = async () => {
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .get(api.countriesAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {       
+        this.setState({countriesData: res.data.data});
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+cashCheckoutOk = ()=>{
+  // this.setState({cashCheckout:false})
+}
+
+cashCheckoutCancel = () =>{  
+  this.setState({cashCheckout:false})
+}
 
   render() {
     const styles = StyleSheet.create({
@@ -175,13 +205,12 @@ class SellerRoutes extends Component {
         paddingTop: Platform.OS === 'ios' ? 20 : 0,
       },
     });
-
+console.log(this.state.cashCheckout)
     return (
-      <NavigationContainer>
+      <NavigationContainer>         
         <Stack.Navigator>
           <Stack.Screen
-            name="Home"
-            component={HomeScreen}
+            name="Home"            
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -200,6 +229,14 @@ class SellerRoutes extends Component {
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
                   <TouchableWithoutFeedback
+                    onPress={() => {this.setState({cashCheckout:true})}}>
+                    <Icon2
+                      name="cash-refund"
+                      size={24}
+                      style={{padding: 10, color: '#ffffff'}}
+                    />
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Seller Notification')}>
                     <Icon
                       name="notifications-none"
@@ -207,24 +244,23 @@ class SellerRoutes extends Component {
                       style={{padding: 10, color: '#ffffff'}}
                     />
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                    onPress={() => navigation.navigate('Search')}>
-                    <Icon
-                      name="search"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableWithoutFeedback>
                 </View>
               ),
-            })}
-            {...this.state}
-            {...this.props}
-          />
+            })}           
+          >
+            {props => (
+              <HomeScreen
+                {...props}
+                {...this.state}
+               cashCheckout = {this.state.cashCheckout}
+               onCashCheckoutOk = {this.cashCheckoutOk}
+               onCashCheckoutCancel = {this.cashCheckoutCancel}
+              />
+            )}
+          </Stack.Screen>
 
           <Stack.Screen
-            name="Order Listing"
-            component={OrderListing}
+            name="Order Listing"           
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -243,18 +279,17 @@ class SellerRoutes extends Component {
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
                   <TouchableWithoutFeedback
-                    onPress={() => navigation.navigate('Seller Notification')}>
-                    <Icon
-                      name="notifications-none"
+                    onPress={() => {this.setState({cashCheckout:true})}}>
+                    <Icon2
+                      name="cash-refund"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
                   </TouchableWithoutFeedback>
                   <TouchableWithoutFeedback
-                  // onPress={() => this.sortClicked({navigation})}
-                  >
+                    onPress={() => navigation.navigate('Seller Notification')}>
                     <Icon
-                      name="search"
+                      name="notifications-none"
                       size={24}
                       style={{padding: 10, color: '#ffffff'}}
                     />
@@ -264,10 +299,19 @@ class SellerRoutes extends Component {
             })}
             initialParams={{filterOn: this.state.filterOn}}
             {...this.props}
-          />
+            >
+            {props => (
+              <OrderListing
+                {...props}
+                {...this.state}
+               cashCheckout = {this.state.cashCheckout}
+               onCashCheckoutOk = {this.cashCheckoutOk}
+               onCashCheckoutCancel = {this.cashCheckoutCancel}
+              />
+            )}
+          </Stack.Screen>
           <Stack.Screen
-            name="Inventory"
-            component={Inventory}
+            name="Inventory"            
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -285,6 +329,14 @@ class SellerRoutes extends Component {
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
+                   <TouchableWithoutFeedback
+                    onPress={() => {this.setState({cashCheckout:true})}}>
+                    <Icon2
+                      name="cash-refund"
+                      size={24}
+                      style={{padding: 10, color: '#ffffff'}}
+                    />
+                  </TouchableWithoutFeedback>
                   <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Notification')}>
                     <Icon
@@ -293,21 +345,21 @@ class SellerRoutes extends Component {
                       style={{padding: 10, color: '#ffffff'}}
                     />
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                  // onPress={() => this.sortClicked({navigation})}
-                  >
-                    <Icon
-                      name="search"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableWithoutFeedback>
                 </View>
               ),
             })}
-            initialParams={{filterOn: this.state.filterOn}}
-            {...this.props}
-          />
+            initialParams={{filterOn: this.state.filterOn}}            
+            >
+            {props => (
+              <Inventory
+                {...props}
+                {...this.state}
+               cashCheckout = {this.state.cashCheckout}
+               onCashCheckoutOk = {this.cashCheckoutOk}
+               onCashCheckoutCancel = {this.cashCheckoutCancel}
+              />
+            )}
+          </Stack.Screen>
 
           <Stack.Screen
             name="Search"
@@ -324,7 +376,8 @@ class SellerRoutes extends Component {
               headerTitle: null,
               headerRightContainerStyle: styles.headerRightContainerStyle,
               headerLeft: () => (
-                <TouchableWithoutFeedback onPress={() => this.goBack({navigation})}>
+                <TouchableWithoutFeedback
+                  onPress={() => this.goBack({navigation})}>
                   <Icon name="chevron-left" size={35} color="black" />
                 </TouchableWithoutFeedback>
               ),
@@ -379,8 +432,7 @@ class SellerRoutes extends Component {
           />
 
           <Stack.Screen
-            name="Seller Notification"
-            component={SellerNotification}
+            name="Seller Notification"            
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -402,20 +454,30 @@ class SellerRoutes extends Component {
                 </TouchableWithoutFeedback>
               ),
               headerRight: () => (
-                <TouchableWithoutFeedback onPress={() => navigation.navigate('Search')}>
-                  <Icon
-                    name="search"
-                    size={24}
-                    style={{padding: 10, color: '#ffffff'}}
-                  />
-                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback
+                    onPress={() => {this.setState({cashCheckout:true})}}>
+                    <Icon2
+                      name="cash-refund"
+                      size={24}
+                      style={{padding: 10, color: '#ffffff'}}
+                    />
+                  </TouchableWithoutFeedback>
               ),
             })}
-            {...this.props}
-          />
+            >
+            {props => (
+              <SellerNotification
+                {...props}
+                {...this.state}
+               cashCheckout = {this.state.cashCheckout}
+               onCashCheckoutOk = {this.cashCheckoutOk}
+               onCashCheckoutCancel = {this.cashCheckoutCancel}
+              />
+            )}
+          </Stack.Screen>
 
           <Stack.Screen
-            name="Seller Profile"            
+            name="Seller Profile"
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -433,6 +495,14 @@ class SellerRoutes extends Component {
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
+                   <TouchableWithoutFeedback
+                    onPress={() => {this.setState({cashCheckout:true})}}>
+                    <Icon2
+                      name="cash-refund"
+                      size={24}
+                      style={{padding: 10, color: '#ffffff'}}
+                    />
+                  </TouchableWithoutFeedback>
                   <TouchableWithoutFeedback
                     onPress={() => navigation.navigate('Notification')}>
                     <Icon
@@ -441,107 +511,101 @@ class SellerRoutes extends Component {
                       style={{padding: 10, color: '#ffffff'}}
                     />
                   </TouchableWithoutFeedback>
-                  <TouchableWithoutFeedback
-                  // onPress={() => this.sortClicked({navigation})}
-                  >
-                    <Icon
-                      name="search"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableWithoutFeedback>
                 </View>
               ),
-            })}           
-          >
-              {props => <SellerProfile 
-              {...props}
-               onFetchDetails={this.fetchDetails}
-               userData = {this.state.userData} 
-               saveIcon={this.state.saveIcon}
-               onLogout = {this.props.onLogoutSession}/>}
-            </Stack.Screen>
-            <Stack.Screen
-                name="Edit Seller Profile"                
-                options={({navigation, route}) => ({
-                  animationEnabled: false,
-                  headerTitle: (
-                    <Text
-                      style={{
-                        textAlign: 'center',
-                        flex: 1,
-                        fontFamily: 'Gotham Black Regular',
-                      }}>
-                      Edit Profile
-                    </Text>
-                  ),
-                  headerStyle: {backgroundColor: '#00aa00'},
-                  headerTintColor: '#ffffff',
-                  headerLeft: () => (
-                    <TouchableWithoutFeedback
-                      onPress={() => this.goBack({navigation}, 'My Address')}>
-                      <Icon name="chevron-left" size={35} color="white" />
-                    </TouchableWithoutFeedback>
-                  ),
-                  headerRight: () => (
-                    <TouchableWithoutFeedback onPress={() => this.clickedSave()}>
-                      <Icon2
-                        name="content-save-outline"
-                        size={24}
-                        style={{padding: 10, color: '#ffffff'}}
-                      />
-                    </TouchableWithoutFeedback>
-                  ),
-                })}              
-              >
-                 {props => (
+            })}>
+            {props => (
+              <SellerProfile
+                {...props}
+                onFetchDetails={this.fetchDetails}
+                userData={this.state.userData}
+                saveIcon={this.state.saveIcon}
+                onLogout={this.props.onLogoutSession}
+                cashCheckout = {this.state.cashCheckout}
+               onCashCheckoutOk = {this.cashCheckoutOk}
+               onCashCheckoutCancel = {this.cashCheckoutCancel}
+              />
+            )}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Edit Seller Profile"
+            options={({navigation, route}) => ({
+              animationEnabled: false,
+              headerTitle: (
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 1,
+                    fontFamily: 'Gotham Black Regular',
+                  }}>
+                  Edit Profile
+                </Text>
+              ),
+              headerStyle: {backgroundColor: '#00aa00'},
+              headerTintColor: '#ffffff',
+              headerLeft: () => (
+                <TouchableWithoutFeedback
+                  onPress={() => this.goBack({navigation}, 'My Address')}>
+                  <Icon name="chevron-left" size={35} color="white" />
+                </TouchableWithoutFeedback>
+              ),
+              headerRight: () => (
+                <TouchableWithoutFeedback onPress={() => this.clickedSave()}>
+                  <Icon2
+                    name="content-save-outline"
+                    size={24}
+                    style={{padding: 10, color: '#ffffff'}}
+                  />
+                </TouchableWithoutFeedback>
+              ),
+            })}>
+            {props => (
               <EditSellerProfile
                 {...props}
                 saveIcon={this.state.saveIcon}
                 onFetchDetails={this.fetchDetails}
-               userData ={this.state.userData}
+                userData={this.state.userData}
               />
             )}
-                </Stack.Screen>
-              <Stack.Screen
-                name="My Address"
-                options={({navigation, route}) => ({
-                  animationEnabled: false,
-                  headerTitle: (
-                    <Text
-                      style={{
-                        textAlign: 'center',
-                        flex: 1,
-                        fontFamily: 'Gotham Black Regular',
-                      }}>
-                      My Address
-                    </Text>
-                  ),
-                  headerStyle: {backgroundColor: '#00aa00'},
-                  headerTintColor: '#ffffff',
-                  headerRightContainerStyle: styles.headerRightContainerStyle,
-                  headerLeft: () => (
-                    <TouchableWithoutFeedback
-                      onPress={() => this.goBack({navigation}, 'Profile')}>
-                      <Icon name="chevron-left" size={35} color="white" />
-                    </TouchableWithoutFeedback>
-                  ),
-                  headerRight: () => (
-                    <View style={{width: 300}}>
-                      <TouchableWithoutFeedback
-                        onPress={() => navigation.navigate('Add Address')}>
-                        <Icon
-                          style={{textAlign: 'right'}}
-                          name="add-circle-outline"
-                          color={'white'}
-                          size={24}
-                        />
-                      </TouchableWithoutFeedback>
-                    </View>
-                  ),
-                })}    
-              >
-                {props => (
+          </Stack.Screen>
+          <Stack.Screen
+            name="My Address"
+            options={({navigation, route}) => ({
+              animationEnabled: false,
+              headerTitle: (
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 1,
+                    fontFamily: 'Gotham Black Regular',
+                  }}>
+                  My Address
+                </Text>
+              ),
+              headerStyle: {backgroundColor: '#00aa00'},
+              headerTintColor: '#ffffff',
+              headerRightContainerStyle: styles.headerRightContainerStyle,
+              headerLeft: () => (
+                <TouchableWithoutFeedback
+                  onPress={() => this.goBack({navigation}, 'Profile')}>
+                  <Icon name="chevron-left" size={35} color="white" />
+                </TouchableWithoutFeedback>
+              ),
+              headerRight: () => (
+                <View style={{width: 300}}>
+                  <TouchableWithoutFeedback
+                    onPress={() => navigation.navigate('Add Address')}>
+                    <Icon
+                      style={{textAlign: 'right'}}
+                      name="add-circle-outline"
+                      color={'white'}
+                      size={24}
+                    />
+                  </TouchableWithoutFeedback>
+                </View>
+              ),
+            })}>
+            {props => (
               <MyAddress
                 {...props}
                 {...this.state}
@@ -550,84 +614,84 @@ class SellerRoutes extends Component {
               />
             )}
           </Stack.Screen>
-              <Stack.Screen
-                name="Add Address"
-                options={({navigation, route}) => ({
-                  animationEnabled: false,
-                  headerTitle: (
-                    <Text
-                      style={{
-                        textAlign: 'center',
-                        flex: 1,
-                        fontFamily: 'Gotham Black Regular',
-                      }}>
-                      Add Address
-                    </Text>
-                  ),
-                  headerStyle: {backgroundColor: '#00aa00'},
-                  headerTintColor: '#ffffff',
-                  headerLeft: () => (
-                    <TouchableWithoutFeedback
-                      onPress={() => this.goBack({navigation}, 'My Address')}>
-                      <Icon name="chevron-left" size={35} color="white" />
-                    </TouchableWithoutFeedback>
-                  ),
-                  headerRight: () => (
-                    <TouchableWithoutFeedback onPress={() => this.clickedSaveAddress()}>
-                    <Icon2
-                      name="content-save-outline"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableWithoutFeedback>
-                  ),
-                })}            
-              >
-                 {props => (
-              <AddAddress {...props} onFetchAddress={this.fetchAddress} />
+          <Stack.Screen
+            name="Add Address"
+            options={({navigation, route}) => ({
+              animationEnabled: false,
+              headerTitle: (
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 1,
+                    fontFamily: 'Gotham Black Regular',
+                  }}>
+                  Add Address
+                </Text>
+              ),
+              headerStyle: {backgroundColor: '#00aa00'},
+              headerTintColor: '#ffffff',
+              headerLeft: () => (
+                <TouchableWithoutFeedback
+                  onPress={() => this.goBack({navigation}, 'My Address')}>
+                  <Icon name="chevron-left" size={35} color="white" />
+                </TouchableWithoutFeedback>
+              ),
+              headerRight: () => (
+                <TouchableWithoutFeedback
+                  onPress={() => this.clickedSaveAddress()}>
+                  <Icon2
+                    name="content-save-outline"
+                    size={24}
+                    style={{padding: 10, color: '#ffffff'}}
+                  />
+                </TouchableWithoutFeedback>
+              ),
+            })}>
+            {props => (
+              <AddAddress {...props} onFetchAddress={this.fetchAddress} saveIconAddress = {this.state.saveIconAddress} countriesData = {this.state.countriesData}/>
             )}
           </Stack.Screen>
-              <Stack.Screen
-                name="Edit Address"
-                options={({navigation, route}) => ({
-                  animationEnabled: false,
-                  headerTitle: (
-                    <Text
-                      style={{
-                        textAlign: 'center',
-                        flex: 1,
-                        fontFamily: 'Gotham Black Regular',
-                      }}>
-                      Edit Address
-                    </Text>
-                  ),
-                  headerStyle: {backgroundColor: '#00aa00'},
-                  headerTintColor: '#ffffff',
-                  headerLeft: () => (
-                    <TouchableWithoutFeedback
-                      onPress={() => this.goBack({navigation}, 'My Address')}>
-                      <Icon name="chevron-left" size={35} color="white" />
-                    </TouchableWithoutFeedback>
-                  ),
-                  headerRight: () => (
-                    <TouchableWithoutFeedback onPress={() => this.clickedSaveEditAddress()}>
-                    <Icon2
-                      name="content-save-outline"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableWithoutFeedback>
-                  ),
-                })}
-               >  
-               {props => (
+          <Stack.Screen
+            name="Edit Address"
+            options={({navigation, route}) => ({
+              animationEnabled: false,
+              headerTitle: (
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    flex: 1,
+                    fontFamily: 'Gotham Black Regular',
+                  }}>
+                  Edit Address
+                </Text>
+              ),
+              headerStyle: {backgroundColor: '#00aa00'},
+              headerTintColor: '#ffffff',
+              headerLeft: () => (
+                <TouchableWithoutFeedback
+                  onPress={() => this.goBack({navigation}, 'My Address')}>
+                  <Icon name="chevron-left" size={35} color="white" />
+                </TouchableWithoutFeedback>
+              ),
+              headerRight: () => (
+                <TouchableWithoutFeedback
+                  onPress={() => this.clickedSaveEditAddress()}>
+                  <Icon2
+                    name="content-save-outline"
+                    size={24}
+                    style={{padding: 10, color: '#ffffff'}}
+                  />
+                </TouchableWithoutFeedback>
+              ),
+            })}>
+            {props => (
               <EditAddress
                 {...props}
                 saveEditIconAddress={this.state.saveEditIconAddress}
                 onFetchAddress={this.fetchAddress}
               />
             )}
-          </Stack.Screen>       
+          </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
     );

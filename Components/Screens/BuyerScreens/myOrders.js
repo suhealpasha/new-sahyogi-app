@@ -8,6 +8,7 @@ import {
   ScrollView,
   TouchableOpacity,
   BackHandler,
+  TouchableNativeFeedback,
 } from 'react-native';
 import {
   Card,
@@ -18,24 +19,24 @@ import {
   CardImage,
 } from 'react-native-material-cards';
 import BottomNavigation from '../../BottomNavigation/bottomNavigation';
-import {TouchableHighlight, TouchableNativeFeedback} from 'react-native-gesture-handler';
+import {TouchableHighlight} from 'react-native-gesture-handler';
 import Dialog from 'react-native-dialog';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Rating, AirbnbRating} from 'react-native-ratings';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
 
- class MyOrders extends Component {
+class MyOrders extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dailogBoxOpen: false,
-      comment:''
+      comment: '',
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
-  componentWillMount() {    
+  componentDidMount() {
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -48,136 +49,27 @@ import {connect} from 'react-redux';
       this.handleBackButtonClick,
     );
   }
-  handleBackButtonClick() {   
+  handleBackButtonClick() {
     this.props.onBottomTabClicked('profile');
     this.props.navigation.goBack(null);
     return true;
-  }  
-
-  ratingCompleted =(rating) => {
-    console.log('Rating is: ' + rating);
   }
-commentUpdate = () =>{
 
-}
+  fetchOrderDetails = (args, args1) => {
+    this.props.onDisplayOrderNumber(args1);
+    this.props.navigation.navigate('Order Detail', {productId: args});
+  };
+
+  ratingCompleted = rating => {
+    console.log('Rating is: ' + rating);
+  };
+  commentUpdate = () => {};
   render() {
-    const items = [
-      {
-        name: require('../../../assets/Images/coffeeFarms/img8.png'),
-        key: '8',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '3.0',
-        orderNumber: 3443,
-        status: 'Delivered',
-        statusDate: '05-Mar-2020',
-        rated: true,
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img9.png'),
-        key: '9',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        ratings: '2.0',
-        orderNumber: 3113,
-        status: 'Ordered',
-        statusDate: '05-Mar-2020',
-        rated: false,
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img10.png'),
-        key: '10',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '4.0',
-        orderNumber: 6443,
-        status: 'Rejected',
-        statusDate: '25-Feb-2020',
-        rated: true,
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img1.png'),
-        key: '1',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '5.0',
-        orderNumber: 3433,
-        status: 'Return',
-        statusDate: '05-Mar-2020',
-        rated: false,
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img2.png'),
-        key: '2',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        ratings: '3.0',
-        orderNumber: 9843,
-        status: 'Delivered',
-        statusDate: '05-Mar-2020',
-        rated: true,
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img5.png'),
-        key: '5',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        ratings: '4.0',
-        orderNumber: 1133,
-        status: 'Delivered',
-        statusDate: '05-Mar-2020',
-        rated: true,
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img6.png'),
-        key: '6',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '1.0',
-        orderNumber: 8765,
-        status: 'Delivered',
-        statusDate: '05-Mar-2020',
-        rated: true,
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img7.png'),
-        key: '7',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        ratings: '4.0',
-        orderNumber: 9001,
-        status: 'Delivered',
-        statusDate: '05-Mar-2020',
-        rated: true,
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img3.png'),
-        key: '3',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        ratings: '2.0',
-        orderNumber: 5428,
-        status: 'Rejected',
-        statusDate: '25-Feb-2020',
-        rated: true,
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img4.png'),
-        key: '4',
-        origin: 'EL SALVADOR',
-        farm: 'Las Delicias',
-        ratings: '5.0',
-        orderNumber: 1111,
-        status: 'Delivered',
-        statusDate: '05-Mar-2020',
-        rated: true,
-      },
-    ];
     return (
       <View style={styles.container}>
         <FlatList
-        style={{paddingLeft:10,paddingRight:10}}
-          data={items}
+          style={{paddingLeft: 10, paddingRight: 10}}
+          data={this.props.buyerOrderData}
           numColumns={1}
           // keyExtractor = {(items)=>{items.key}}
 
@@ -228,14 +120,17 @@ commentUpdate = () =>{
               </TouchableOpacity>
             );
             return (
-              <TouchableNativeFeedback onPress={() => this.props.navigation.navigate('Order Detail')}>
+              <TouchableNativeFeedback
+                onPress={() =>this.fetchOrderDetails(item.product_Id,item.order_Id)}>
                 <View style={styles.itemContainer}>
                   <View style={styles.thumbnailImageContainer}>
                     <Image
-                      source={item.name}
+                      source={{
+                        uri: item.thumbnail_image_url,
+                      }}
                       style={{
                         width: 130,
-                        height: 100,
+                        height: 140,
                         borderTopLeftRadius: 5,
                         borderBottomLeftRadius: 5,
                       }}
@@ -243,30 +138,40 @@ commentUpdate = () =>{
                   </View>
                   <View style={styles.itemDetailContainer}>
                     <Text style={styles.itemTextOrderText}>
-                      Order#: {item.orderNumber}
+                      Order#: {item.order_Id}
                     </Text>
-                    <Text style={styles.itemTextVariety}>{item.verityname}</Text>
-                    <Text style={styles.itemTextOrigin}>{item.originsname}</Text>
+                    <Text style={styles.itemTextVariety}>
+                      {item.verityname}
+                    </Text>
+                    <Text style={styles.itemTextOrigin}>
+                      {item.originsname}
+                    </Text>
                     <Text style={styles.itemTextFarm}>{item.farm}</Text>
+                    <View style={{flexDirection: 'row'}}>
+                      <Text style={styles.statusOrdered}>Price</Text>
+                      <Text style={styles.itemTextPrice}>
+                        $ {item.total_price}
+                      </Text>
+                    </View>
                     <View style={{flexDirection: 'row'}}>
                       <Text
                         style={(() => {
-                          switch (item.status) {
-                            case 'Delivered':
+                          switch (item.order_status) {
+                            case 'delivered':
                               return styles.statusDelivered;
-                            case 'Rejected':
+                            case 'rejected':
                               return styles.statusRejected;
-                            case 'Return':
+                            case 'return':
                               return styles.statusRejected;
                             default:
                               return styles.statusOrdered;
                           }
                         })()}>
-                        {item.status}
+                        {item.order_status}
                       </Text>
                       <Text style={styles.statusOrdered}>
                         {' '}
-                        on {item.statusDate}
+                        on {item.order_date}
                       </Text>
                     </View>
                     {ratingIcon}
@@ -308,7 +213,7 @@ commentUpdate = () =>{
               paddingLeft: 0,
               paddingRight: 0,
               borderColor: 'grey',
-              width:300,
+              width: 300,
               borderTopWidth: 1,
               textAlign: 'center',
               justifyContent: 'center',
@@ -318,7 +223,15 @@ commentUpdate = () =>{
               this.setState({dailogBoxOpen: false});
             }}
           />
-          <Dialog.Input placeholder = 'Comment' underlineColorAndroid={'#95A5A6'}  multiline={true} width={280} onChangeText={()=>{this.commentUpdate()}}/>
+          <Dialog.Input
+            placeholder="Comment"
+            underlineColorAndroid={'#95A5A6'}
+            multiline={true}
+            width={280}
+            onChangeText={() => {
+              this.commentUpdate();
+            }}
+          />
         </Dialog.Container>
       </View>
     );
@@ -328,7 +241,7 @@ commentUpdate = () =>{
 const styles = StyleSheet.create({
   container: {
     flex: 1.0,
-   
+
     paddingBottom: 10,
     paddingTop: 10,
   },
@@ -354,7 +267,7 @@ const styles = StyleSheet.create({
     fontFamily: 'GothamLight',
     paddingTop: 5,
   },
-  itemTextVariety:{
+  itemTextVariety: {
     fontFamily: 'Gotham Black Regular',
     fontSize: 14,
     paddingTop: 5,
@@ -363,7 +276,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     justifyContent: 'space-around',
     fontFamily: 'GothamMedium',
-    color: '#5C5C5C',      
+    color: '#5C5C5C',
   },
   itemTextFarm: {
     fontSize: 12,
@@ -399,11 +312,18 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     fontSize: 12,
   },
+  itemTextPrice: {
+    fontFamily: 'Gotham Black Regular',
+    fontSize: 14,
+    marginLeft: 5,
+  },
 });
 const mapDispatchToProps = dispatch => {
   return {
     onBottomTabClicked: value =>
       dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
+    onDisplayOrderNumber: value =>
+      dispatch({type: actionTypes.DISPLAY_ORDER_NUMBER, payload: value}),
   };
 };
 export default connect(

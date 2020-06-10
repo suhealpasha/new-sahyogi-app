@@ -10,6 +10,7 @@ import {connect} from 'react-redux';
 import KeyboardShift from '../../utils/keyboardShift';
 import {YellowBox} from 'react-native';
 import Dashboard from 'react-native-dashboard';
+import { AlertPrompt } from 'react-native-alert-prompt';
 
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
 const Tab = createMaterialBottomTabNavigator();
@@ -246,8 +247,7 @@ intToString = (value)=>{
     });
 
     return (
-      <ScrollView>
-       
+      <ScrollView>    
           <View style={styles.container}>
             <FlatList
               data={items}

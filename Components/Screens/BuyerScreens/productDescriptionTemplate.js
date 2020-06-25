@@ -47,6 +47,7 @@ class ProductDescriptionTemplate extends Component {
   }
 
   componentDidMount() {
+    
     this.fetchProduct();
     this.props.onBuyProduct(true);  
   }
@@ -67,7 +68,8 @@ class ProductDescriptionTemplate extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {        
+      .then(res => {   
+        console.log(res.data.data)     
        this.setState({spinner: false, productData: res.data.data});
       })
       .catch(err => {

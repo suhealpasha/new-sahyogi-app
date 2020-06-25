@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   BackHandler,
   TouchableNativeFeedback,
+  AsyncStorage,
 } from 'react-native';
 import {
   Card,
@@ -25,13 +26,17 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Rating, AirbnbRating} from 'react-native-ratings';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
-
+import Spinner from 'react-native-loading-spinner-overlay';
+import * as api from '../../../assets/api/api';
+import axios from 'axios';
 class MyOrders extends Component {
   constructor(props) {
     super(props);
     this.state = {
       dailogBoxOpen: false,
       comment: '',
+      buyerRating: null,
+      productId: null,
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -57,13 +62,38 @@ class MyOrders extends Component {
 
   fetchOrderDetails = (args, args1) => {
     this.props.onDisplayOrderNumber(args1);
-    this.props.navigation.navigate('Order Detail', {productId: args});
+    this.props.navigation.navigate('Order Detail', {itemId: args});
   };
 
   ratingCompleted = rating => {
-    console.log('Rating is: ' + rating);
+    this.setState({buyerRating: rating});
   };
-  commentUpdate = () => {};
+
+  giveRatings = async s => {
+    this.setState({dailogBoxOpen: false});
+    let data = JSON.stringify({
+      rating: this.state.buyerRating,
+      comment: this.state.comment,
+      product_Id: this.state.productId,
+    });
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .post(api.buyerAddOrUpdateFeedbackAPI, data, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        console.log(res)
+        this.props.onFetchBuyerOrders();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   render() {
     return (
       <View style={styles.container}>
@@ -104,7 +134,10 @@ class MyOrders extends Component {
             ) : (
               <TouchableOpacity
                 onPress={() => {
-                  this.setState({dailogBoxOpen: true});
+                  this.setState({
+                    dailogBoxOpen: true,
+                    productId: item.product_Id,
+                  });
                 }}>
                 <Text
                   style={{
@@ -121,7 +154,9 @@ class MyOrders extends Component {
             );
             return (
               <TouchableNativeFeedback
-                onPress={() =>this.fetchOrderDetails(item.product_Id,item.order_Id)}>
+                onPress={() =>
+                  this.fetchOrderDetails(item.order_item_id, item.order_Id)
+                }>
                 <View style={styles.itemContainer}>
                   <View style={styles.thumbnailImageContainer}>
                     <Image
@@ -159,7 +194,11 @@ class MyOrders extends Component {
                           switch (item.order_status) {
                             case 'delivered':
                               return styles.statusDelivered;
+                            case 'shipped':
+                              return styles.statusDelivered;
                             case 'rejected':
+                              return styles.statusRejected;
+                            case 'cancelled':
                               return styles.statusRejected;
                             case 'return':
                               return styles.statusRejected;
@@ -220,7 +259,7 @@ class MyOrders extends Component {
             }}
             label="Ok"
             onPress={() => {
-              this.setState({dailogBoxOpen: false});
+              this.giveRatings();
             }}
           />
           <Dialog.Input
@@ -228,8 +267,8 @@ class MyOrders extends Component {
             underlineColorAndroid={'#95A5A6'}
             multiline={true}
             width={280}
-            onChangeText={() => {
-              this.commentUpdate();
+            onChangeText={comm => {
+              this.setState({comment: comm});
             }}
           />
         </Dialog.Container>

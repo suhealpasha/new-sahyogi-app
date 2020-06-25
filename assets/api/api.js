@@ -17,7 +17,7 @@ export const unitsAPI = URL+'getUnits';
 export const productsAPI = URL+'getproducts';
 export const countriesAPI = URL+'getCountries';
 export const statesAPI = URL+'getStates';
-
+export const orderStatusUpdateAPI = URL+'orderStatusupdate';
 
 
 //////////////////////// Buyer API's //////////////////////////
@@ -45,6 +45,7 @@ export const buyerUpdateProductFromCart = URL+'buyerupdateProductToCart';
 export const buyerOrderAPI = URL+'addBuyerOrder';
 export const buyerOrderListAPI = URL+'buyerOrderList';
 export const buyerOrderDetailsAPI = URL+'getBuyerOrderDetails';
+export const buyerAddOrUpdateFeedbackAPI = URL+'buyerAddOrUpdateFeedback';
 
 //////////////////////// Seller API's //////////////////////////
 
@@ -57,4 +58,4 @@ export const sellerAddressAPI = URL+'getSellerAddress';
 export const sellerAddressDeleteAPI = URL+'deleteSellerAddress';
 export const sellerAddressByIdAPI = URL+'getSellerAddressById';
 export const sellerAddressUpdateAPI = URL+'updateSellerAddressById';
-export const sellerInventoryAPI = URL+'getSellerInventory';
+export const sellerInventoryAPI = URL+'getSellerInventories';

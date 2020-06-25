@@ -81,7 +81,7 @@ class Login extends Component {
       data = JSON.stringify({
         email_id: this.state.emailId,
         password: this.state.password,
-      });
+      });      
       await axios
         .post(api.signInAPI, data, {
           headers: {

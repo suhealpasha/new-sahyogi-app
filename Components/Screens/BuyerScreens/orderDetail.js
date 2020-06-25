@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-
 import {
   StyleSheet,
   FlatList,
@@ -10,7 +9,7 @@ import {
   Button,
   Dimensions,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
 } from 'react-native';
 import {
   Card,
@@ -27,51 +26,99 @@ import ProductAction from '../../utils/productAction';
 import {SliderBox} from 'react-native-image-slider-box';
 import StepIndicator from 'react-native-step-indicator';
 import ConfirmButton from '../../utils/confirmButton';
+import axios from 'axios';
+import * as api from '../../../assets/api/api';
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 class ProductDescriptionTemplate extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      spinner: false,
       width: Dimensions.get('window').width,
-      height: Dimensions.get('window').height,
-      currentPosition: 0,      
+      height: Dimensions.get('window').height,     
+      orderDetailsData:[],
+      thumbnailImages: [
+        require('../../../assets/Images/coffeeFarms/img4.png')
+          
+      ],
     };
   }
 
   componentDidMount() {
-    this.fetchOrder();    
+    this.fetchOrder();
   }
 
   fetchOrder = async () => {
     this.setState({spinner: true});
     let data = JSON.stringify({
-      product_Id: this.props.route.params.productId,
+      Id: this.props.route.params.itemId,
+      order_Id: this.props.orderNumber,
     });
-    console.log(data)
+    this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
-    // axios
-    //   .post(api.buyerOrderDetailsAPI, data, {
-    //     headers: {
-    //       accept: 'application/json',
-    //       access_token: access_token,
-    //       'accept-language': 'en_US',
-    //       'content-type': 'application/x-www-form-urlencoded',
-    //     },
-    //   })
-    //   .then(res => {        
-    //    this.setState({spinner: false, productData: res.data.data});
-    //   })
-    //   .catch(err => {
-    //     this.setState({spinner: false});
-    //     console.log(err);
-    //   });
+    axios
+      .post(api.buyerOrderDetailsAPI, data, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        console.log(res.data);
+         this.setState({spinner: false, orderDetailsData: res.data.data});
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
+  };
+
+  cancelOrder = async () =>{
+
+    this.setState({spinner: true});
+    let data = JSON.stringify({
+      orderStatus:"cancelled",   
+      order_Id: this.props.orderNumber,
+    });
+    this.setState({spinner: true});
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .post(api.orderStatusUpdateAPI, data, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        console.log(res.data);
+         this.setState({spinner: false});
+         this.props.onFetchBuyerOrders();
+         this.props.navigation.navigate('My Orders');
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
+
+  }
+
+  fetchProductDetails = (args, args1) => {
+    this.props.onDisplayVarietyName(args1);
+    this.props.navigation.navigate('Product Description', {productId: args});
   };
 
   render() {
-      const styles = StyleSheet.create({
+    const styles = StyleSheet.create({
       parentContaier: {
         backgroundColor: '#efebea',
-        paddingBottom:10
+        paddingBottom: 10,
       },
       container: {
         width: this.state.width,
@@ -174,7 +221,7 @@ class ProductDescriptionTemplate extends Component {
       orderPlacementContainer: {
         flex: 1.0,
         flexDirection: 'column',
-        paddingTop: 10,        
+        paddingTop: 10,
       },
       orderPlacementContainerHeaderText: {
         fontSize: 20,
@@ -190,11 +237,11 @@ class ProductDescriptionTemplate extends Component {
       orderPlacementContainerTextFinal: {
         paddingBottom: 10,
         paddingTop: 10,
-        fontFamily: 'GothamBook',      
-        fontWeight:'bold',
-        borderBottomWidth:0.25,
-        borderTopWidth:0.25, 
-        borderColor:'#95A5A6'       
+        fontFamily: 'GothamBook',
+        fontWeight: 'bold',
+        borderBottomWidth: 0.25,
+        borderTopWidth: 0.25,
+        borderColor: '#95A5A6',
       },
       orderPlaceButton: {
         backgroundColor: '#004561',
@@ -278,8 +325,87 @@ class ProductDescriptionTemplate extends Component {
         lineHeight: 20,
         fontFamily: 'GothamLight',
       },
+      spinnerTextStyle: {
+        color: '#00aa00',
+      },
+      rejected: {
+        fontFamily: 'GothamMedium',
+        paddingTop: 10,
+        fontSize: 12,
+        color:'red'
+      },
+      delivered:{
+        fontFamily: 'GothamMedium',
+        paddingTop: 10,
+        fontSize: 12,
+        color:'green'
+      }
     });
 
+    let imageList=[]
+    if(this.state.orderDetailsData.images){
+        this.state.orderDetailsData.images.length >=1 
+          ? this.state.orderDetailsData.images.map(i=>{           
+            imageList.push(i.url_image)
+          })
+          :null
+        }
+    
+
+        let unitPrice,proId,lotName,quantity,unitName,totalPrice,
+        tax,
+        shipping,
+        totalAmount,
+        buyerAddress,
+        door,
+        street,
+        mobile,
+        city,
+        state,
+        zip,
+        addressName,
+        addressFormating,
+        addressId,
+        cartId,
+        orderStatus,currentPosition;
+  
+      unitPrice = this.state.orderDetailsData.unit_price;
+      totalPrice = this.state.orderDetailsData.total_price;
+      proId = this.state.orderDetailsData.product_Id;
+      tax = this.state.orderDetailsData.tax;
+      lotName =  this.state.orderDetailsData.lot_name;
+      unitName = this.state.orderDetailsData.unit_name;
+      quantity = this.state.orderDetailsData.quantity
+      shipping = this.state.orderDetailsData.shipping_charge;
+      totalAmount = this.state.orderDetailsData.total_amount;
+      orderStatus = this.state.orderDetailsData.order_status;
+      if(orderStatus === 'placed' || orderStatus === 'rejected'){
+        currentPosition = 0;
+      }
+      else if( orderStatus === 'shipped'){
+        currentPosition = 1;
+      }
+      else{
+        currentPosition = 2;
+      }
+
+
+     
+      buyerAddress = Object.values(this.state.orderDetailsData).map(i => {    
+        if(this.state.orderDetailsData.buyer_address){
+          if(i.address){
+      return i.door_number+','+i.address+','+i.city+','+ i.state_name+'-'+i.zip+'\n'+i.contact_no   
+        }   
+      }
+      });
+      addressName = Object.values(this.state.orderDetailsData).map(i => {    
+        if(this.state.orderDetailsData.buyer_address){
+          if(i.address){
+      return i.name   
+        }   
+      }
+      });
+   
     const labels = ['Ordered', 'Shipped', 'Delivered'];
     const customStyles = {
       stepIndicatorSize: 30,
@@ -309,10 +435,15 @@ class ProductDescriptionTemplate extends Component {
 
     return (
       <View style={styles.parentContaier}>
-        {/* <ScrollView>
+        <Spinner
+          visible={this.state.spinner}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
+         <ScrollView>
           <View style={styles.productImageContainer}>
             <SliderBox
-              images={this.state.items}
+              images={this.state.orderDetailsData.images && this.state.orderDetailsData.images.length >=1  ? imageList : this.state.thumbnailImages}
               sliderBoxHeight={190}
               onCurrentImagePressed={index =>
                 console.warn(`image ${index} pressed`)
@@ -330,38 +461,30 @@ class ProductDescriptionTemplate extends Component {
             <View style={styles.productDescriptionContainer}>
               <View style={{flex: 1.0}}>
                 <View>
-                  <FlatList
-                    data={items}
-                    numColumns={2}
-                    renderItem={({item}) => {
-                      return (
-                        <View style={styles.productDetailsContainer}>
+                <View style={styles.productDetailsContainer}>
                           <View style={styles.productDetailHeader}>
-                            <Text style={styles.productDetailHeaderText}>
-                              Origin
-                            </Text>
-                            <Text style={styles.productDetailHeaderText}>
+                          <Text style={styles.productDetailHeaderText}>
                               Variety
                             </Text>
+                            <Text style={styles.productDetailHeaderText}>
+                              Origin
+                            </Text>                           
                             <Text style={styles.productDetailHeaderText}>
                               Farm
                             </Text>
                           </View>
                           <View style={styles.productDetail}>
-                            <Text style={styles.productDetailText}>
-                              : {item.origin}
+                          <Text style={styles.productDetailText}>
+                              : {this.state.orderDetailsData.verityname}
                             </Text>
                             <Text style={styles.productDetailText}>
-                              : {item.variety}
-                            </Text>
+                              : {this.state.orderDetailsData.originsname}
+                            </Text>                           
                             <Text style={styles.productDetailText}>
-                              : {item.farm}
+                              : {this.state.orderDetailsData.farm}
                             </Text>
                           </View>
                         </View>
-                      );
-                    }}
-                  />
                   <View
                     style={{
                       flexDirection: 'row',
@@ -371,28 +494,35 @@ class ProductDescriptionTemplate extends Component {
                       borderColor:'#95A5A6'
                     }}>
                     <View>
-                      <Text style={styles.priceText}>$100.00</Text>
+                      <Text style={styles.priceText}>${this.state.orderDetailsData.total_price}</Text>
                     </View>
                     <View>
                       <TouchableOpacity
-                        // onPress={() =>
-                        //   this.props.navigation.navigate('Product Description')
-                        // }
+                        onPress={() => this.fetchProductDetails(proId,this.state.orderDetailsData.verityname )}
                         >
                         <Text style={styles.viewall}>View Detail</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
                 </View>
-                <View style={{paddingBottom: 10, paddingTop: 10,borderBottomWidth:0.25,borderColor:'#95A5A6'}}>
-                  <StepIndicator
-                    customStyles={customStyles}
-                    currentPosition={this.state.currentPosition}
-                    labels={labels}
-                    stepCount={3}
-                  />
-                  <ConfirmButton buttonName="Cancel" />
-                </View>
+                {orderStatus === 'placed' || orderStatus === 'shipped'  || orderStatus === 'deliverd'?
+                 <View style={{paddingBottom: 10, paddingTop: 10,borderBottomWidth:0.25,borderColor:'#95A5A6'}}>
+                 <StepIndicator
+                   customStyles={customStyles}
+                   currentPosition={currentPosition}
+                   labels={labels}
+                   stepCount={3}
+                 />
+                { orderStatus === 'placed' ? <ConfirmButton buttonName="Cancel" cancelOrder = {this.cancelOrder}/> : null}
+               </View>                
+                :
+                orderStatus === 'rejected' ?
+                <Text style={styles.rejected}>Rejected !</Text>
+                : orderStatus === 'cancelled' ?
+                <Text style={styles.rejected}>Cancelled !</Text>
+                : null
+                }
+               
                 <View style={styles.orderPlacementContainer}>
                   <View style={{flexDirection: 'column'}}>
                     <View
@@ -406,12 +536,9 @@ class ProductDescriptionTemplate extends Component {
                         <Text style={styles.orderPlacementContainerHeaderText}>
                           Shipping Details
                         </Text>
-                        <Text style={styles.itemContainerName}>Smith Adam</Text>
+                    <Text style={styles.itemContainerName}>{addressName}</Text>
                         <Text style={styles.itemContainerAddress}>
-                          704 Oxford Dr, Richmond Hill GA,31324
-                        </Text>
-                        <Text style={styles.itemContainerMobile}>
-                          (912) 727-3506
+                        {buyerAddress}
                         </Text>
                       </View>
                     </View>
@@ -448,28 +575,28 @@ class ProductDescriptionTemplate extends Component {
                         </View>
                         <View style={{width: '50%'}}>
                           <Text style={styles.orderPlacementContainerText}>
-                            $340
+                            {unitPrice}
                           </Text>
                           <Text style={styles.orderPlacementContainerText}>
-                            Microlot
+                            {lotName}
                           </Text>
                           <Text style={styles.orderPlacementContainerText}>
-                            2
+                            {quantity}
                           </Text>
                           <Text style={styles.orderPlacementContainerText}>
-                            10 lbs
+                            {unitName}
                           </Text>
                           <Text style={styles.orderPlacementContainerText}>
-                            $680
+                            {totalPrice}
                           </Text>
                           <Text style={styles.orderPlacementContainerText}>
-                            0
+                            {tax}
                           </Text>
                           <Text style={styles.orderPlacementContainerText}>
-                            $20
+                            {shipping}
                           </Text>
                           <Text style={styles.orderPlacementContainerTextFinal}>
-                            $700
+                            {totalAmount}
                           </Text>
                         </View>
                       </View>
@@ -479,9 +606,26 @@ class ProductDescriptionTemplate extends Component {
               </View>
             </View>
           </View>
-        </ScrollView> */}
+      
+        </ScrollView> 
       </View>
     );
   }
 }
-export default ProductDescriptionTemplate;
+const mapStateToProps = state => {
+  return {
+    orderNumber: state.reducer.orderNumber,
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    onDisplayVarietyName: value =>
+      dispatch({type: actionTypes.DISPLAY_VARIETY_NAME, payload: value}),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ProductDescriptionTemplate);

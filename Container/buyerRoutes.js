@@ -1186,7 +1186,7 @@ class Routes extends Component {
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
-                  onPress={() => this.goBack({navigation}, 'Home')}>
+                  onPress={() => navigation.goBack(null)}>
                   <Icon name="chevron-left" size={35} color="white" />
                 </TouchableWithoutFeedback>
               ),
@@ -1327,7 +1327,7 @@ class Routes extends Component {
               ),
             })}
           >
-            {props => <OrderDetail {...props} {...this.state}  />}
+            {props => <OrderDetail {...props} {...this.state} onFetchBuyerOrders={this.fetchBuyerOrders} />}
           </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>

@@ -34,7 +34,8 @@ class StickyButton extends Component {
      product_id:this.props.cartProductData[0],
      unit_id:this.props.cartProductData[1],     
      quantity:this.props.cartProductData[2],     
-     unit_price:this.props.cartProductData[3]
+     unit_price:this.props.cartProductData[3],
+     inventory_id:this.props.cartProductData[4]
     });
     console.log(data)
     const access_token = await AsyncStorage.getItem('isLoggedIn');

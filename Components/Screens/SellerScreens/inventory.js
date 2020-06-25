@@ -44,9 +44,11 @@ componentDidMount() {
   fetchSellerInventory = async () => {
     this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');  
-    console.log(access_token)  
+    const data = JSON.stringify({
+      product_Id:null
+    }) 
     axios
-      .get(api.sellerInventoryAPI, {
+      .post(api.sellerInventoryAPI,data,{
         headers: {
           accept: 'application/json',
           access_token: access_token,
@@ -55,7 +57,7 @@ componentDidMount() {
         },
       })
       .then(res => {
-        console.log(res)
+        console.log(res.data.data)
         if (res.status) {
           this.setState({
             spinner: false,

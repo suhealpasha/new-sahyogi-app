@@ -33,6 +33,7 @@ class ProductAction extends Component {
       value: 1,
       availableQuantity: 0,
       productId: null,
+      unitId:null
     };
   }
 
@@ -43,9 +44,10 @@ class ProductAction extends Component {
   componentDidUpdate(prevProps, prevState) {
     this.props.onProductAddToCartDetails([
       this.state.productId,
-      this.state.activeButton,     
+      this.state.unitId,   
       this.state.value,
-      this.state.price
+      this.state.price,
+      this.state.activeButton, 
     ]);
   }
 
@@ -86,12 +88,14 @@ class ProductAction extends Component {
       });
   };
 
-  activateUnitsButton = (param1, param2, param3, param4) => {
+  activateUnitsButton = (param1, param2, param3, param4, param5) => {
+    console.log(param5)
     this.setState({
       activeButton: param1,
       price: param2,
       availableQuantity: param3,
       productId: param4,
+      unitId:param5
     });
   };
 
@@ -217,6 +221,7 @@ class ProductAction extends Component {
                       i.price,
                       i.available_quantity,
                       i.product_Id,
+                      i.unit_Id
                     )
                   }>
                   <Text
@@ -251,6 +256,7 @@ class ProductAction extends Component {
                       i.price,
                       i.available_quantity,
                       i.product_Id,
+                      i.unit_Id
                     )
                   }>
                   <Text
@@ -392,55 +398,7 @@ class ProductAction extends Component {
                 : noItem}
             </View>
           </View>
-          <View style={styles.lotsPageSwitchContainer}>
-            {/* <View>
-              <SwitchButton
-                onValueChange={val => {
-                  if (val === 1) {
-                    if (this.props.productData.nano.length >= 1) {
-                      this.setState({
-                        availableQuantity: null,
-                        activeButton: '',
-                        value: 1,
-                        activeSwitch: val,
-                      });
-                    } else {
-                      this.setState({activeButton: '', activeSwitch: 1});
-                      this.setState({unavailableNanoUnits: true});
-                      // Toast.show('No Nano Lots');
-                    }
-                  } else {
-                    if (this.props.productData.micro.length >= 1) {
-                      this.setState({
-                        availableQuantity: null,
-                        activeButton: '',
-                        value: 1,
-                        activeSwitch: val,
-                      });
-                    } else {
-                      this.setState({activeButton: '', activeSwitch: 2});
-                      this.setState({unavailableMicroUnits: true});
-                      // Toast.show('No Micro Lots');
-                      return;
-                    }
-                  }
-                }}
-                // this is necessary for this component
-                text1="N" // optional: first text in switch button --- default ON
-                text2="M" // optional: second text in switch button --- default OFF
-                switchWidth={80} // optional: switch width --- default 44
-                switchHeight={30} // optional: switch height --- default 100
-                switchdirection="ltl" // optional: switch button direction ( ltr and rtl ) --- default ltr
-                switchBorderRadius={0} // optional: switch border radius --- default oval
-                switchSpeedChange={100} // optional: button change speed --- default 100
-                switchBorderColor="#95A5A6" // optional: switch border color --- default #d4d4d4
-                switchBackgroundColor="white" // optional: switch background color --- default #fff
-                btnBorderColor="#004561" // optional: button border color --- default #00a4b9
-                btnBackgroundColor="#004561" // optional: button background color --- default #00bcd4
-                fontColor="#004561" // optional: text font color --- default #b1b1b1
-                activeFontColor="#fff" // optional: active font color --- default #fff
-              />
-            </View> */}
+          <View style={styles.lotsPageSwitchContainer}>        
              <Text style={styles.priceText}>
               $ {''}
               {this.state.activeButton === ''

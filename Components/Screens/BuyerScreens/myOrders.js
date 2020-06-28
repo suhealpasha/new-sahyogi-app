@@ -42,6 +42,7 @@ class MyOrders extends Component {
   }
 
   componentDidMount() {
+    console.log(this.props.buyerOrderData)
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,

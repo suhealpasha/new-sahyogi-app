@@ -52,7 +52,7 @@ class App extends Component {
             visible={this.props.cashCheckout}>
             <Dialog.Title
               style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
-              Cash Checkout
+              CashOut
             </Dialog.Title>
             <Dialog.Description
               style={{textAlign: 'center', fontFamily: 'GothamLight'}}>
@@ -63,7 +63,7 @@ class App extends Component {
               underlineColorAndroid={'#95A5A6'}
               multiline={true}
               width={280}
-              // onChangeText={()=>{}}
+              onChangeText={comment=>{this.props.onCashoutComment(comment)}}
             />
             <Dialog.Button
               style={{

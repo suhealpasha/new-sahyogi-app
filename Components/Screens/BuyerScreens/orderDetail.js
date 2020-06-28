@@ -38,12 +38,9 @@ class ProductDescriptionTemplate extends Component {
     this.state = {
       spinner: false,
       width: Dimensions.get('window').width,
-      height: Dimensions.get('window').height,     
-      orderDetailsData:[],
-      thumbnailImages: [
-        require('../../../assets/Images/coffeeFarms/img4.png')
-          
-      ],
+      height: Dimensions.get('window').height,
+      orderDetailsData: [],
+      thumbnailImages: [require('../../../assets/Images/coffeeFarms/img4.png')],
     };
   }
 
@@ -57,6 +54,7 @@ class ProductDescriptionTemplate extends Component {
       Id: this.props.route.params.itemId,
       order_Id: this.props.orderNumber,
     });
+    console.log(data)
     this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     axios
@@ -70,7 +68,7 @@ class ProductDescriptionTemplate extends Component {
       })
       .then(res => {
         console.log(res.data);
-         this.setState({spinner: false, orderDetailsData: res.data.data});
+        this.setState({spinner: false, orderDetailsData: res.data.data});
       })
       .catch(err => {
         this.setState({spinner: false});
@@ -78,11 +76,10 @@ class ProductDescriptionTemplate extends Component {
       });
   };
 
-  cancelOrder = async () =>{
-
+  cancelOrder = async () => {
     this.setState({spinner: true});
     let data = JSON.stringify({
-      orderStatus:"cancelled",   
+      orderStatus: 'cancelled',
       order_Id: this.props.orderNumber,
     });
     this.setState({spinner: true});
@@ -98,16 +95,15 @@ class ProductDescriptionTemplate extends Component {
       })
       .then(res => {
         console.log(res.data);
-         this.setState({spinner: false});
-         this.props.onFetchBuyerOrders();
-         this.props.navigation.navigate('My Orders');
+        this.setState({spinner: false});
+        this.props.onFetchBuyerOrders();
+        this.props.navigation.navigate('My Orders');
       })
       .catch(err => {
         this.setState({spinner: false});
         console.log(err);
       });
-
-  }
+  };
 
   fetchProductDetails = (args, args1) => {
     this.props.onDisplayVarietyName(args1);
@@ -332,80 +328,93 @@ class ProductDescriptionTemplate extends Component {
         fontFamily: 'GothamMedium',
         paddingTop: 10,
         fontSize: 12,
-        color:'red'
+        color: 'red',
       },
-      delivered:{
+      delivered: {
         fontFamily: 'GothamMedium',
         paddingTop: 10,
         fontSize: 12,
-        color:'green'
-      }
+        color: 'green',
+      },
     });
 
-    let imageList=[]
-    if(this.state.orderDetailsData.images){
-        this.state.orderDetailsData.images.length >=1 
-          ? this.state.orderDetailsData.images.map(i=>{           
-            imageList.push(i.url_image)
-          })
-          :null
-        }
-    
-
-        let unitPrice,proId,lotName,quantity,unitName,totalPrice,
-        tax,
-        shipping,
-        totalAmount,
-        buyerAddress,
-        door,
-        street,
-        mobile,
-        city,
-        state,
-        zip,
-        addressName,
-        addressFormating,
-        addressId,
-        cartId,
-        orderStatus,currentPosition;
-  
+    let imageList = [],
+      unitPrice,
+      proId,
+      lotName,
+      quantity,
+      unitName,
+      totalPrice,
+      tax,
+      shipping,
+      totalAmount,
+      buyerAddress,
+      door,
+      street,
+      mobile,
+      city,
+      state,
+      zip,
+      addressName,
+      addressFormating,
+      addressId,
+      cartId,
+      orderStatus,
+      currentPosition;
+    if (this.state.orderDetailsData) {
+      if (this.state.orderDetailsData.images) {
+        this.state.orderDetailsData.images.length >= 1
+          ? this.state.orderDetailsData.images.map(i => {
+              imageList.push(i.url_image);
+            })
+          : null;
+      }
       unitPrice = this.state.orderDetailsData.unit_price;
       totalPrice = this.state.orderDetailsData.total_price;
       proId = this.state.orderDetailsData.product_Id;
       tax = this.state.orderDetailsData.tax;
-      lotName =  this.state.orderDetailsData.lot_name;
+      lotName = this.state.orderDetailsData.lot_name;
       unitName = this.state.orderDetailsData.unit_name;
-      quantity = this.state.orderDetailsData.quantity
+      quantity = this.state.orderDetailsData.quantity;
       shipping = this.state.orderDetailsData.shipping_charge;
       totalAmount = this.state.orderDetailsData.total_amount;
       orderStatus = this.state.orderDetailsData.order_status;
-      if(orderStatus === 'placed' || orderStatus === 'rejected'){
+      if (orderStatus === 'placed' || orderStatus === 'rejected') {
         currentPosition = 0;
-      }
-      else if( orderStatus === 'shipped'){
+      } else if (orderStatus === 'shipped') {
         currentPosition = 1;
-      }
-      else{
+      } else {
         currentPosition = 2;
       }
 
+      buyerAddress = Object.values(this.state.orderDetailsData).map(i => {
+        if (this.state.orderDetailsData.buyer_address) {
+          if (i.address) {
+            return (
+              i.door_number +
+              ',' +
+              i.address +
+              ',' +
+              i.city +
+              ',' +
+              i.state_name +
+              '-' +
+              i.zip +
+              '\n' +
+              i.contact_no
+            );
+          }
+        }
+      });
+      addressName = Object.values(this.state.orderDetailsData).map(i => {
+        if (this.state.orderDetailsData.buyer_address) {
+          if (i.address) {
+            return i.name;
+          }
+        }
+      });
+    }
 
-     
-      buyerAddress = Object.values(this.state.orderDetailsData).map(i => {    
-        if(this.state.orderDetailsData.buyer_address){
-          if(i.address){
-      return i.door_number+','+i.address+','+i.city+','+ i.state_name+'-'+i.zip+'\n'+i.contact_no   
-        }   
-      }
-      });
-      addressName = Object.values(this.state.orderDetailsData).map(i => {    
-        if(this.state.orderDetailsData.buyer_address){
-          if(i.address){
-      return i.name   
-        }   
-      }
-      });
-   
     const labels = ['Ordered', 'Shipped', 'Delivered'];
     const customStyles = {
       stepIndicatorSize: 30,
@@ -440,10 +449,15 @@ class ProductDescriptionTemplate extends Component {
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}
         />
-         <ScrollView>
+        <ScrollView>
           <View style={styles.productImageContainer}>
             <SliderBox
-              images={this.state.orderDetailsData.images && this.state.orderDetailsData.images.length >=1  ? imageList : this.state.thumbnailImages}
+              images={
+                this.state.orderDetailsData.images &&
+                this.state.orderDetailsData.images.length >= 1
+                  ? imageList
+                  : this.state.thumbnailImages
+              }
               sliderBoxHeight={190}
               onCurrentImagePressed={index =>
                 console.warn(`image ${index} pressed`)
@@ -461,84 +475,99 @@ class ProductDescriptionTemplate extends Component {
             <View style={styles.productDescriptionContainer}>
               <View style={{flex: 1.0}}>
                 <View>
-                <View style={styles.productDetailsContainer}>
-                          <View style={styles.productDetailHeader}>
-                          <Text style={styles.productDetailHeaderText}>
-                              Variety
-                            </Text>
-                            <Text style={styles.productDetailHeaderText}>
-                              Origin
-                            </Text>                           
-                            <Text style={styles.productDetailHeaderText}>
-                              Farm
-                            </Text>
-                          </View>
-                          <View style={styles.productDetail}>
-                          <Text style={styles.productDetailText}>
-                              : {this.state.orderDetailsData.verityname}
-                            </Text>
-                            <Text style={styles.productDetailText}>
-                              : {this.state.orderDetailsData.originsname}
-                            </Text>                           
-                            <Text style={styles.productDetailText}>
-                              : {this.state.orderDetailsData.farm}
-                            </Text>
-                          </View>
-                        </View>
+                  <View style={styles.productDetailsContainer}>
+                    <View style={styles.productDetailHeader}>
+                      <Text style={styles.productDetailHeaderText}>
+                        Variety
+                      </Text>
+                      <Text style={styles.productDetailHeaderText}>Origin</Text>
+                      <Text style={styles.productDetailHeaderText}>Farm</Text>
+                    </View>
+                    <View style={styles.productDetail}>
+                      <Text style={styles.productDetailText}>
+                        : {this.state.orderDetailsData.verityname}
+                      </Text>
+                      <Text style={styles.productDetailText}>
+                        : {this.state.orderDetailsData.originsname}
+                      </Text>
+                      <Text style={styles.productDetailText}>
+                        : {this.state.orderDetailsData.farm}
+                      </Text>
+                    </View>
+                  </View>
                   <View
                     style={{
                       flexDirection: 'row',
                       justifyContent: 'space-between',
-                      borderBottomWidth:0.25,
-                      paddingBottom:10,
-                      borderColor:'#95A5A6'
+                      borderBottomWidth: 0.25,
+                      paddingBottom: 10,
+                      borderColor: '#95A5A6',
                     }}>
                     <View>
-                      <Text style={styles.priceText}>${this.state.orderDetailsData.total_price}</Text>
+                      <Text style={styles.priceText}>
+                        ${this.state.orderDetailsData.total_price}
+                      </Text>
                     </View>
                     <View>
                       <TouchableOpacity
-                        onPress={() => this.fetchProductDetails(proId,this.state.orderDetailsData.verityname )}
-                        >
+                        onPress={() =>
+                          this.fetchProductDetails(
+                            proId,
+                            this.state.orderDetailsData.verityname,
+                          )
+                        }>
                         <Text style={styles.viewall}>View Detail</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
                 </View>
-                {orderStatus === 'placed' || orderStatus === 'shipped'  || orderStatus === 'deliverd'?
-                 <View style={{paddingBottom: 10, paddingTop: 10,borderBottomWidth:0.25,borderColor:'#95A5A6'}}>
-                 <StepIndicator
-                   customStyles={customStyles}
-                   currentPosition={currentPosition}
-                   labels={labels}
-                   stepCount={3}
-                 />
-                { orderStatus === 'placed' ? <ConfirmButton buttonName="Cancel" cancelOrder = {this.cancelOrder}/> : null}
-               </View>                
-                :
-                orderStatus === 'rejected' ?
-                <Text style={styles.rejected}>Rejected !</Text>
-                : orderStatus === 'cancelled' ?
-                <Text style={styles.rejected}>Cancelled !</Text>
-                : null
-                }
-               
+                {orderStatus === 'placed' ||
+                orderStatus === 'shipped' ||
+                orderStatus === 'deliverd' ? (
+                  <View
+                    style={{
+                      paddingBottom: 10,
+                      paddingTop: 10,
+                      borderBottomWidth: 0.25,
+                      borderColor: '#95A5A6',
+                    }}>
+                    <StepIndicator
+                      customStyles={customStyles}
+                      currentPosition={currentPosition}
+                      labels={labels}
+                      stepCount={3}
+                    />
+                    {orderStatus === 'placed' ? (
+                      <ConfirmButton
+                        buttonName="Cancel"
+                        cancelOrder={this.cancelOrder}
+                      />
+                    ) : null}
+                  </View>
+                ) : orderStatus === 'rejected' ? (
+                  <Text style={styles.rejected}>Rejected !</Text>
+                ) : orderStatus === 'cancelled' ? (
+                  <Text style={styles.rejected}>Cancelled !</Text>
+                ) : null}
+
                 <View style={styles.orderPlacementContainer}>
                   <View style={{flexDirection: 'column'}}>
                     <View
                       style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        borderBottomWidth:0.25,
-                        borderColor:'#95A5A6'
+                        borderBottomWidth: 0.25,
+                        borderColor: '#95A5A6',
                       }}>
-                      <View style={{width: '50%',paddingBottom:10}}>
+                      <View style={{width: '50%', paddingBottom: 10}}>
                         <Text style={styles.orderPlacementContainerHeaderText}>
                           Shipping Details
                         </Text>
-                    <Text style={styles.itemContainerName}>{addressName}</Text>
+                        <Text style={styles.itemContainerName}>
+                          {addressName}
+                        </Text>
                         <Text style={styles.itemContainerAddress}>
-                        {buyerAddress}
+                          {buyerAddress}
                         </Text>
                       </View>
                     </View>
@@ -606,8 +635,7 @@ class ProductDescriptionTemplate extends Component {
               </View>
             </View>
           </View>
-      
-        </ScrollView> 
+        </ScrollView>
       </View>
     );
   }

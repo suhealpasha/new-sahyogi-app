@@ -29,6 +29,7 @@ export default class Inventory extends Component {
       height: Dimensions.get('window').height,
       width: Dimensions.get('window').width,
       sellerInventoryData: [],
+      noDataAvailable: false,
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -57,13 +58,16 @@ componentDidMount() {
         },
       })
       .then(res => {
-        console.log(res.data.data)
         if (res.status) {
+          if (res.data.data.length <= 0) {
+            this.setState({noDataAvailable: true, spinner: false});
+          } else {
           this.setState({
             spinner: false,
             sellerInventoryData: res.data.data,
           });
         }
+      }
       })
       .catch(err => {
         this.setState({spinner: false});
@@ -102,6 +106,16 @@ componentDidMount() {
         backgroundColor: 'white',
       },
       itemDetailContainer: {},
+      noData: {
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: this.state.height - 110,
+      },
+      noDataText: {
+        fontSize: 20,
+        fontFamily: 'GothamBold',
+      },
       spinnerTextStyle: {
         color: '#00aa00',
       },
@@ -147,6 +161,11 @@ componentDidMount() {
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
+           {this.state.noDataAvailable ? (
+          <View style={styles.noData}>
+            <Text style={styles.noDataText}>No Data</Text>
+          </View>
+        ) : (
          <FlatList
               data={this.state.sellerInventoryData}
               numColumns={1}
@@ -174,7 +193,7 @@ componentDidMount() {
                             {item.verity_name}
                           </Text>
                         </View>
-                        <Text style={styles.itemTextOrigin}>{item.origins_name}</Text>                        
+                        <Text style={styles.itemTextOrigin}>{item.origin_name}</Text>                        
                         <View
                           style={{
                             flexDirection: 'row',
@@ -217,7 +236,7 @@ componentDidMount() {
                   </TouchableOpacity>
                 );
               }}
-            />       
+            /> )}  
        <BottomNavigation {...this.props}/>
       </View>
     );

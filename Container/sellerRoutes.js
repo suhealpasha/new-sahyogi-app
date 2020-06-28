@@ -44,6 +44,7 @@ import {StatusBar} from 'react-native';
 import Dialog from 'react-native-dialog';
 import axios from 'axios';
 import * as api from '../assets/api/api';
+import Toast from 'react-native-simple-toast';
 
 const Tab = createMaterialTopTabNavigator();
 const Tab2 = createMaterialBottomTabNavigator();
@@ -62,7 +63,7 @@ class SellerRoutes extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      cashCheckout:false,
+      cashCheckout: false,
       isLogout: false,
       isLoggedIn: null,
       sellerHomeScreen: false,
@@ -75,7 +76,8 @@ class SellerRoutes extends Component {
       userData: [],
       addressData: [],
       saveIcon: false,
-      countriesData:[]
+      countriesData: [],
+      sellerComment: null,
     };
   }
 
@@ -84,8 +86,16 @@ class SellerRoutes extends Component {
     this.fetchDetails();
     this.fetchAddress();
     this.fetchCountries();
+    this.interval = setInterval(() => {this.setState({ time: Date.now() })
+    this.fetchDetails();
+    this.fetchAddress();
+    this.fetchCountries();
+  
+  }, 60000);
   }
-
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
   clickedSave = () => {
     this.setState({saveIcon: !this.state.saveIcon});
   };
@@ -176,7 +186,7 @@ class SellerRoutes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {       
+      .then(res => {
         this.setState({countriesData: res.data.data});
       })
       .catch(err => {
@@ -184,13 +194,40 @@ class SellerRoutes extends Component {
       });
   };
 
-cashCheckoutOk = ()=>{
-  // this.setState({cashCheckout:false})
-}
+  cashoutComment = args => {
+    this.setState({sellerComment: args});
+  };
 
-cashCheckoutCancel = () =>{  
-  this.setState({cashCheckout:false})
-}
+  cashCheckoutOk = async () => {
+    const data = JSON.stringify({
+      seller_comment: this.state.sellerComment,
+    });
+
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    await axios
+      .post(api.sellerCashoutAPI, data, {
+        headers: {
+          access_token: access_token,
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        if (res.status) {
+          this.setState({cashCheckout: false});
+          Toast.show('Cashout request done.');
+        }
+      })
+      .catch(err => {
+        this.setState({cashCheckout: false});
+        console.log(err);
+      });
+  };
+
+  cashCheckoutCancel = () => {
+    this.setState({cashCheckout: false, sellerComment: null});
+  };
 
   render() {
     const styles = StyleSheet.create({
@@ -205,12 +242,12 @@ cashCheckoutCancel = () =>{
         paddingTop: Platform.OS === 'ios' ? 20 : 0,
       },
     });
-console.log(this.state.cashCheckout)
+   
     return (
-      <NavigationContainer>         
+      <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
-            name="Home"            
+            name="Home"
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -229,7 +266,9 @@ console.log(this.state.cashCheckout)
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
                   <TouchableWithoutFeedback
-                    onPress={() => {this.setState({cashCheckout:true})}}>
+                    onPress={() => {
+                      this.setState({cashCheckout: true});
+                    }}>
                     <Icon2
                       name="cash-refund"
                       size={24}
@@ -246,21 +285,21 @@ console.log(this.state.cashCheckout)
                   </TouchableWithoutFeedback>
                 </View>
               ),
-            })}           
-          >
+            })}>
             {props => (
               <HomeScreen
                 {...props}
                 {...this.state}
-               cashCheckout = {this.state.cashCheckout}
-               onCashCheckoutOk = {this.cashCheckoutOk}
-               onCashCheckoutCancel = {this.cashCheckoutCancel}
+                cashCheckout={this.state.cashCheckout}
+                onCashCheckoutOk={this.cashCheckoutOk}
+                onCashCheckoutCancel={this.cashCheckoutCancel}
+                onCashoutComment={args => this.cashoutComment(args)}
               />
             )}
           </Stack.Screen>
 
           <Stack.Screen
-            name="Order Listing"           
+            name="Order Listing"
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -279,7 +318,9 @@ console.log(this.state.cashCheckout)
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
                   <TouchableWithoutFeedback
-                    onPress={() => {this.setState({cashCheckout:true})}}>
+                    onPress={() => {
+                      this.setState({cashCheckout: true});
+                    }}>
                     <Icon2
                       name="cash-refund"
                       size={24}
@@ -298,20 +339,19 @@ console.log(this.state.cashCheckout)
               ),
             })}
             initialParams={{filterOn: this.state.filterOn}}
-            {...this.props}
-            >
+            {...this.props}>
             {props => (
               <OrderListing
                 {...props}
                 {...this.state}
-               cashCheckout = {this.state.cashCheckout}
-               onCashCheckoutOk = {this.cashCheckoutOk}
-               onCashCheckoutCancel = {this.cashCheckoutCancel}
+                cashCheckout={this.state.cashCheckout}
+                onCashCheckoutOk={this.cashCheckoutOk}
+                onCashCheckoutCancel={this.cashCheckoutCancel}
               />
             )}
           </Stack.Screen>
           <Stack.Screen
-            name="Inventory"            
+            name="Inventory"
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -329,8 +369,10 @@ console.log(this.state.cashCheckout)
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                   <TouchableWithoutFeedback
-                    onPress={() => {this.setState({cashCheckout:true})}}>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      this.setState({cashCheckout: true});
+                    }}>
                     <Icon2
                       name="cash-refund"
                       size={24}
@@ -348,15 +390,14 @@ console.log(this.state.cashCheckout)
                 </View>
               ),
             })}
-            initialParams={{filterOn: this.state.filterOn}}            
-            >
+            initialParams={{filterOn: this.state.filterOn}}>
             {props => (
               <Inventory
                 {...props}
                 {...this.state}
-               cashCheckout = {this.state.cashCheckout}
-               onCashCheckoutOk = {this.cashCheckoutOk}
-               onCashCheckoutCancel = {this.cashCheckoutCancel}
+                cashCheckout={this.state.cashCheckout}
+                onCashCheckoutOk={this.cashCheckoutOk}
+                onCashCheckoutCancel={this.cashCheckoutCancel}
               />
             )}
           </Stack.Screen>
@@ -407,7 +448,6 @@ console.log(this.state.cashCheckout)
 
           <Stack.Screen
             name="Seller Order Detail"
-            component={SellerOrderDetail}
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -417,22 +457,23 @@ console.log(this.state.cashCheckout)
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
                   }}>
-                  Order# 1212
+                  Order #{this.props.orderNumber}
                 </Text>
               ),
               headerStyle: {backgroundColor: '#00aa00'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
-                  onPress={() => this.goBack({navigation}, 'Home')}>
+                  onPress={() => navigation.goBack(null)}>
                   <Icon name="chevron-left" size={35} color="white" />
                 </TouchableWithoutFeedback>
               ),
-            })}
-          />
+            })}>
+            {props => <SellerOrderDetail {...props} {...this.state} />}
+          </Stack.Screen>
 
           <Stack.Screen
-            name="Seller Notification"            
+            name="Seller Notification"
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -455,23 +496,24 @@ console.log(this.state.cashCheckout)
               ),
               headerRight: () => (
                 <TouchableWithoutFeedback
-                    onPress={() => {this.setState({cashCheckout:true})}}>
-                    <Icon2
-                      name="cash-refund"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableWithoutFeedback>
+                  onPress={() => {
+                    this.setState({cashCheckout: true});
+                  }}>
+                  <Icon2
+                    name="cash-refund"
+                    size={24}
+                    style={{padding: 10, color: '#ffffff'}}
+                  />
+                </TouchableWithoutFeedback>
               ),
-            })}
-            >
+            })}>
             {props => (
               <SellerNotification
                 {...props}
                 {...this.state}
-               cashCheckout = {this.state.cashCheckout}
-               onCashCheckoutOk = {this.cashCheckoutOk}
-               onCashCheckoutCancel = {this.cashCheckoutCancel}
+                cashCheckout={this.state.cashCheckout}
+                onCashCheckoutOk={this.cashCheckoutOk}
+                onCashCheckoutCancel={this.cashCheckoutCancel}
               />
             )}
           </Stack.Screen>
@@ -495,8 +537,10 @@ console.log(this.state.cashCheckout)
               headerLeft: () => null,
               headerRight: () => (
                 <View style={{flexDirection: 'row'}}>
-                   <TouchableWithoutFeedback
-                    onPress={() => {this.setState({cashCheckout:true})}}>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      this.setState({cashCheckout: true});
+                    }}>
                     <Icon2
                       name="cash-refund"
                       size={24}
@@ -521,9 +565,9 @@ console.log(this.state.cashCheckout)
                 userData={this.state.userData}
                 saveIcon={this.state.saveIcon}
                 onLogout={this.props.onLogoutSession}
-                cashCheckout = {this.state.cashCheckout}
-               onCashCheckoutOk = {this.cashCheckoutOk}
-               onCashCheckoutCancel = {this.cashCheckoutCancel}
+                cashCheckout={this.state.cashCheckout}
+                onCashCheckoutOk={this.cashCheckoutOk}
+                onCashCheckoutCancel={this.cashCheckoutCancel}
               />
             )}
           </Stack.Screen>
@@ -648,7 +692,12 @@ console.log(this.state.cashCheckout)
               ),
             })}>
             {props => (
-              <AddAddress {...props} onFetchAddress={this.fetchAddress} saveIconAddress = {this.state.saveIconAddress} countriesData = {this.state.countriesData}/>
+              <AddAddress
+                {...props}
+                onFetchAddress={this.fetchAddress}
+                saveIconAddress={this.state.saveIconAddress}
+                countriesData={this.state.countriesData}
+              />
             )}
           </Stack.Screen>
           <Stack.Screen
@@ -697,4 +746,12 @@ console.log(this.state.cashCheckout)
     );
   }
 }
-export default SellerRoutes;
+const mapStateToProps = state => {
+  return {
+    orderNumber: state.reducer.orderNumber,
+  };
+};
+export default connect(
+  mapStateToProps,
+  null,
+)(SellerRoutes);

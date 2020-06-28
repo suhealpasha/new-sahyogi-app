@@ -134,10 +134,7 @@ class AddAddress extends Component {
         let addAddressAPI;
         if (userType === 'Buyer') {
           addAddressAPI = api.buyerAddAddressAPI;
-        } else {
-          addAddressAPI = api.sellerAddAddressAPI;
-        }
-        await axios
+          await axios
           .post(addAddressAPI, data, {
             headers: {
               access_token: access_token,
@@ -159,6 +156,33 @@ class AddAddress extends Component {
             this.setState({spinner: false});
             console.log(err);
           });
+        } else {
+          addAddressAPI = api.sellerAddAddressAPI;
+          await axios
+          .post(addAddressAPI, data, {
+            headers: {
+              access_token: access_token,
+              accept: 'application/json',
+              'accept-language': 'en_US',
+              'content-type': 'application/x-www-form-urlencoded',
+            },
+          })
+          .then(res => {
+            if (res.status) {
+              this.setState({spinner: false});
+              this.props.onFetchAddress();
+            
+              Toast.show('Address Added');
+              this.props.navigation.goBack(null);
+            }
+          })
+          .catch(err => {
+            this.setState({spinner: false});
+            console.log(err);
+          });
+        }
+        
+         
       } else {
         if (this.state.doorNumber === null) {
           this.setState({doorNumberError: true});

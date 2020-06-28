@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {BackHandler,
+import {
+  BackHandler,
   StyleSheet,
   FlatList,
   View,
@@ -9,6 +10,7 @@ import {BackHandler,
   Dimensions,
   TouchableWithoutFeedback,
   TouchableOpacity,
+  AsyncStorage,
 } from 'react-native';
 import {TouchableHighlight} from 'react-native-gesture-handler';
 import NumericInput from 'react-native-numeric-input';
@@ -29,27 +31,65 @@ import {YellowBox} from 'react-native';
 import ConfirmButton from '../../utils/confirmButton';
 import StickyButton from '../../utils/stickyButtons';
 import * as actionTypes from '../../../Store/action';
-import { connect} from 'react-redux'
+import {connect} from 'react-redux';
+import * as api from '../../../assets/api/api';
+import Spinner from 'react-native-loading-spinner-overlay';
+import axios from 'axios';
+
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
 
-export default class Cart extends Component {
+class SellerOrderDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      spinner: false,
       height: Dimensions.get('window').height,
       width: Dimensions.get('window').width,
       active10Button: false,
       active20Button: false,
       active50Button: true,
+      orderDetailsData: [],
+      orderItemDetailsData: [],
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
   componentWillMount() {
+    this.fetchOrder();
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
     );
   }
+
+  fetchOrder = async () => {
+    this.setState({spinner: true});
+    let data = JSON.stringify({
+      order_Id: this.props.route.params.orderId,
+    });
+    this.setState({spinner: true});
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .post(api.sellerOrderDetailsAPI, data, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        console.log(res.data.data);
+        this.setState({
+          spinner: false,
+          orderDetailsData: res.data.data,
+          orderItemDetailsData: res.data.data.order_items,
+        });
+      })
+      .catch(err => {
+        this.setState({spinner: false});
+        console.log(err);
+      });
+  };
 
   componentWillUnmount() {
     BackHandler.removeEventListener(
@@ -58,7 +98,6 @@ export default class Cart extends Component {
     );
   }
   handleBackButtonClick() {
-   
     this.props.navigation.goBack();
     return true;
   }
@@ -77,71 +116,39 @@ export default class Cart extends Component {
   };
 
   render() {
-    const items = [
-      {
-        name: require('../../../assets/Images/coffeeFarms/img2.png'),
-        key: '2',
-        origin: 'BOURBON',
-        farm: 'Sta Lucia',
-        quantity:1,
-        unit:'1lbs',
-        price:'$2500',
-        total:'$2500'
-
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img3.png'),
-        key: '1',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        quantity:5,
-        unit:'10lbs',
-        price:'$12500',
-        total:'$102500'
-      },
-      {
-        name: require('../../../assets/Images/coffeeFarms/img3.png'),
-        key: '1',
-        origin: 'GEISHA',
-        farm: 'El Rosario',
-        quantity:2,
-        unit:'5lbs',
-        price:'$500',
-        total:'$1000'
-      },
-     
-    ];
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
-            
       },
-      productHeaderText:{
+      productHeaderText: {
         fontSize: 20,
         fontFamily: 'Gotham Black Regular',
-        paddingRight:10,
-        paddingLeft:10,
-        paddingTop:10,
-        paddingBottom:10
+        paddingRight: 10,
+        paddingLeft: 10,
+        paddingTop: 10,
+        paddingBottom: 10,
       },
-      itemListContainer: {},
+      itemListContainer: { },
       itemContainer: {
-      borderBottomWidth:0.25,
-      borderColor:'#95A5A6',
+        borderBottomWidth: 0.25,
+        borderColor: '#95A5A6',
         flexDirection: 'column',
-     
         backgroundColor: 'white',
-       
       },
       itemDetailContainer: {
         paddingLeft: 10,
         paddingRight: 10,
-        
       },
-      itemTextOrigin: {
+      itemTextVariety: {
         fontFamily: 'Gotham Black Regular',
         fontSize: 14,
         paddingTop: 5,
+      },
+      itemTextOrigin: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#5C5C5C',
       },
       itemTextFarm: {
         fontSize: 12,
@@ -156,7 +163,6 @@ export default class Cart extends Component {
       unitsContainer: {
         flexDirection: 'row',
         paddingTop: 10,
-       
       },
       placeOrderButtonText: {
         fontFamily: 'GothamLight',
@@ -173,50 +179,55 @@ export default class Cart extends Component {
         flex: 1.0,
         flexDirection: 'column',
         paddingTop: 10,
-      
-       
       },
       orderPlacementContainerHeaderText: {
-        fontSize:14,
+        fontSize: 14,
         fontFamily: 'GothamLight',
-        borderTopWidth:0.25,
-        borderBottomWidth:0.25,
-        borderColor:'#95A5A6',
-        paddingTop:10,
-        paddingBottom:10,
-        paddingLeft:10,
-        paddingRight:10
+        borderTopWidth: 0.25,
+        borderBottomWidth: 0.25,
+        borderColor: '#95A5A6',
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
       },
-      orderPlacementContainerText:{
-        paddingBottom:10,
-        paddingTop:10,
-        fontFamily:'GothamBook',
-       lineHeight:20,
-       paddingLeft:10,
-        paddingRight:10
+      orderPlacementContainerTextBuyerName: {
+        paddingTop: 10,
+        fontFamily: 'GothamBold',
+        lineHeight: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
       },
-      orderPlacementContainerTotalText:{
-        paddingBottom:10,
-        paddingTop:10,
-        fontFamily:'GothamBook',
-        fontSize:20,
-       lineHeight:20,
-       paddingLeft:10,
-        paddingRight:10
+      orderPlacementContainerText: {
+        paddingBottom: 10,
+        paddingTop: 10,
+        fontFamily: 'GothamBook',
+        lineHeight: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
       },
-      orderPlacementContainerTotalValueText:{
-        paddingBottom:10,
-        paddingTop:10,
-        fontFamily:'Gotham Black Regular',
-        fontSize:20,
-       lineHeight:20,
-       paddingLeft:10,
-        paddingRight:10
+      orderPlacementContainerTotalText: {
+        paddingBottom: 10,
+        paddingTop: 10,
+        fontFamily: 'GothamBook',
+        fontSize: 20,
+        lineHeight: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
       },
-      statusText:{
-        fontFamily:'GothamMedium',
-        paddingLeft:10,
-        paddingRight:10
+      orderPlacementContainerTotalValueText: {
+        paddingBottom: 10,
+        paddingTop: 10,
+        fontFamily: 'Gotham Black Regular',
+        fontSize: 20,
+        lineHeight: 20,
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      statusText: {
+        fontFamily: 'GothamMedium',
+        paddingLeft: 10,
+        paddingRight: 10,
       },
       orderPlaceButton: {
         backgroundColor: '#004561',
@@ -233,8 +244,8 @@ export default class Cart extends Component {
       },
       unitsText: {
         fontFamily: 'GothamBook',
-        fontSize: 14,      
-        marginLeft:5,
+        fontSize: 14,
+        marginLeft: 5,
       },
       buyButton: {
         marginBottom: 5,
@@ -259,12 +270,12 @@ export default class Cart extends Component {
         padding: 10,
         fontFamily: 'GothamMedium',
       },
-      totalAmount:{       
-        justifyContent:'center',
-        width:'50%'
+      totalAmount: {
+        justifyContent: 'center',
+        width: '50%',
       },
-      totalAmountText:{
-        textAlign:'center',
+      totalAmountText: {
+        textAlign: 'center',
         fontFamily: 'Gotham Black Regular',
         fontSize: 25,
         textAlignVertical: 'center',
@@ -277,34 +288,74 @@ export default class Cart extends Component {
         justifyContent: 'center',
         height: 40,
         backgroundColor: '#004561',
-      
-      
-       
       },
-      buttonTextStyle:{
-        color:'white',
+      buttonTextStyle: {
+        color: 'white',
         fontFamily: 'GothamMedium',
         fontSize: 14,
-        paddingLeft:10,
-        paddingRight:10
-      }
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      spinnerTextStyle: {
+        color: '#00aa00',
+      },
+      statusDelivered: {
+        fontFamily: 'GothamMedium',
+        color: 'green',
+        paddingBottom: 5,
+        fontSize: 12,
+      },
+      statusRejected: {
+        fontFamily: 'GothamMedium',
+        color: 'red',
+        paddingBottom: 5,
+        fontSize: 12,
+      },
+      statusOrdered: {
+        fontFamily: 'GothamMedium',
+        paddingBottom: 5,
+        fontSize: 12,
+      },
     });
 
+    let orderDetails = [],
+      buyerAddress,
+      buyerName,
+      buyerContact;
+    if (this.state.orderDetailsData !== []) {
+      if (this.state.orderDetailsData.shipping_address) {
+        buyerName = this.state.orderDetailsData.shipping_address.name;
+        buyerAddress =
+          this.state.orderDetailsData.shipping_address.door_number +
+          "," +
+          this.state.orderDetailsData.shipping_address.address +
+          "," +
+          this.state.orderDetailsData.shipping_address.city +
+          "," +
+          this.state.orderDetailsData.shipping_address.state_name +
+          "-" +
+          this.state.orderDetailsData.shipping_address.zip;
+        buyerContact = this.state.orderDetailsData.shipping_address.contact_no;
+      }
+    }
+
     return (
-      <View style={{flex:1.0}}>
-         <ScrollView>
-        <View style={styles.container}>
-         
+      <View style={{flex: 1.0}}>
+        <ScrollView>
+          <View style={styles.container}>
+            <Spinner
+              visible={this.state.spinner || this.props.spinner}
+              textContent={'Loading...'}
+              textStyle={styles.spinnerTextStyle}
+            />
             <View style={styles.itemListContainer}>
-            <Text style={styles.productHeaderText}>
-                      Products
-                    </Text>
+              <Text style={styles.productHeaderText}>Products</Text>
               <FlatList
-                data={items}
+                data={this.state.orderItemDetailsData}
                 numColumns={1}
                 // keyExtractor = {(items)=>{items.key}}
 
-                renderItem={({item}) => {                 
+                renderItem={({item}) => {
                   return (
                     <TouchableOpacity
                       onPress={() => console.log('parent')}
@@ -314,25 +365,28 @@ export default class Cart extends Component {
                           <View
                             style={{
                               flexDirection: 'row',
-                              
                             }}>
-                               <View style={styles.thumbnailImageContainer}>
+                            <View style={styles.thumbnailImageContainer}>
                               <Image
-                                source={item.name}
+                                source={{
+                                  uri: item.thumbnail_image_url,
+                                }}
                                 style={{
-                                  width: 130,
+                                  width: 150,
                                   resizeMode: 'cover',
-                                  height: 125,
-
+                                  height: 130,
                                 }}
                               />
                             </View>
                             <View style={styles.itemDetailContainer}>
-                              
-                              <View
-                                style={{flexDirection: 'row', paddingTop: 5,}}>
+                              <View style={{flexDirection: 'row'}}>
+                                <Text style={styles.itemTextVariety}>
+                                  {item.verityname}
+                                </Text>
+                              </View>
+                              <View style={{flexDirection: 'row'}}>
                                 <Text style={styles.itemTextOrigin}>
-                                  {item.origin}
+                                  {item.originsname}
                                 </Text>
                               </View>
 
@@ -345,11 +399,12 @@ export default class Cart extends Component {
                                     fontFamily: 'GothamLight',
                                     fontSize: 15,
                                     textAlignVertical: 'center',
-                                    
                                   }}>
                                   Quantity:
                                 </Text>
-                                <Text  style={styles.unitsText}>{item.quantity}</Text>
+                                <Text style={styles.unitsText}>
+                                  {item.quantity}
+                                </Text>
                               </View>
                               <View style={styles.unitsContainer}>
                                 <View
@@ -366,8 +421,10 @@ export default class Cart extends Component {
                                     }}>
                                     Units:
                                   </Text>
-                                  <Text style={styles.unitsText}>{item.unit}</Text>
-                                </View>                                
+                                  <Text style={styles.unitsText}>
+                                    {item.unit_name}
+                                  </Text>
+                                </View>
                               </View>
                               <View style={styles.unitsContainer}>
                                 <View
@@ -384,21 +441,28 @@ export default class Cart extends Component {
                                     }}>
                                     Price:
                                   </Text>
-                                  <Text style={styles.unitsText}>{item.price}</Text>
-                                </View>                                
+                                  <Text style={styles.unitsText}>
+                                    ${item.unit_price}
+                                  </Text>
+                                </View>
                               </View>
                             </View>
-                           
                           </View>
                           <View
                             style={{
                               flexDirection: 'row',
                               borderColor: '#95A5A6',
                               borderTopWidth: 0.25,
-                             
                             }}>
                             <View style={styles.AddToCartButton}>
-                              <Text style={{fontFamily:'GothamBook',textAlign:'center',fontSize:16}}>Total</Text>
+                              <Text
+                                style={{
+                                  fontFamily: 'GothamBook',
+                                  textAlign: 'center',
+                                  fontSize: 16,
+                                }}>
+                                Total
+                              </Text>
                             </View>
 
                             <View
@@ -409,7 +473,9 @@ export default class Cart extends Component {
                                 justifyContent: 'center',
                               }}
                               onPress={() => navigate('HomeScreen')}>
-                              <Text style={styles.cartText}>{item.total}</Text>
+                              <Text style={styles.cartText}>
+                                ${item.total_price}
+                              </Text>
                             </View>
                           </View>
                         </View>
@@ -425,62 +491,102 @@ export default class Cart extends Component {
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
-                   
                   }}>
-                  <View style={{ width:this.state.width}}>
-                   
+                  <View style={{width: this.state.width}}>
                     <Text style={styles.orderPlacementContainerHeaderText}>
                       Shipping Details
                     </Text>
-                    <View style={{width:'50%'}}>
-                    <Text style={styles.orderPlacementContainerText}>
-                    105 Vista Oxford Dr,Richmond Hill GA,31324,
-                    </Text>
-                    <Text style={styles.orderPlacementContainerText}>
-                  (325) 698-2333
-                    </Text>
-                  </View>
-                  </View>
-                  <View>
-                
-                  </View>
-                </View>
-                <View style={{}}>
-                    <Text style={styles.orderPlacementContainerHeaderText}>
-                      Price Details
-                    </Text>
-                    <View style={{flexDirection:'row'}}>
-                      <View style={{width:'50%'}}>
-
-                        <Text style={styles.orderPlacementContainerText}>Total</Text>
-                        <Text style={styles.orderPlacementContainerText}>Tax</Text>
-                        <Text style={styles.orderPlacementContainerText}>Shipping</Text>
-                        <Text style={styles.orderPlacementContainerTotalText}>Total Amount</Text>
-                      </View>
-                      <View style={{width:'50%'}}>
-                      <Text style={styles.orderPlacementContainerText}>$340</Text>
-                        <Text style={styles.orderPlacementContainerText}>0</Text>
-                        <Text style={styles.orderPlacementContainerText}>$20</Text>
-                        <Text style={styles.orderPlacementContainerTotalValueText}>$360</Text>
-
-                      </View>
+                    <View style={{width: '50%'}}>
+                    <Text style={styles.orderPlacementContainerTextBuyerName}>
+                        {buyerName}
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                        {buyerAddress}
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                        {buyerContact}
+                      </Text>
                     </View>
                   </View>
-                  <View style={{flexDirection:'row',paddingBottom:10,justifyContent:'flex-end'}}>
-                    <Text style={styles.statusText}>
-                      Status:
-                    </Text>
-                    <Text style={styles.statusText}>
-                      {' '}Ordered
-                    </Text>
+                  <View />
+                </View>
+                <View style={{}}>
+                  <Text style={styles.orderPlacementContainerHeaderText}>
+                    Price Details
+                  </Text>
+                  <View style={{flexDirection: 'row'}}>
+                    <View style={{width: '50%'}}>
+                      <Text style={styles.orderPlacementContainerText}>
+                        Total
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                        Tax
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                        Shipping
+                      </Text>
+                      <Text style={styles.orderPlacementContainerTotalText}>
+                        Total Amount
+                      </Text>
+                    </View>
+                    <View style={{width: '50%'}}>
+                      <Text style={styles.orderPlacementContainerText}>
+                        ${this.state.orderDetailsData.amount}
+                      </Text>
+                      <Text style={styles.orderPlacementContainerText}>${this.state.orderDetailsData.tax}</Text>
+                      <Text style={styles.orderPlacementContainerText}>
+                      ${this.state.orderDetailsData.shipping_charge}
+                      </Text>
+                      <Text
+                        style={styles.orderPlacementContainerTotalValueText}>
+                        ${this.state.orderDetailsData.total_amount}
+                      </Text>
+                    </View>
                   </View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    paddingBottom: 10,
+                    paddingRight:10,
+                    justifyContent: 'flex-end',
+                  }}>
+                  <Text style={styles.statusText}>Status:</Text>
+                <Text style={(() => {
+                          switch (this.state.orderDetailsData.order_status) {
+                            case 'delivered':
+                              return styles.statusDelivered;
+                            case 'shipped':
+                              return styles.statusDelivered;
+                            case 'rejected':
+                              return styles.statusRejected;
+                            case 'cancelled':
+                              return styles.statusRejected;
+                            case 'return':
+                              return styles.statusRejected;
+                            default:
+                              return styles.statusOrdered;
+                          }
+                        })()}> {this.state.orderDetailsData.order_status}</Text>
+                </View>
               </View>
             </View>
-
-        </View>
+          </View>
         </ScrollView>
-       <StickyButton cancel='Cancel' proceed='Proceed' buyer={false}/>
+       {this.state.orderDetailsData.order_status === 'placed' || this.state.orderDetailsData.order_status === 'accepted'  
+       ? <StickyButton cancel="Cancel" proceed="Proceed" buyer={false} sellerAction = {this.state.orderDetailsData.order_status === 'placed' ? "accepted" : "shipped"} onfetchOrder = {this.fetchOrder} {...this.props}/> : null} 
       </View>
     );
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    spinner: state.reducer.spinner,
+  };
+};
+
+export default connect(
+  mapStateToProps,
+null
+)(SellerOrderDetail);

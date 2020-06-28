@@ -66,6 +66,67 @@ class StickyButton extends Component {
   this.props.navigation.navigate('Cart')
   }
 
+  cancelOrder = async () =>{
+    this.props.onSpinner(true) 
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    console.log(access_token)
+       let data = JSON.stringify({
+      orderStatus: 'rejected',
+      order_Id: this.props.orderNumber,      
+    });      
+ 
+    await axios
+      .post(api.sellerOrderorderStatusupdateAPI, data, {
+        headers: {
+          accept: "application/json",
+          "accept-language": "en_US",
+          "content-type": "application/x-www-form-urlencoded",
+          access_token: access_token,
+        },
+      })
+      .then((res) => {
+        this.props.onSpinner(false) 
+        this.props.onfetchOrder();
+        this.props.onBottomTabClicked('home')
+        Toast.show('Order Cancelled');
+        this.props.navigation.navigate('Home')            
+      })
+      .catch((err) => {
+        this.props.onSpinner(false) 
+        console.log(err);
+      });
+  }
+
+  proceedOrder = async () =>{
+    this.props.onSpinner(true) 
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    console.log(access_token)
+       let data = JSON.stringify({
+      orderStatus:this.props.sellerAction,
+      order_Id: this.props.orderNumber,      
+    });      
+    await axios
+      .post(api.sellerOrderorderStatusupdateAPI, data, {
+        headers: {
+          accept: "application/json",
+          "accept-language": "en_US",
+          "content-type": "application/x-www-form-urlencoded",
+          access_token: access_token,
+        },
+      })
+      .then((res) => {
+        this.props.onSpinner(false) 
+        Toast.show('Order '+this.props.sellerAction+' successfully');
+        this.props.onfetchOrder();
+        this.props.onBottomTabClicked('home')
+        this.props.navigation.navigate('Home')            
+      })
+      .catch((err) => {
+        this.props.onSpinner(false) 
+        console.log(err);
+      });
+  }
+
 
   render() {
 
@@ -126,14 +187,14 @@ class StickyButton extends Component {
         <TouchableOpacity
           disabled={this.props.buy}
           style={styles.AddToCartButton}
-          onPress={this.props.buyer ? this.addToCart : null}
+          onPress={this.props.buyer ? this.addToCart : this.cancelOrder}
           underlayColor='#fff'>
           <Text style={styles.cartText}>{this.props.cancel}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           disabled={this.props.buy}
           style={styles.buyButton}
-          onPress={this.props.buyer ? this.buyNow : null}
+          onPress={this.props.buyer ? this.buyNow : this.proceedOrder}
           underlayColor='#fff'>
           <Text style={styles.buyText}>{this.props.proceed}</Text>
         </TouchableOpacity>
@@ -144,6 +205,7 @@ class StickyButton extends Component {
 const mapStateToProps = state => {
   return {
     cartProductData: state.reducer.cartProductData,
+    orderNumber: state.reducer.orderNumber,
   };
 };
 
@@ -151,6 +213,8 @@ const mapDispatchToProps = dispatch => {
   return {
     onSpinner: value =>
       dispatch({type: actionTypes.SPINNER_SWITCH, payload: value}),
+      onBottomTabClicked: value =>
+      dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
   };
 };
 

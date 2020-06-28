@@ -57,6 +57,7 @@ class Cart extends Component {
   }
 
   componentDidMount() {
+    console.log( this.props.buyerCartData)
     this.setState({
       buyerCartData: this.props.buyerCartData,
       cartCount: this.props.cartCount,
@@ -142,6 +143,7 @@ class Cart extends Component {
       shipping_address_Id: args1,
       invoice_address_Id: args1,
     });
+    console.log(data)
     this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
@@ -176,9 +178,7 @@ class Cart extends Component {
       unit_price: args4,
       Id: args5,
     });
-    console.log(data)
-    this.setState({spinner: true});
-   
+    this.setState({spinner: true});   
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
       .post(api.buyerUpdateProductFromCart, data, {
@@ -404,7 +404,7 @@ class Cart extends Component {
     tax = this.state.buyerCartData.tax;
     shipping = this.state.buyerCartData.shipping_charge;
     totalAmount = this.state.buyerCartData.total_amount;
-
+    cartId = this.state.buyerCartData.cart_id;
 
     let button;
     if (this.state.buyerCartData.buyer_address) {

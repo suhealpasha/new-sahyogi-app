@@ -94,13 +94,14 @@ class Routes extends Component {
       regionsData: [],
       allRegionsData: [],
       buyerCartData: [],
+      buyerFeedbackData:[],
       cartCount: null,
       buyerOrderData:[],
       notificationCount:null
     };
   }
 
-  componentDidMount() {
+  componentDidMount() {   
     this.fetchHomeScreenData();
     this.fetchDetails();
     this.fetchAddress();
@@ -108,6 +109,21 @@ class Routes extends Component {
     this.fetchBuyerCart();
     this.fetchCountries();
     this.fetchBuyerOrders();
+    this.fetchBuyerFeeback();
+    this.interval = setInterval(() => {this.setState({ time: Date.now() })
+    this.fetchHomeScreenData();
+    this.fetchDetails();
+    this.fetchAddress();
+    this.fetchAllRegions();
+    this.fetchBuyerCart();
+    this.fetchCountries();
+    this.fetchBuyerOrders();  
+    this.fetchBuyerFeeback();
+  }, 60000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   goBack = ({navigation}, path) => {
@@ -303,8 +319,7 @@ class Routes extends Component {
       });
   };
 
-  fetchBuyerOrders = async () => {
-    
+  fetchBuyerOrders = async () => {    
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     axios
       .get(api.buyerOrderListAPI, {
@@ -315,8 +330,29 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {          
+      .then(res => { 
+        console.log( res.data.data)         
         this.setState({buyerOrderData: res.data.data});
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  fetchBuyerFeeback = async () => {    
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .get(api.buyergetFeedbackAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {       
+        console.log(res.data.data)   
+        this.setState({buyerFeedbackData: res.data.data});
       })
       .catch(err => {
         console.log(err);

@@ -5,7 +5,6 @@ import {
   FlatList,
   Text,
   View,
-  TextInput,
   Button,
   TouchableHighlight,
   Image,
@@ -31,7 +30,8 @@ import {
 } from 'react-native-material-cards';
 import * as api from '../assets/api/api';
 import Spinner from 'react-native-loading-spinner-overlay';
-
+import PageTitle from '../Components/utils/pageTitle';
+import {HelperText, TextInput} from 'react-native-paper';
 class Register extends Component {
   constructor(props) {
     super(props);
@@ -61,7 +61,7 @@ class Register extends Component {
       if (String(this.state.mobileNumber).length !== 12) {
         this.setState({mobileValidationError: true});
         return;
-      } 
+      }
       // else {
       //   if (this.state.mobileNumber !== null) {
       //     let data = JSON.stringify({
@@ -103,10 +103,10 @@ class Register extends Component {
         return;
       } else {
         this.setState({emailIdError: false, emailValidationError: false});
-          if (this.state.emailId !== null) {
+        if (this.state.emailId !== null) {
           let data = JSON.stringify({
             email_id: this.state.emailId,
-          });        
+          });
           await axios
             .post(api.emailCheckAPI, data, {
               headers: {
@@ -114,7 +114,7 @@ class Register extends Component {
                 'content-type': 'application/x-www-form-urlencoded',
               },
             })
-            .then(res => {              
+            .then(res => {
               if (res.data.message === 'Mobile exist') {
                 this.setState({
                   emailExist: true,
@@ -133,49 +133,45 @@ class Register extends Component {
     }
   };
 
- 
-
   handleRegister = async () => {
     if (
       this.state.mobileNumber !== null &&
       this.state.userName !== null &&
       this.state.emailId !== null &&
       this.state.mobileExist === false &&
-      this.state.emailExist === false && 
+      this.state.emailExist === false &&
       this.state.userNameValidationError === false &&
       this.state.mobileValidationError === false &&
-      this.state.emailValidationError === false 
+      this.state.emailValidationError === false
     ) {
-       this.setState({spinner: true});
-        let data = JSON.stringify({
-          email_id: this.state.emailId,
-        });
-        await axios
-          .post(api.otpAPI, data, {
-            headers: {
-              accept: 'application/json',
-              'accept-language': 'en_US',
-              'content-type': 'application/x-www-form-urlencoded',
-            },
-          })
-          .then(res => {
-            if (res.status) {
-              this.setState({spinner: false});
-              this.props.onRegisterDetails(
-                this.state.userName,
-                this.state.mobileNumber,
-                this.state.emailId,
-                String(res.data.data.otp),
-              );
-              this.props.navigation.navigate('OTP');
-            }
-          })
-          .catch(err => {
+      this.setState({spinner: true});
+      let data = JSON.stringify({
+        email_id: this.state.emailId,
+      });
+      await axios
+        .post(api.otpAPI, data, {
+          headers: {
+            accept: 'application/json',
+            'accept-language': 'en_US',
+            'content-type': 'application/x-www-form-urlencoded',
+          },
+        })
+        .then(res => {
+          if (res.status) {
             this.setState({spinner: false});
-            console.log(err);
-          });      
-        
-      
+            this.props.onRegisterDetails(
+              this.state.userName,
+              this.state.mobileNumber,
+              this.state.emailId,
+              String(res.data.data.otp),
+            );
+            this.props.navigation.navigate('OTP');
+          }
+        })
+        .catch(err => {
+          this.setState({spinner: false});
+          console.log(err);
+        });
     } else {
       if (this.state.mobileNumber === null) {
         this.setState({mobileNumberError: true});
@@ -201,49 +197,67 @@ class Register extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         paddingLeft: 10,
-        paddingRight: 10,       
-      },
+        paddingRight: 10,
+        justifyContent: 'center',
+        display: 'flex',
+        alignItems:'center',
+        height: this.state.height - 48,
+         },
       registerFormContainer: {
+        paddingTop:10,
         width: '100%',
       },
       users: {},
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
       suggestionContainer: {
         paddingTop: 10,
         width: '100%',
       },
+      inputFieldsStyle: {
+        backgroundColor: '#ffff',
+        marginLeft: 10,
+        marginRight: 10,
+        borderWidth: 1,
+        borderColor: '#bad5ff',
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
+        height:55
+      },
     });
 
     return (
+      <View>
+           <PageTitle title="Fill User Details" {...this.props} />
+    
       <KeyboardAwareScrollView
+        style={{backgroundColor: '#ffff',display:'flex'}}
         resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: '#efebea'}}
         scrollEnabled={true}>
-            <BackButton {...this.props} />
+     
+     
         <View style={styles.container}>
           <Spinner
             visible={this.state.spinner}
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
-        
+
           <Logo />
           <View style={styles.registerFormContainer}>
-            <Text
-              style={{
-                fontFamily: 'Gotham Black Regular',
-                color: '#004561',
-                fontSize: 24,
-                paddingLeft: 10,
-                paddingRight: 10,
-              }}>
-              Create Your Account
-            </Text>
-            <Input
-              placeholder="Name"
-              style={styles.inputStyle}
+            <TextInput
+              type="text"
+              label="Name"
+              mode="flat"
+              style={styles.inputFieldsStyle}
+              underlineColor="transparent"
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
+              spellCheck={false}
+              autoCorrect={false}
               onChangeText={userName => {
                 if (/[^a-zA-Z\s]/.test(userName)) {
                   this.setState({userNameValidationError: true});
@@ -259,31 +273,51 @@ class Register extends Component {
                 this.state.userName === ''
                   ? this.setState({userName: null})
                   : null
-              }
-              errorMessage={
-                this.state.userNameError === true
-                  ? 'Enter the User Name'
-                  : this.state.userNameValidationError
-                  ? 'Invalid User Name'
-                  : false
-              }
+              }            
             />
-             <Input
-              placeholder="Email"
+            <HelperText
+              type="error"
+              visible={
+                this.state.userNameError === true ||
+                this.state.userNameValidationError
+              }>
+              {this.state.userNameError === true
+                ? 'Enter the User Name'
+                : this.state.userNameValidationError
+                ? 'Invalid User Name'
+                : false}
+            </HelperText>
+            <TextInput
+              type="email"
+              label="Email"
+              mode="flat"
+              style={styles.inputFieldsStyle}
+              underlineColor="transparent"
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
               spellCheck={false}
-              autoCorrect={false}
-              style={styles.inputStyle}
+              autoCorrect={false}           
               onChangeText={emailId =>
                 this.setState({
                   emailId,
                   emailIdError: false,
                   emailValidationError: false,
-                  emailExist:false
+                  emailExist: false,
                 })
               }
               onBlur={this.checkEmailExist}
-              autoCapitalize="none"
-              errorMessage={
+              autoCapitalize="none" 
+            />
+            <HelperText
+              type="error"
+              visible={
+                this.state.emailIdError === true ||
+                this.state.emailValidationError ||
+                this.state.emailExist
+              }>
+              {
                 this.state.emailIdError === true
                   ? 'Enter the emailId'
                   : this.state.emailValidationError
@@ -292,11 +326,18 @@ class Register extends Component {
                   ? 'Email already registered'
                   : null
               }
-            />
-            <Input
-              placeholder="Mobile Number"
-              style={styles.inputStyle}
+            </HelperText>            
+             <TextInput
+              type="text"
+              label="Mobile Number"
               value={this.state.mobileNumber}
+              mode="flat"
+              style={styles.inputFieldsStyle}
+              underlineColor="transparent"
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
               keyboardType="numeric"
               maxLength={12}
               onBlur={this.checkMobileExist}
@@ -310,7 +351,7 @@ class Register extends Component {
                   this.setState({
                     mobileNumber: `${first}-${middle}-${last}`,
                     mobileNumberError: false,
-                    mobileValidationError: false,                    
+                    mobileValidationError: false,
                   });
                 } else if (input.length > 3) {
                   this.setState({
@@ -323,11 +364,19 @@ class Register extends Component {
                     mobileNumber: input,
                     mobileNumberError: false,
                     mobileValidationError: false,
-                    mobileExist:false
+                    mobileExist: false,
                   });
                 }
-              }}
-              errorMessage={
+              }} 
+            />
+            <HelperText
+              type="error"
+              visible={
+                this.state.mobileNumberError === true ||
+                this.state.mobileValidationError ||
+                this.state.mobileExist
+              }>
+             {
                 this.state.mobileNumberError === true
                   ? 'Enter the mobile number'
                   : this.state.mobileValidationError
@@ -336,11 +385,17 @@ class Register extends Component {
                   ? 'Mobile number already registered'
                   : null
               }
-            />           
-          </View>
-          <NextButton click={() => this.handleRegister()} {...this.state} />
+            </HelperText>
+          </View>    
+          <NextButton
+            click={() => this.handleRegister()}
+            {...this.state}
+            color="#7ea100"
+            label="Next"
+          />
         </View>
       </KeyboardAwareScrollView>
+      </View>
     );
   }
 }
@@ -359,7 +414,7 @@ const mapDispatchToProps = dispatch => {
         payload2: value2,
         payload3: value3,
         payload4: value4,
-      }),   
+      }),
   };
 };
 export default connect(

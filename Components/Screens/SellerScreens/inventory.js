@@ -117,7 +117,7 @@ componentDidMount() {
         fontFamily: 'GothamBold',
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
       itemTextOrderText: {
         fontSize: 12,

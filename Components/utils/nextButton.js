@@ -11,11 +11,34 @@ class NextButton extends Component{
     }
 
     render(){
-
+      const styles = StyleSheet.create({
+        nextButtonContainer: {
+            flexDirection: 'row',
+            width: '100%',            
+            paddingLeft:10,
+            paddingRight:10,
+            paddingTop:30
+          },
+          loginButton: {   
+      
+            alignItems: 'center',
+             width:'100%',
+            padding:10,
+            backgroundColor: this.props.color,
+            borderRadius:50,
+            marginTop: 10,
+            marginRight: 10,           
+          },
+          buttonText:{
+            color:'#fff',
+            fontFamily:'GothamMedium',
+            fontSize:18
+          }
+        })
         return(
             <View style={styles.nextButtonContainer}>
             <TouchableOpacity style={styles.loginButton} onPress={this.props.click}>
-              <Icon name="arrow-forward" color="white" size={30} />
+        <Text style={styles.buttonText}>{this.props.label}</Text>
             </TouchableOpacity>
           </View>
         );
@@ -23,22 +46,3 @@ class NextButton extends Component{
 }
 
 export default NextButton;
-const styles = StyleSheet.create({
-nextButtonContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'flex-end',
-  },
-  loginButton: {
-    borderWidth: 1,
-    borderColor: '#3e708f',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 60,
-    height: 60,
-    backgroundColor: '#004561',
-    borderRadius: 100,
-    marginTop: 10,
-    marginRight: 10,
-  }
-})

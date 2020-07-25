@@ -235,7 +235,7 @@ class Listing extends Component {
         width: 45,
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
     });
   

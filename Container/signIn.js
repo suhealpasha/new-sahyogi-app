@@ -4,16 +4,16 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   Button,
   TouchableHighlight,
   Image,
   Alert,
   Dimensions,
   AsyncStorage,
+  TouchableOpacity
 } from 'react-native';
 import {Input} from 'react-native-elements';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+
 import {KeyboardAwareView} from 'react-native-keyboard-aware-view';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import NextButton from '../Components/utils/nextButton';
@@ -25,6 +25,7 @@ import {connect} from 'react-redux';
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
 import * as api from '../assets/api/api';
+import {HelperText,TextInput} from 'react-native-paper';
 
 class Login extends Component {
   constructor(props) {
@@ -81,7 +82,7 @@ class Login extends Component {
       data = JSON.stringify({
         email_id: this.state.emailId,
         password: this.state.password,
-      });      
+      });
       await axios
         .post(api.signInAPI, data, {
           headers: {
@@ -137,9 +138,11 @@ class Login extends Component {
         paddingTop: 10,
         justifyContent: 'center',
         height: this.state.height,
+    
+    
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
 
       logoContainer: {},
@@ -149,28 +152,44 @@ class Login extends Component {
         resizeMode: 'stretch',
       },
       signInFormContainer: {
+        paddingTop:20,
         width: '100%',
+        
       },
       inputStyle: {
         fontFamily: 'Gotham Black Regular',
       },
 
       signUpContainer: {
-        paddingTop: 10,
+        paddingTop: 20,
         width: '100%',
+     
+       
       },
       forgotPasswordContainer: {
         paddingTop: 10,
+        paddingBottom:10,
         paddingLeft: 10,
         paddingRight: 10,
         width: '100%',
+       
       },
+      inputFieldsStyle:{
+        backgroundColor:'#ffff',
+        marginLeft:10,
+        marginRight:10,
+        borderWidth:1,
+        borderColor:'#bad5ff',
+        borderBottomLeftRadius:5,
+        borderBottomRightRadius:5,
+        height:55
+      }
     });
 
     return (
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: '#efebea'}}
+        style={{backgroundColor: '#ffff'}}
         scrollEnabled={true}>
         <View style={styles.container}>
           <Spinner
@@ -178,59 +197,19 @@ class Login extends Component {
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
+          <Text style={{fontSize:26,fontFamily:'GothamMedium'}}>Welcome to Microffee</Text>
           <Logo />
-          <View style={styles.signInFormContainer}>
-            <Text
-              style={{
-                fontFamily: 'Gotham Black Regular',
-                color: '#004561',
-                fontSize: 24,
-                paddingLeft: 10,
-                paddingRight: 10,
-              }}>
-              Login
-            </Text>
-            {/* <Input
-              placeholder="Mobile Number"
-              style={{fontFamily: 'Gotham Black Regular'}}
-              keyboardType="numeric"
-              onChangeText={mobileNumber =>
-                {
-                  const input = mobileNumber.replace(/\D/g, '').substring(0, 10);
-                  const first = input.substring(0, 3);
-                  const middle = input.substring(3, 6);
-                  const last = input.substring(6, 10);  
-                  if (input.length > 6) {
-                    this.setState({
-                      mobileNumber: `${first}-${middle}-${last}`,
-                      mobileNumberError: false,                     
-                    });
-                  } else if (input.length > 3) {
-                    this.setState({
-                      mobileNumber: `${first}-${middle}`,
-                      mobileNumberError: false,                     
-                    });
-                  } else if (input.length >= 0) {
-                    this.setState({
-                      mobileNumber: input,
-                      mobileNumberError: false,                     
-                    });
-                  }
-                }                
-                }            
-              onBlur={this.state.mobileNumber === '' ? this.setState({mobileNumber:null}):null}
-              errorMessage={
-                this.state.mobileNumberError === true
-                  ? 'Enter the Mobile Number'
-                  : false
-              }
-              value={this.state.mobileNumber}
-            /> */}
-            <Input
-              placeholder="Email"
+          <View style={styles.signInFormContainer}>           
+            <TextInput
+              type="email"
+              label="Email"            
+              mode="flat"
+              style={styles.inputFieldsStyle}              
+              underlineColor="transparent"  
+              under
+              theme={{colors: {text: 'black', primary: 'grey'} ,  fonts: { medium: 'Open Sans' }}}
               spellCheck={false}
               autoCorrect={false}
-              style={styles.inputStyle}
               onChangeText={emailId =>
                 this.setState({
                   emailId,
@@ -239,20 +218,26 @@ class Login extends Component {
                 })
               }
               onBlur={this.emailValidate}
-              autoCapitalize="none"
-              errorMessage={
-                this.state.emailIdError === true
-                  ? 'Enter the emailId'
-                  : this.state.emailValidationError
-                  ? 'Invalid Email address'
-                  : null
-              }
+              autoCapitalize="none"             
               value={this.state.emailId}
             />
-            <Input
+             <HelperText type="error" visible={this.state.emailIdError === true || this.state.emailValidationError }>
+             {this.state.emailIdError === true
+                  ? 'Enter the email Id'
+                  : this.state.emailValidationError
+                  ? 'Invalid Email address'
+                  : null}
+            </HelperText>
+            
+              <TextInput
               secureTextEntry={true}
-              placeholder="Password"
-              style={{fontFamily: 'Gotham Black Regular'}}
+              label="Password"           
+              mode="flat"
+              style={styles.inputFieldsStyle}              
+              underlineColor="transparent"               
+              theme={{colors: {text: 'black', primary: 'grey'} ,  fonts: { medium: 'Open Sans' }}}
+              spellCheck={false}
+              autoCorrect={false}
               onChangeText={password =>
                 this.setState({password, passwordError: false})
               }
@@ -261,11 +246,12 @@ class Login extends Component {
                   ? this.setState({password: null})
                   : null
               }
-              errorMessage={
-                this.state.passwordError === true ? 'Enter the Password' : false
-              }
+              autoCapitalize="none"             
               value={this.state.password}
             />
+             <HelperText type="error" visible={this.state.passwordError === true }>
+             {this.state.passwordError === true ? 'Enter the Password' : false}
+            </HelperText>
           </View>
           <View style={styles.forgotPasswordContainer}>
             <TouchableOpacity
@@ -280,7 +266,7 @@ class Login extends Component {
                   fontFamily: 'GothamLight',
                   fontSize: 14,
                   fontWeight: '100',
-                  textAlign: 'right',
+                  textAlign: 'center',
                   textAlignVertical: 'center',
                   paddingLeft: 10,
                   paddingRight: 10,
@@ -290,11 +276,11 @@ class Login extends Component {
             </TouchableOpacity>
           </View>
 
-          <NextButton click={() => this._handleLogin()} />
+          <NextButton click={() => this._handleLogin()} color="#7ea100" label="Login"/>
           <View style={styles.signUpContainer}>
             <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-              <Text style={{fontFamily: 'GothamLight'}}>
-                Don't have an account?{' '}
+              <Text style={{fontFamily: 'GothamMedium',fontSize:16}}>
+                Not a member yet?{' '}
               </Text>
               <TouchableOpacity
                 onPress={() => {
@@ -304,13 +290,13 @@ class Login extends Component {
                 }}>
                 <Text
                   style={{
-                    color: '#004561',
-                    fontFamily: 'GothamBold',
-                    fontSize: 14,
+                    color: '#043f4f',
+                    fontFamily: 'GothamMedium',
+                    fontSize: 16,
                     textAlign: 'center',
                     textAlignVertical: 'center',
                   }}>
-                  Register
+                  Signup
                 </Text>
               </TouchableOpacity>
             </View>

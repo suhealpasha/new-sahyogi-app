@@ -21,7 +21,7 @@ import Logo from '../Components/utils/logo';
 import {CheckBox} from 'react-native-elements';
 import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
-
+import PageTitle from '../Components/utils/pageTitle';
 class SellerType extends Component {
   constructor(props) {
     super(props);
@@ -40,7 +40,7 @@ class SellerType extends Component {
   userClicked = u => {
     if (u === 'p') {
       this.props.onSellerUserTypeClicked('Producer');
-      this.setState({user1BorderColor: '#00aa00'});
+      this.setState({user1BorderColor: '#7ea100'});
       this.setState({user2BorderColor: '#95A5A6'});
       this.setState({user3BorderColor: '#95A5A6'});
       this.setState({u1: true});
@@ -49,14 +49,14 @@ class SellerType extends Component {
     } else if (u === 'd') {
       this.props.onSellerUserTypeClicked('Distributor');
       this.setState({user1BorderColor: '#95A5A6'});
-      this.setState({user2BorderColor: '#00aa00'});
+      this.setState({user2BorderColor: '#7ea100'});
       this.setState({user3BorderColor: '#95A5A6'});
       this.setState({u2: true});
       this.setState({u1: false});
       this.setState({u3: false});
     } else {
       this.props.onSellerUserTypeClicked('Producer or Distributor');
-      this.setState({user3BorderColor: '#00aa00'});
+      this.setState({user3BorderColor: '#7ea100'});
       this.setState({user2BorderColor: '#95A5A6'});
       this.setState({user1BorderColor: '#95A5A6'});
       this.setState({u3: true});
@@ -87,7 +87,7 @@ class SellerType extends Component {
       },
       user1: {
         borderColor: this.state.user1BorderColor,
-        borderWidth: 4,
+        borderWidth: 1,
         paddingTop: 10,
         paddingRight: 15,
         paddingLeft: 15,
@@ -96,7 +96,7 @@ class SellerType extends Component {
       },
       user2: {
         borderColor: this.state.user2BorderColor,
-        borderWidth: 4,
+        borderWidth: 1,
         paddingTop: 10,
         paddingRight: 15,
         paddingLeft: 15,
@@ -105,7 +105,7 @@ class SellerType extends Component {
       },
       user3: {
         borderColor: this.state.user3BorderColor,
-        borderWidth: 4,
+        borderWidth: 1,
         paddingTop: 10,
         paddingRight: 15,
         paddingLeft: 15,
@@ -113,39 +113,28 @@ class SellerType extends Component {
         borderRadius: 10,
       },
       userTextInactive: {
-        fontFamily: 'Gotham Black Regular',
-        fontSize: 14,
+        fontFamily: 'GothamMedium',
+        fontSize: 18,
         textAlign: 'center',
         color: '#95A5A6',
       },
       userTextActive: {
-        fontFamily: 'Gotham Black Regular',
-        fontSize: 14,
+        fontFamily: 'GothamMedium',
+        fontSize: 18,
         textAlign: 'center',
-        color: '#00aa00',
+        color: '#7ea100',
       },
     });
 
     return (
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: '#efebea'}}
+        style={{backgroundColor: '#ffff'}}
         scrollEnabled={true}>
-        <BackButton {...this.props} />
+        <PageTitle title="Who are you?" {...this.props} />
         <View style={styles.container}>
           <Logo />
-          <View style={styles.signInFormContainer}>
-            <Text
-              style={{
-                fontFamily: 'Gotham Black Regular',
-                color: '#004561',
-                fontSize: 24,
-                paddingLeft: 10,
-                paddingRight: 10,
-              }}>
-              Who are you?
-            </Text>
-          </View>
+          
           <View style={styles.usersContainer}>
             <View style={styles.users}>
               <View
@@ -207,7 +196,7 @@ class SellerType extends Component {
             {this.state.errorMessage ? (
               <Text
                 style={{
-                  color: 'red',
+                  color: '#a10723',
                   fontSize: 12,
                   paddingLeft: 10,
                   paddingRight: 10,
@@ -216,21 +205,24 @@ class SellerType extends Component {
                 }}>
                 Please Select who you are!
               </Text>
-            ) : null}
-            <NextButton
-              click={() => {
-                if (
-                  this.state.u1 === null &&
-                  this.state.u2 === null &&
-                  this.state.u3 === null
-                ) {
-                  this.setState({errorMessage: true});
-                } else {
-                  this.props.onUserTypeClicked('seller');
-                  this.props.navigation.navigate('Register');
-                }
-              }}
-            />
+            ) : null}         
+             <NextButton
+            click={() => {
+              if (
+                this.state.u1 === null &&
+                this.state.u2 === null &&
+                this.state.u3 === null
+              ) {
+                this.setState({errorMessage: true});
+              } else {
+                this.props.onUserTypeClicked('seller');
+                this.props.navigation.navigate('Register');
+              }
+            }}
+            {...this.state}
+            color="#7ea100"
+            label="Next"
+          />
           </View>
         </View>
       </KeyboardAwareScrollView>

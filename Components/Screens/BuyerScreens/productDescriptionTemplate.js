@@ -89,7 +89,7 @@ class ProductDescriptionTemplate extends Component {
         flex: 1.0,
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
       container: {
        

@@ -40,6 +40,7 @@ class ProductDescriptionTemplate extends Component {
       width: Dimensions.get('window').width,
       height: Dimensions.get('window').height,
       orderDetailsData: [],
+      orderDetailsAddressData: null,
       thumbnailImages: [require('../../../assets/Images/coffeeFarms/img4.png')],
     };
   }
@@ -54,7 +55,7 @@ class ProductDescriptionTemplate extends Component {
       Id: this.props.route.params.itemId,
       order_Id: this.props.orderNumber,
     });
-    console.log(data)
+
     this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     axios
@@ -67,8 +68,12 @@ class ProductDescriptionTemplate extends Component {
         },
       })
       .then(res => {
-        console.log(res.data);
-        this.setState({spinner: false, orderDetailsData: res.data.data});
+        console.log(res.data.data);
+        this.setState({
+          spinner: false,
+          orderDetailsData: res.data.data,
+          orderDetailsAddressData: res.data.data.buyer_address,
+        });
       })
       .catch(err => {
         this.setState({spinner: false});
@@ -76,10 +81,10 @@ class ProductDescriptionTemplate extends Component {
       });
   };
 
-  cancelOrder = async () => {
+  cancelOrder = async (args) => {
     this.setState({spinner: true});
     let data = JSON.stringify({
-      orderStatus: 'cancelled',
+      orderStatus: args,
       order_Id: this.props.orderNumber,
     });
     this.setState({spinner: true});
@@ -93,10 +98,9 @@ class ProductDescriptionTemplate extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {
-        console.log(res.data);
+      .then(res => {        
         this.setState({spinner: false});
-        this.props.onFetchBuyerOrders();
+        this.props.onFetchBuyerOrders();        
         this.props.navigation.navigate('My Orders');
       })
       .catch(err => {
@@ -111,6 +115,7 @@ class ProductDescriptionTemplate extends Component {
   };
 
   render() {
+
     const styles = StyleSheet.create({
       parentContaier: {
         backgroundColor: '#efebea',
@@ -134,6 +139,17 @@ class ProductDescriptionTemplate extends Component {
         fontWeight: 'bold',
         fontSize: 20,
         textAlign: 'center',
+      },
+      ratingStyle: {
+        backgroundColor: '#00ac00',
+        color: 'white',
+        lineHeight: 20,
+        justifyContent: 'center',
+        textAlignVertical: 'center',
+        fontSize: 14,
+        width: 45,
+        borderRadius: 5,
+        
       },
       productImageContainer: {
         justifyContent: 'center',
@@ -181,8 +197,7 @@ class ProductDescriptionTemplate extends Component {
       },
       productDetailsContainer: {
         flexDirection: 'row',
-        width: '100%',
-        paddingBottom: 10,
+        width: '100%',       
       },
       productDetailHeader: {
         flexDirection: 'column',
@@ -322,7 +337,7 @@ class ProductDescriptionTemplate extends Component {
         fontFamily: 'GothamLight',
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
       rejected: {
         fontFamily: 'GothamMedium',
@@ -336,6 +351,10 @@ class ProductDescriptionTemplate extends Component {
         fontSize: 12,
         color: 'green',
       },
+      commentText:{    
+       
+        fontFamily: 'GothamLight',
+       }
     });
 
     let imageList = [],
@@ -360,7 +379,9 @@ class ProductDescriptionTemplate extends Component {
       addressId,
       cartId,
       orderStatus,
-      currentPosition;
+      currentPosition,
+      buyerRating,
+      buyerComment;
     if (this.state.orderDetailsData) {
       if (this.state.orderDetailsData.images) {
         this.state.orderDetailsData.images.length >= 1
@@ -379,6 +400,9 @@ class ProductDescriptionTemplate extends Component {
       shipping = this.state.orderDetailsData.shipping_charge;
       totalAmount = this.state.orderDetailsData.total_amount;
       orderStatus = this.state.orderDetailsData.order_status;
+      // buyerRating = this.state.orderDetailsData.rating;
+      // buyerComment = this.state.orderDetailsData.comment;
+      // console.log("****************",buyerRating,buyerComment)
       if (orderStatus === 'placed' || orderStatus === 'rejected') {
         currentPosition = 0;
       } else if (orderStatus === 'shipped') {
@@ -386,33 +410,23 @@ class ProductDescriptionTemplate extends Component {
       } else {
         currentPosition = 2;
       }
-
-      buyerAddress = Object.values(this.state.orderDetailsData).map(i => {
-        if (this.state.orderDetailsData.buyer_address) {
-          if (i.address) {
-            return (
-              i.door_number +
-              ',' +
-              i.address +
-              ',' +
-              i.city +
-              ',' +
-              i.state_name +
-              '-' +
-              i.zip +
-              '\n' +
-              i.contact_no
-            );
-          }
-        }
-      });
-      addressName = Object.values(this.state.orderDetailsData).map(i => {
-        if (this.state.orderDetailsData.buyer_address) {
-          if (i.address) {
-            return i.name;
-          }
-        }
-      });
+      if (this.state.orderDetailsAddressData) {
+        buyerAddress =
+          this.state.orderDetailsAddressData.door_number +
+          ',' +
+          this.state.orderDetailsAddressData.address +
+          ',' +
+          this.state.orderDetailsAddressData.city +
+          ',' +
+          this.state.orderDetailsAddressData.state_name +
+          '-' +
+          this.state.orderDetailsAddressData.zip +
+          '\n' +
+          this.state.orderDetailsAddressData.contact_no;
+          addressName = this.state.orderDetailsAddressData.name;
+      }
+   
+    
     }
 
     const labels = ['Ordered', 'Shipped', 'Delivered'];
@@ -482,6 +496,8 @@ class ProductDescriptionTemplate extends Component {
                       </Text>
                       <Text style={styles.productDetailHeaderText}>Origin</Text>
                       <Text style={styles.productDetailHeaderText}>Farm</Text>
+                      <Text style={styles.productDetailHeaderText}>Your Rating</Text>
+                      {this.state.orderDetailsData.comment !== ''  ? <Text style={styles.productDetailHeaderText}>Comments</Text> : null }
                     </View>
                     <View style={styles.productDetail}>
                       <Text style={styles.productDetailText}>
@@ -493,8 +509,23 @@ class ProductDescriptionTemplate extends Component {
                       <Text style={styles.productDetailText}>
                         : {this.state.orderDetailsData.farm}
                       </Text>
-                    </View>
+                      <View style={{display:'flex',flexDirection:'row'}}><Text style={styles.productDetailText}>: </Text><Text style={styles.ratingStyle}>
+                  {'  '}
+                  {this.state.orderDetailsData.rating}{' '}
+                  <Icon
+                    name="star"
+                    size={12}
+                    style={{
+                      justifyContent: 'center',
+                      textAlignVertical: 'center',
+                    }}
+                  />
+                  {'  '}
+                </Text>
+                </View>            
+                  </View>                  
                   </View>
+                  <View style={{paddingBottom:10,paddingLeft:5,paddingRight:5}}><Text style={styles.commentText}>{this.state.orderDetailsData.comment}</Text></View> 
                   <View
                     style={{
                       flexDirection: 'row',
@@ -519,7 +550,8 @@ class ProductDescriptionTemplate extends Component {
                         <Text style={styles.viewall}>View Detail</Text>
                       </TouchableOpacity>
                     </View>
-                  </View>
+                    
+                  </View>                
                 </View>
                 {orderStatus === 'placed' ||
                 orderStatus === 'shipped' ||
@@ -538,10 +570,16 @@ class ProductDescriptionTemplate extends Component {
                       stepCount={3}
                     />
                     {orderStatus === 'placed' ? (
+                      <View>
                       <ConfirmButton
                         buttonName="Cancel"
-                        cancelOrder={this.cancelOrder}
+                        cancelOrder={()=>this.cancelOrder('cancelled')}
                       />
+                      <ConfirmButton
+                      buttonName="Return"
+                      cancelOrder={()=>this.cancelOrder('returned')}
+                    />
+                    </View>
                     ) : null}
                   </View>
                 ) : orderStatus === 'rejected' ? (

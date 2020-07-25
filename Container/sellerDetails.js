@@ -5,14 +5,13 @@ import {
   FlatList,
   Text,
   View,
-  TextInput,
   Button,
   TouchableHighlight,
   Image,
   TochableOpacity,
   Alert,
   Dimensions,
-  AsyncStorage
+  AsyncStorage,
 } from 'react-native';
 import {Input} from 'react-native-elements';
 import {TouchableOpacity, ScrollView} from 'react-native-gesture-handler';
@@ -34,43 +33,44 @@ import {connect} from 'react-redux';
 import * as api from '../assets/api/api';
 import Spinner from 'react-native-loading-spinner-overlay';
 import ModalDropdown from 'react-native-modal-dropdown';
-
+import PageTitle from '../Components/utils/pageTitle';
+import {HelperText, TextInput} from 'react-native-paper';
 class SellerDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
       height: Dimensions.get('window').height,
-      width:Dimensions.get('window').height,
+      width: Dimensions.get('window').width,
       spinner: false,
       company: null,
       ein: null,
-      alternatePhone: null,      
+      alternatePhone: null,
       companyError: false,
       companyValidationError: false,
       einError: false,
       einValidationError: false,
       alternatePhoneError: false,
-      alternatePhoneValidationError: false,      
-      defaultContryColor: '#969291',
-      defaultStateColor: '#969291',
+      alternatePhoneValidationError: false,
+      defaultContryColor: 'grey',
+      defaultStateColor: 'grey',
       countriesData: [],
-      statesData:[],   
-      countryId:null,
-      countryError:false,        
+      statesData: [],
+      countryId: null,
+      countryError: false,
       street: null,
-      streeError: false,  
+      streeError: false,
       city: null,
-      cityError: false, 
-      stateId:null,
+      cityError: false,
+      stateId: null,
       stateError: false,
       zipCode: null,
       zipCodeError: false,
-      zipCodeValidationError: false, 
+      zipCodeValidationError: false,
     };
   }
 
-  componentDidMount(){
-    this.setState({ countriesData: this.props.countriesData })
+  componentDidMount() {
+    this.setState({countriesData: this.props.countriesData});
   }
 
   einValidate = () => {
@@ -99,15 +99,15 @@ class SellerDetails extends Component {
 
   zipCodeValidate = () => {
     if (this.state.zipCode === '') {
-      this.setState({ zipCode: null });
+      this.setState({zipCode: null});
       return;
     } else {
       if (String(this.state.zipCode).length !== 5) {
-        this.setState({ zipCodeValidationError: true });
+        this.setState({zipCodeValidationError: true});
         return;
       }
     }
-  }
+  };
 
   onContrySelect = async (args, args1) => {
     let country;
@@ -174,7 +174,6 @@ class SellerDetails extends Component {
       this.state.einValidationError === false &&
       this.state.alternatePhoneValidationError === false &&
       this.state.zipCodeValidationError === false
-      
     ) {
       this.setState({spinner: true});
       let data = JSON.stringify({
@@ -226,29 +225,29 @@ class SellerDetails extends Component {
         this.setState({alternatePhoneError: false});
       }
       if (this.state.street === null) {
-        this.setState({ streetError: true });
+        this.setState({streetError: true});
       } else {
-        this.setState({ streetError: false });
+        this.setState({streetError: false});
       }
       if (this.state.countryId === null) {
-        this.setState({ countryError: true });
+        this.setState({countryError: true});
       } else {
-        this.setState({ countryError: false });
+        this.setState({countryError: false});
       }
       if (this.state.stateId === null) {
-        this.setState({ stateError: true });
+        this.setState({stateError: true});
       } else {
-        this.setState({ stateError: false });
+        this.setState({stateError: false});
       }
       if (this.state.city === null) {
-        this.setState({ cityError: true });
+        this.setState({cityError: true});
       } else {
-        this.setState({ cityError: false });
+        this.setState({cityError: false});
       }
       if (this.state.zipCode === null) {
-        this.setState({ zipCodeError: true });
+        this.setState({zipCodeError: true});
       } else {
-        this.setState({ zipCodeError: false });
+        this.setState({zipCodeError: false});
       }
     }
   };
@@ -262,48 +261,60 @@ class SellerDetails extends Component {
         paddingRight: 10,
       },
       registerFormContainer: {
+        paddingTop: 10,
         width: '100%',
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
+      },
+      inputFieldsStyle: {
+        backgroundColor: '#ffff',
+        marginLeft: 10,
+        marginRight: 10,
+        borderWidth: 1,
+        borderColor: '#bad5ff',
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
+        height: 55,
       },
     });
 
-    let countriesList = [],stateList=[];    
-    countriesList = this.state.countriesData.map(i => { return (i.country_name) })
-    stateList = this.state.statesData.map(i => { return (i.state_name) })
- 
+    let countriesList = [],
+      stateList = [];
+    countriesList = this.state.countriesData.map(i => {
+      return i.country_name;
+    });
+    stateList = this.state.statesData.map(i => {
+      return i.state_name;
+    });
 
     return (
-     
       <KeyboardAwareScrollView
-      resetScrollToCoords={{ x: 0, y: 0 }}
-      style={{ backgroundColor: '#efebea' }}
-      scrollEnabled={true}>
-           <Spinner
-            visible={this.state.spinner}
-            textContent={'Loading...'}
-            textStyle={styles.spinnerTextStyle}
-          />
-        <BackButton {...this.props} />
+        resetScrollToCoords={{x: 0, y: 0}}
+        style={{backgroundColor: '#ffff'}}
+        scrollEnabled={true}>
+        <PageTitle title="Contact Details" {...this.props} />
+        <Spinner
+          visible={this.state.spinner}
+          textContent={'Loading...'}
+          textStyle={styles.spinnerTextStyle}
+        />
         <View style={styles.container}>
           <Logo />
           <View style={styles.registerFormContainer}>
-            <Text
-              style={{
-                fontFamily: 'Gotham Black Regular',
-                color: '#004561',
-                fontSize: 24,
-                paddingLeft: 10,
-                paddingRight: 10,
-              }}>
-              Contact Details
-            </Text>
-            <Input
-              placeholder="Company"
+            <TextInput
+              type="text"
+              label="Company"
+              mode="flat"
+              style={styles.inputFieldsStyle}
+              underlineColor="transparent"
+              under
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
               spellCheck={false}
               autoCorrect={false}
-              style={styles.inputStyle}
               onChangeText={company => {
                 if (/[^0-9a-zA-Z\s]/.test(company)) {
                   this.setState({companyValidationError: true});
@@ -320,17 +331,31 @@ class SellerDetails extends Component {
                   ? this.setState({company: null})
                   : null
               }
-              errorMessage={
-                this.state.companyError === true
-                  ? 'Enter the Company'
-                  : this.state.companyValidationError
-                  ? 'Invalid Company name'
-                  : null
-              }
             />
-            <Input
-              placeholder="EIN"
-              style={styles.inputStyle}
+            <HelperText
+              type="error"
+              visible={
+                this.state.companyError === true ||
+                this.state.companyValidationError
+              }>
+              {this.state.companyError === true
+                ? 'Enter the Company'
+                : this.state.companyValidationError
+                ? 'Invalid Company name'
+                : null}
+            </HelperText>
+            <TextInput
+              type="text"
+              label="EIN"
+              mode="flat"
+              style={styles.inputFieldsStyle}
+              underlineColor="transparent"
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
+              spellCheck={false}
+              autoCorrect={false}
               keyboardType="numeric"
               value={this.state.ein}
               maxLength={11}
@@ -354,20 +379,33 @@ class SellerDetails extends Component {
                 }
               }}
               onBlur={this.einValidate}
-              errorMessage={
-                this.state.einError === true
-                  ? 'Enter the EIN'
-                  : this.state.einValidationError
-                  ? 'Invalid Ein'
-                  : null
-              }
             />
-            <Input
-              placeholder="Alternate Phone"
+            <HelperText
+              type="error"
+              visible={
+                this.state.einError === true || this.state.einValidationError
+              }>
+              {this.state.einError === true
+                ? 'Enter the EIN'
+                : this.state.einValidationError
+                ? 'Invalid Ein'
+                : null}
+            </HelperText>
+            <TextInput
+              type="text"
+              label="Alternate Phone"
+              mode="flat"
+              underlineColor="transparent"
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
+              spellCheck={false}
+              autoCorrect={false}
               keyboardType="numeric"
               value={this.state.alternatePhone}
               maxLength={12}
-              style={styles.inputStyle}
+              style={styles.inputFieldsStyle}
               onChangeText={alternatePhone => {
                 const input = alternatePhone
                   .replace(/\D/g, '')
@@ -397,114 +435,180 @@ class SellerDetails extends Component {
                 }
               }}
               onBlur={this.alternatePhoneValidate}
-              errorMessage={
-                this.state.alternatePhoneError === true
-                  ? 'Enter the Alternate Phone number'
-                  : this.state.alternatePhoneValidationError
-                  ? 'Invalid Phone number'
-                  : null
-              }
             />
-            <Input
-              placeholder="Street"
+            <HelperText
+              type="error"
+              visible={
+                this.state.alternatePhoneError === true ||
+                this.state.alternatePhoneValidationError
+              }>
+              {this.state.alternatePhoneError === true
+                ? 'Enter the Alternate Phone number'
+                : this.state.alternatePhoneValidationError
+                ? 'Invalid Phone number'
+                : null}
+            </HelperText>
+            <TextInput
+              type="text"
+              label="Street"
+              mode="flat"
+              underlineColor="transparent"
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
               spellCheck={false}
               autoCorrect={false}
-              style={styles.inputStyle}
+              style={styles.inputFieldsStyle}
               onChangeText={street =>
-                this.setState({ street, streetError: false })
+                this.setState({street, streetError: false})
               }
               onBlur={
-                this.state.street === '' ? this.setState({ street: null }) : null
-              }
-              errorMessage={
-                this.state.streetError === true ? 'Enter the Street' : false
+                this.state.street === '' ? this.setState({street: null}) : null
               }
             />
-            <Input
-              placeholder="City"
+            <HelperText type="error" visible={this.state.streetError === true}>
+              {this.state.streetError === true ? 'Enter the Street' : false}
+            </HelperText>
+            <TextInput
+              type="text"
+              label="City"
+              mode="flat"
+              underlineColor="transparent"
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
               spellCheck={false}
               autoCorrect={false}
-              style={styles.inputStyle}
-              onChangeText={city => this.setState({ city, cityError: false })}
+              style={styles.inputFieldsStyle}
+              onChangeText={city => this.setState({city, cityError: false})}
               onBlur={
-                this.state.city === '' ? this.setState({ city: null }) : null
-              }
-              errorMessage={
-                this.state.cityError === true ? 'Enter the City' : false
+                this.state.city === '' ? this.setState({city: null}) : null
               }
             />
+            <HelperText type="error" visible={this.state.cityError === true}>
+              {this.state.cityError === true ? 'Enter the City' : false}
+            </HelperText>
 
             <ModalDropdown
               options={countriesList}
               defaultValue="Country"
-              textStyle={{ color: this.state.defaultContryColor, fontSize: 18, fontWeight: '100', paddingLeft: 5, }}
-              style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
-              dropdownStyle={{ width: this.state.width - 40}}
-              dropdownTextStyle={{fontSize:18}}
+              textStyle={{
+                color: this.state.defaultContryColor,
+                fontSize: 16,
+                fontWeight: '100',
+                paddingLeft: 10,
+              }}
+              style={{
+                borderWidth: 1,
+                borderColor: '#bad5ff',
+                borderRadius: 5,
+                marginLeft: 10,
+                marginRight: 10,
+                paddingBottom: 15,
+                paddingTop: 15,
+              }}
+              dropdownStyle={{width: this.state.width - 40, borderWidth: 2}}
+              dropdownTextStyle={{fontSize: 18}}
               onSelect={(i, j) => {
                 this.onContrySelect(i, j);
-              }}         
+              }}
             />
-            {this.state.countryError ?<Text
+            {this.state.countryError ? (
+              <Text
                 style={{
-                  color: 'red',
+                  color: '#a10723',
                   fontSize: 12,
                   paddingLeft: 10,
                   paddingRight: 10,
-                  paddingTop: 5,
-                  paddingBottom: 5,
                 }}>
                 Please Select the Country!
-              </Text> :null}
+              </Text>
+            ) : null}
 
             <ModalDropdown
               options={stateList}
               defaultValue="State"
-              disabled={stateList.length >=1 ? false:true}
-              textStyle={{ color: this.state.defaultStateColor, fontSize: 18, fontWeight: '100', paddingLeft: 5, }}
-              style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
-              dropdownStyle={{ width: this.state.width - 40 }}
-              dropdownTextStyle={{fontSize:18}}
+              disabled={stateList.length >= 1 ? false : true}
+              textStyle={{
+                color: this.state.defaultContryColor,
+                fontSize: 16,
+                fontWeight: '100',
+                paddingLeft: 10,
+              }}
+              style={{
+                borderWidth: 1,
+                borderColor: '#bad5ff',
+                borderRadius: 5,
+                marginTop: 25,
+                marginBottom:25,
+                marginLeft: 10,
+                marginRight: 10,
+                paddingBottom: 15,
+                paddingTop: 15,
+              }}
+              dropdownStyle={{width: this.state.width - 40, borderWidth: 2}}
+              dropdownTextStyle={{fontSize: 18}}
               onSelect={(i, j) => {
                 this.onStateSelect(i, j);
               }}
             />
-             {this.state.stateError ?<Text
+            {this.state.stateError ? (
+              <Text
                 style={{
-                  color: 'red',
+                  color: '#a10723',
                   fontSize: 12,
                   paddingLeft: 10,
                   paddingRight: 10,
                   paddingTop: 5,
-                  paddingBottom: 5,
                 }}>
                 Please Select the State!
-              </Text> :null}
-           
-            <Input
-              placeholder="Zip Code"
+              </Text>
+            ) : null}
+
+            <TextInput
+              type="text"
+              label="Zip Code"
+              mode="flat"
+              underlineColor="transparent"
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
               maxLength={5}
-              style={styles.inputStyle}
+              style={styles.inputFieldsStyle}
               keyboardType="numeric"
               onChangeText={zipCode =>
-                this.setState({ zipCode, zipCodeError: false,zipCodeValidationError:false })
+                this.setState({
+                  zipCode,
+                  zipCodeError: false,
+                  zipCodeValidationError: false,
+                })
               }
-              onBlur={
-                this.zipCodeValidate
-              }
-              errorMessage={
-                this.state.zipCodeError === true
+              onBlur={this.zipCodeValidate}
+            />
+            <HelperText
+              type="error"
+              visible={
+                this.state.zipCodeError === true ||
+                this.state.zipCodeValidationError
+              }>
+              {this.state.zipCodeError === true
                 ? 'Enter the Zip code'
                 : this.state.zipCodeValidationError
-                  ? 'Invalid Zip Code'
-                  : null
-              }
-            />
+                ? 'Invalid Zip Code'
+                : null}
+            </HelperText>
           </View>
-          <NextButton click={() => this.handleRegister()} />
+          <NextButton
+            click={() => this.handleRegister()}
+            {...this.state}
+            color="#7ea100"
+            label="Next"
+          />
         </View>
-        </KeyboardAwareScrollView>
-        
+      </KeyboardAwareScrollView>
     );
   }
 }
@@ -525,7 +629,7 @@ const mapDispatchToProps = dispatch => {
       value5,
       value6,
       value7,
-      value8
+      value8,
     ) =>
       dispatch({
         type: actionTypes.REGISTER_SELLER_ADDITIONAL_DETAILS,
@@ -537,7 +641,6 @@ const mapDispatchToProps = dispatch => {
         payload6: value6,
         payload7: value7,
         payload8: value8,
-        
       }),
   };
 };

@@ -143,7 +143,7 @@ class Cart extends Component {
       shipping_address_Id: args1,
       invoice_address_Id: args1,
     });
-    console.log(data)
+   
     this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
@@ -160,6 +160,7 @@ class Cart extends Component {
           this.setState({spinner: false});
           this.props.onfetchBuyerCart();
           this.props.navigation.navigate('Home');
+          this.props.onFetchBuyerOrders();
           Toast.show('Orderd placed sucessfully!');
         }
       })
@@ -381,7 +382,7 @@ class Cart extends Component {
         textAlign: 'center',
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
     });
 
@@ -537,6 +538,7 @@ class Cart extends Component {
                                             )
                                           : this.state.updatedValue
                                       }
+                                      editable={false}
                                       onChange={value => this.updateCart(value,item.product_Id,item.unit_Id,item.price,item.cart_item_id)}
                                       totalWidth={80}
                                       totalHeight={30}

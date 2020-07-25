@@ -7,7 +7,6 @@ import {
   View,
   Button,
   TouchableOpacity,
-  TextInput,
   Dimensions,
   AsyncStorage,
   Image,
@@ -148,7 +147,7 @@ class App extends Component {
           <StatusBar
             barStyle="dark-content"
             hidden={false}
-            backgroundColor="#007b00"
+            backgroundColor="#7ea100"
             translucent={true}
             barStyle="light-content"
           />

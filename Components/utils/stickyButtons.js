@@ -118,8 +118,8 @@ class StickyButton extends Component {
         this.props.onSpinner(false) 
         Toast.show('Order '+this.props.sellerAction+' successfully');
         this.props.onfetchOrder();
-        this.props.onBottomTabClicked('home')
-        this.props.navigation.navigate('Home')            
+        this.props.onBottomTabClicked('home');
+        this.props.navigation.navigate('Home');            
       })
       .catch((err) => {
         this.props.onSpinner(false) 
@@ -173,7 +173,7 @@ class StickyButton extends Component {
         fontFamily: 'GothamMedium',
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
     })
 

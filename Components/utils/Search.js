@@ -64,6 +64,12 @@ class Search extends Component {
     this.props.navigation.navigate('Home');
     return true;
   }
+
+  fetchProductDetails = (args, args1) => {
+    this.props.onDisplayVarietyName(args1);
+    this.props.navigation.navigate('Product Description', {productId: args});
+  };
+
   render() {
     const styles = StyleSheet.create({
       container: {
@@ -155,7 +161,7 @@ class Search extends Component {
             newData.map(i => {
               
               return (
-                <TouchableOpacity onPress={() => this.productDetails()}>
+                <TouchableOpacity onPress={() => this.fetchProductDetails(i.product_Id, i.verityname)}>
                 <View style={styles.itemContainer}>
                   <View style={styles.thumbnailImageContainer}>
                     <Image
@@ -216,6 +222,8 @@ const mapDispatchToProps = dispatch => {
   return {
        onBottomTabClicked: value =>
       dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
+      onDisplayVarietyName: value =>
+      dispatch({type: actionTypes.DISPLAY_VARIETY_NAME, payload: value}),
   };
 };
 export default connect(null,mapDispatchToProps)(Search);

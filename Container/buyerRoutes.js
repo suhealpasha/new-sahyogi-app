@@ -109,7 +109,7 @@ class Routes extends Component {
     this.fetchBuyerCart();
     this.fetchCountries();
     this.fetchBuyerOrders();
-    this.fetchBuyerFeeback();
+
     this.interval = setInterval(() => {this.setState({ time: Date.now() })
     this.fetchHomeScreenData();
     this.fetchDetails();
@@ -117,8 +117,8 @@ class Routes extends Component {
     this.fetchAllRegions();
     this.fetchBuyerCart();
     this.fetchCountries();
-    this.fetchBuyerOrders();  
-    this.fetchBuyerFeeback();
+    this.fetchBuyerOrders(); 
+
   }, 60000);
   }
 
@@ -210,7 +210,7 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {
+      .then(res => {        
         if (res.status) {
           this.setState({
             user_name: res.data.data.first_name,
@@ -295,7 +295,7 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {           
+      .then(res => {      
         if (res.status) {
           if(res.data.data === null){ this.setState({noDataAvailable: true, spinner: false,cartCount:null});}
           else{
@@ -320,7 +320,7 @@ class Routes extends Component {
   };
 
   fetchBuyerOrders = async () => {    
-    const access_token = await AsyncStorage.getItem('isLoggedIn');
+        const access_token = await AsyncStorage.getItem('isLoggedIn');
     axios
       .get(api.buyerOrderListAPI, {
         headers: {
@@ -330,8 +330,7 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => { 
-        console.log( res.data.data)         
+      .then(res => {             
         this.setState({buyerOrderData: res.data.data});
       })
       .catch(err => {
@@ -339,26 +338,7 @@ class Routes extends Component {
       });
   };
 
-  fetchBuyerFeeback = async () => {    
-    const access_token = await AsyncStorage.getItem('isLoggedIn');
-    axios
-      .get(api.buyergetFeedbackAPI, {
-        headers: {
-          accept: 'application/json',
-          access_token: access_token,
-          'accept-language': 'en_US',
-          'content-type': 'application/x-www-form-urlencoded',
-        },
-      })
-      .then(res => {       
-        console.log(res.data.data)   
-        this.setState({buyerFeedbackData: res.data.data});
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
-
+ 
   updateSearch = search => {
     this.setState({searchBarText: search});
   };
@@ -813,7 +793,7 @@ class Routes extends Component {
               ),
             })}>
             {props => (
-              <Cart {...props}  {...this.state} buyerCartData={this.state.buyerCartData} cartCount ={this.state.cartCount} onfetchBuyerCart={this.fetchBuyerCart} />
+              <Cart {...props}  {...this.state} buyerCartData={this.state.buyerCartData} cartCount ={this.state.cartCount} onfetchBuyerCart={this.fetchBuyerCart} onFetchBuyerOrders={this.fetchBuyerOrders}/>
             )}
           </Stack.Screen>
           <Stack.Screen
@@ -1305,37 +1285,9 @@ class Routes extends Component {
                   <Icon name="chevron-left" size={35} color="white" />
                 </TouchableWithoutFeedback>
               ),
-              headerRight: () => (
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableWithoutFeedback
-                    onPress={() =>
-                      this.setState({searchIcon: !this.state.searchIcon})
-                    }>
-                    {this.state.searchIcon ? (
-                      <Icon
-                        name="search"
-                        size={24}
-                        style={{padding: 10, color: '#ffffff'}}
-                      />
-                    ) : (
-                      <TextInput
-                        style={{
-                          height: 50,
-                          fontSize: 20,
-                          padding: 10,
-                          width: 150,
-                        }}
-                        placeholder="Search"
-                        autoFocus={true}
-                        onChangeText={text =>
-                          this.changeTitleText({navigation}, 'My Orders', text)
-                        }
-                      />
-                    )}
-                  </TouchableWithoutFeedback>
-                </View>
-              ),
-            })}>
+              headerRight: () => null
+            }
+            )}>
             {props => <MyOrders {...props} {...this.state}  onFetchBuyerOrders={this.fetchBuyerOrders}
                 buyerOrderData={this.state.buyerOrderData}/>}
           </Stack.Screen>

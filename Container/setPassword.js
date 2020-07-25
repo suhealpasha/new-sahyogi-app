@@ -5,7 +5,6 @@ import {
   FlatList,
   Text,
   View,
-  TextInput,
   Button,
   TouchableHighlight,
   Image,
@@ -13,6 +12,7 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
+import {HelperText, TextInput,Checkbox } from 'react-native-paper';
 import {Input} from 'react-native-elements';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import BackButton from '../Components/utils/backButton';
@@ -30,6 +30,7 @@ import {CheckBox} from 'react-native-elements';
 import {TouchableNativeFeedback} from 'react-native-gesture-handler';
 import HTMLView from 'react-native-htmlview';
 import {ceil} from 'react-native-reanimated';
+import PageTitle from '../Components/utils/pageTitle';
 
 class SetPassword extends Component {
   constructor(props) {
@@ -52,7 +53,7 @@ class SetPassword extends Component {
   }
 
   handleRegister = async () => {
-    if (
+         if (
       this.state.password !== null &&
       this.state.confirmPassword !== null &&
       this.state.checked &&
@@ -189,46 +190,58 @@ class SetPassword extends Component {
         alignItems: 'center',
         paddingLeft: 10,
         paddingRight: 10,
+        justifyContent:'center',
+        display:'flex',       
+        height:this.state.height - 48
       },
       registerFormContainer: {
         width: '100%',
+        paddingTop:10,
+        paddingBottom:10
       },
       users: {},
-      inputStyle: {},
+      inputFieldsStyle: {
+        backgroundColor: '#ffff',
+        marginLeft: 10,
+        marginRight: 10,
+        borderWidth: 1,
+        borderColor: '#bad5ff',
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
+        height: 55,
+      },
       suggestionContainer: {
         paddingTop: 10,
         width: '100%',
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
       viewall: {
         color: '#3e708f',
         borderRadius: 10,
-        fontSize: 14,
-        fontFamily: 'GothamMedium',
+        fontSize: 16,
+        fontFamily: 'GothamLight',
         paddingTop: 10,
         paddingLeft: 10,
         paddingRight: 10,
         paddingBottom: 10,
       },
-      webView: {        
+      webView: {
         paddingLeft: 10,
-        paddingTop:10,
-        paddingBottom:10,
-        marginTop:10,
+        paddingTop: 10,
+        paddingBottom: 10,
+        marginTop: 10,
         paddingRight: 10,
-        flex:1.0,
-        justifyContent:'center',
+        flex: 1.0,
+        justifyContent: 'center',
         alignItems: 'center',
-       
       },
       webViewChild: {
         marginTop: 20,
         paddingLeft: 10,
         paddingRight: 10,
-        
-        height: this.state.height - 60,
+        height: this.state.height - 100,
         width: this.state.width - 30,
         borderRadius: 20,
         shadowColor: '#000',
@@ -236,29 +249,30 @@ class SetPassword extends Component {
           width: 0,
           height: 10,
         },
-        shadowOpacity: 0.44,
-        shadowRadius: 10.32,
-        elevation: 5,
+        
       },
       tc: {
         textAlign: 'center',
         fontFamily: 'GothamMedium',
+        fontSize:18
       },
       tcDetail: {
         padding: 10,
         justifyContent: 'center',
         fontFamily: 'GothamLight',
         textAlign: 'justify',
+        fontSize:16
       },
     });
 
     return (
       <View style={{flex: 1.0}}>
+        <PageTitle title="Register Now" {...this.props} />
         {this.state.webView ? (
           <KeyboardAwareScrollView
             resetScrollToCoords={{x: 0, y: 0}}
             style={{
-              backgroundColor: '#efebea',
+              backgroundColor:'#ffff',
               paddingTop: 10,
               paddingBottom: 10,
             }}
@@ -284,10 +298,9 @@ class SetPassword extends Component {
           </KeyboardAwareScrollView>
         ) : (
           <KeyboardAwareScrollView
+          style={{backgroundColor:'#ffff'}} 
             resetScrollToCoords={{x: 0, y: 0}}
-            style={{backgroundColor: '#efebea'}}
             scrollEnabled={true}>
-            <BackButton {...this.props} />
             <View style={styles.container}>
               <Spinner
                 visible={this.state.spinner}
@@ -296,20 +309,19 @@ class SetPassword extends Component {
               />
               <Logo />
               <View style={styles.registerFormContainer}>
-                <Text
-                  style={{
-                    fontFamily: 'Gotham Black Regular',
-                    color: '#004561',
-                    fontSize: 24,
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                  }}>
-                  Set Your Password
-                </Text>
-                <Input
-                  placeholder="Enter Your Password"
-                  style={styles.inputStyle}
+                <TextInput
                   secureTextEntry={true}
+                  type="text"
+                  label="Enter Your Password"
+                  mode="flat"
+                  style={styles.inputFieldsStyle}
+                  underlineColor="transparent"
+                  theme={{
+                    colors: {text: 'black', primary: 'grey'},
+                    fonts: {medium: 'Open Sans'},
+                  }}
+                  spellCheck={false}
+                  autoCorrect={false}
                   onChangeText={password =>
                     this.setState({
                       password,
@@ -318,18 +330,31 @@ class SetPassword extends Component {
                     })
                   }
                   onBlur={this.passwordValidate}
-                  errorMessage={
-                    this.state.passwordError === true
-                      ? 'Enter the Password'
-                      : this.state.passwordValidationError
-                      ? 'Should contain min 8 digits,atleast 1 no, 1 uppercase letter & a special charater.'
-                      : null
-                  }
                 />
-                <Input
-                  placeholder="Confirm Your password"
-                  style={styles.inputStyle}
+                <HelperText
+                  type="error"
+                  visible={
+                    this.state.passwordError === true ||
+                    this.state.passwordValidationError
+                  }>
+                  {this.state.passwordError === true
+                    ? 'Enter the Password'
+                    : this.state.passwordValidationError
+                    ? 'Should contain min 8 digits,atleast 1 no, 1 uppercase letter & a special charater.'
+                    : null}
+                </HelperText>
+                <TextInput
                   secureTextEntry={true}
+                  label="Confirm Your Password"
+                  mode="flat"
+                  style={styles.inputFieldsStyle}
+                  underlineColor="transparent"
+                  theme={{
+                    colors: {text: 'black', primary: 'grey'},
+                    fonts: {medium: 'Open Sans'},
+                  }}
+                  spellCheck={false}
+                  autoCorrect={false}
                   onChangeText={confirmPassword =>
                     this.setState({
                       confirmPassword,
@@ -342,14 +367,19 @@ class SetPassword extends Component {
                       ? this.setState({confirmPassword: null})
                       : null
                   }
-                  errorMessage={
-                    this.state.confirmPasswordError === true
-                      ? 'Confirm the password'
-                      : this.state.passwordMatchError
-                      ? 'Password Mismatch'
-                      : false
-                  }
                 />
+                <HelperText
+                  type="error"
+                  visible={
+                    this.state.confirmPasswordError === true ||
+                    this.state.passwordMatchError
+                  }>
+                  {this.state.confirmPasswordError === true
+                    ? 'Confirm the password'
+                    : this.state.passwordMatchError
+                    ? 'Password Mismatch'
+                    : false}
+                </HelperText>
               </View>
               <ConfirmButton
                 buttonName={
@@ -357,22 +387,23 @@ class SetPassword extends Component {
                     ? 'Complete Registration'
                     : 'Reset Password'
                 }
+                name="register"
                 click={this.handleRegister}
               />
 
               <CheckBox
                 title={'I have read and accepted'}
-                fontFamily={'GothamMedium'}
+                fontFamily={'GothamMedium'}                
                 size={25}
                 containerStyle={{
                   paddingLeft: 0,
                   marginLeft: 0,
                   marginTop: 0,
-                  marginBottom: 0,
-
-                  backgroundColor: '#efebea',
+                  marginBottom: 0,  
+                  backgroundColor:'#ffff',
+                  borderWidth:0              
                 }}
-                checkedColor={'#00aa00'}
+                checkedColor={'#7ea100'}
                 checked={this.state.checked}
                 onPress={() =>
                   this.setState({
@@ -390,7 +421,7 @@ class SetPassword extends Component {
               {this.state.checkedError ? (
                 <Text
                   style={{
-                    color: 'red',
+                    color: '#a10723',
                     fontSize: 12,
                     paddingLeft: 10,
                     paddingRight: 10,
@@ -403,16 +434,16 @@ class SetPassword extends Component {
               <Dialog.Container
                 contentStyle={{
                   alignItems: 'center',
-                  paddingBottom: 0,
+                  paddingBottom: 10,
                   paddingRight: 0,
                   paddingLeft: 0,
                 }}
                 visible={this.state.dailogBoxOpen}>
                 <Dialog.Title style={{textAlign: 'center'}}>
-                  <Icon name="done" size={25} />
+                  <Icon name="done" size={25} color='#7ea100'/>
                 </Dialog.Title>
                 <Dialog.Title
-                  style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
+                  style={{textAlign: 'center', fontFamily: 'GothamMedium',fontSize:18}}>
                   Thank you
                 </Dialog.Title>
                 {this.props.userType === 'seller' ? (
@@ -432,14 +463,15 @@ class SetPassword extends Component {
                   style={{
                     paddingTop: 10,
                     paddingBottom: 10,
-                    color: '#004561',
-                    fontFamily: 'GothamBold',
+                    color: '#ffff',
+                    fontFamily: 'GothamMedium',
                     paddingLeft: 0,
                     paddingRight: 0,
-                    borderColor: 'grey',
-
+                    backgroundColor:'#024262',
                     textAlign: 'center',
                     justifyContent: 'center',
+                    width:100,
+                    fontSize:16
                   }}
                   label="Ok"
                   onPress={this.handleOk}

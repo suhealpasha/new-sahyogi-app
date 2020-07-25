@@ -21,6 +21,7 @@ import OTPInputView from '@twotalltotems/react-native-otp-input';
 import {connect} from 'react-redux';
 import * as actionTypes from '../Store/action';
 import * as api from '../assets/api/api';
+import PageTitle from '../Components/utils/pageTitle';
 
 class Otp extends Component {
   constructor(props) {
@@ -92,7 +93,8 @@ class Otp extends Component {
         justifyContent:'flex-start',
         alignItems:'flex-start',
         paddingRight:10,
-        paddingLeft:10
+        paddingLeft:10,
+        alignItems:'center'
       },
       otpStyles: {
         width:300,
@@ -114,9 +116,10 @@ class Otp extends Component {
       underlineStyleBase: {
         width: 30,
         height: 50,
-        borderWidth: 0,
-        borderBottomWidth: 1,
-        borderColor:'grey',
+        borderWidth: 0,    
+        borderWidth:1,
+        borderColor:'#bad5ff',
+     
         color:'#3e708f',
         fontSize:25
       },
@@ -134,23 +137,14 @@ class Otp extends Component {
     });
 
     return (
-      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}}
+      style={{backgroundColor:'#ffff'}} 
       scrollEnabled={true}>
-         <BackButton {...this.props} />
+          <PageTitle title="      OTP    " {...this.props} />
         <View style={styles.container}>         
           <Logo />
 
-          <View style={styles.otpFormContainer}>
-            <Text
-              style={{
-                fontFamily: 'Gotham Black Regular',
-                color: '#004561',
-                fontSize: 24,
-                paddingLeft:10,
-                paddingRight:10
-              }}>
-              OTP
-            </Text>
+          <View style={styles.otpFormContainer}>            
             <OTPInputView
               autoFocus={true}
               pinCount={4}
@@ -204,7 +198,13 @@ class Otp extends Component {
               </Text>
             </TouchableOpacity>
           </View>
-          <NextButton click={() => this.handleLogin()} />
+  
+          <NextButton
+           click={() => this.handleLogin()}
+            {...this.state}
+            color="#7ea100"
+            label="Next"
+          />
         </View>
       </KeyboardAwareScrollView>
     );

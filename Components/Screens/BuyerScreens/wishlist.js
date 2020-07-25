@@ -226,7 +226,7 @@ class Wishlist extends Component {
         borderColor: '#95A5A6',
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
     });
     return (

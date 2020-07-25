@@ -297,7 +297,7 @@ class SellerOrderDetail extends Component {
         paddingRight: 10,
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
       statusDelivered: {
         fontFamily: 'GothamMedium',

@@ -6,7 +6,8 @@ import BackButton from '../Components/utils/backButton';
 import Logo from '../Components/utils/logo';
 import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
-
+import PageTitle from '../Components/utils/pageTitle';
+import Icon from 'react-native-vector-icons/SimpleLineIcons';
 
 class SignUp extends Component {
   constructor(props) {
@@ -44,7 +45,7 @@ class SignUp extends Component {
       this.setState({
         userImageType2: require('../assets/Images/users/myUser.png'),
       });
-      this.setState({user1BorderColor: '#00aa00'});
+      this.setState({user1BorderColor: '#7ea100'});
       this.setState({user2BorderColor: '#95A5A6'});
       this.setState({u1: true});
       this.setState({u2: false});
@@ -56,7 +57,7 @@ class SignUp extends Component {
         userImageType1: require('../assets/Images/users/myUser.png'),
       });
       this.setState({user1BorderColor: '#95A5A6'});
-      this.setState({user2BorderColor: '#00aa00'});
+      this.setState({user2BorderColor: '#7ea100'});
       this.setState({u2: true});
       this.setState({u1: false});
     }
@@ -74,13 +75,16 @@ class SignUp extends Component {
         paddingLeft: 10,
         paddingRight: 10,  
         justifyContent:'center',
-        height:this.state.height - 90,         
+        display:'flex'  ,       
+        height:this.state.height - 172
        },
       signInFormContainer: {
         width: '100%',
       },
       usersContainer: {
-        paddingTop: 10,
+     
+        paddingTop:10
+      
       },
       users: {
         flexDirection: 'row',
@@ -89,54 +93,42 @@ class SignUp extends Component {
       user1: {
         resizeMode: 'cover',
         borderColor: this.state.user1BorderColor,
-        borderWidth: 4,
+        borderWidth: 2,
         padding: 10,
         borderRadius: 10,
       },
       user2: {
         resizeMode: 'cover',
         borderColor: this.state.user2BorderColor,
-        borderWidth: 4,
+        borderWidth: 2,
         padding: 10,
         borderRadius: 10,
       },
       userTextInactive: {
-        fontFamily: 'Gotham Black Regular',
-        fontSize: 14,
+        fontFamily: 'GothamMedium',
+        fontSize: 16,
         textAlign: 'center',
         marginTop: 5,
         color: '#95A5A6',
       },
       userTextActive: {
-        fontFamily: 'Gotham Black Regular',
-        fontSize: 14,
+        fontFamily: 'GothamMedium',
+        fontSize: 16,
         textAlign: 'center',
         marginTop: 5,
-        color: '#00aa00',
+        color: '#7ea100',
       },
     });
 
 
 
     return (
-      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#efebea',}}
+      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}}
+      style={{backgroundColor:'#ffff'}} 
       scrollEnabled={true}>
-        <BackButton {...this.props} />
-        <View style={styles.container}>
-   
-          <Logo />
-          <View style={styles.signInFormContainer}>
-            <Text
-              style={{
-                fontFamily: 'Gotham Black Regular',
-                color: '#004561',
-                fontSize: 24,
-                paddingLeft: 10,
-                paddingRight: 10,
-              }}>
-              Register As
-            </Text>
-          </View>
+        <PageTitle title="Register As" {...this.props} />      
+        <View style={styles.container}>    
+          <Logo />         
           <View style={styles.usersContainer}>
             <View style={styles.users}>
               <View style={styles.user1}>
@@ -167,6 +159,7 @@ class SignUp extends Component {
                     style={{width: 120}}
                     source={this.state.userImageType2}
                   />
+               
                 </TouchableWithoutFeedback>
                 <Text
                   style={
@@ -181,7 +174,7 @@ class SignUp extends Component {
             {this.state.errorMessage ? (
               <Text
                 style={{
-                  color: 'red',
+                  color: '#a10723',
                   fontSize: 12,
                   paddingLeft: 10,
                   paddingRight: 10,
@@ -191,8 +184,8 @@ class SignUp extends Component {
                 Please Select the user type!
               </Text>
             ) : null}
-            <NextButton
-              click={() => {
+          
+            <NextButton  click={() => {
                 if (this.state.u1 === null && this.state.u2 === null) {
                   this.setState({errorMessage: true});
                 } else {
@@ -205,10 +198,10 @@ class SignUp extends Component {
                     this.props.navigation.navigate('Seller Type');
                   }
                 }
-              }}
-            />
+              }} color="#7ea100" label="Next"/>
           </View>
         </View>
+      
       </KeyboardAwareScrollView>
     );
   }

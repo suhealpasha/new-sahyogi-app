@@ -181,7 +181,7 @@ class AllOrigins extends Component {
         fontFamily: 'Gotham Black Regular',
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
     });
 

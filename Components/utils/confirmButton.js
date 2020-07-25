@@ -7,11 +7,16 @@ class ConfirmButton extends Component {
     this.state = {};
   }
 
-
   render() {
     return (
       <View style={styles.nextButtonContainer}>
-        <TouchableOpacity style={styles.loginButton} onPress={this.props.cancelOrder}>
+        <TouchableOpacity
+          style={styles.loginButton}
+          onPress={
+            this.props.name === 'register'
+              ? this.props.click
+              : this.props.cancelOrder
+          }>
           <Text style={styles.buttonTextStyle}>{this.props.buttonName}</Text>
         </TouchableOpacity>
       </View>
@@ -24,25 +29,23 @@ const styles = StyleSheet.create({
   nextButtonContainer: {
     flexDirection: 'row',
     width: '100%',
-    justifyContent: 'flex-end',
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingBottom:10
+    // justifyContent: 'flex-end',
   },
   loginButton: {
-    borderWidth: 1,
-    borderColor: '#3e708f',
     alignItems: 'center',
-    justifyContent: 'center',
-    height: 40,
-    backgroundColor: '#004561',
-
-    borderRadius: 15,
+    width: '100%',
+    padding: 10,
+    backgroundColor: '#024262',
+    borderRadius: 50,
     marginTop: 10,
     marginRight: 10,
   },
   buttonTextStyle: {
-    color: 'white',
-    fontFamily: 'GothamMedium',
-    fontSize: 14,
-    paddingLeft: 10,
-    paddingRight: 10,
+    color:'#fff',
+    fontFamily:'GothamMedium',
+    fontSize:18
   },
 });

@@ -164,7 +164,7 @@ class Listing extends Component {
         fontSize: 12,
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
     });
 

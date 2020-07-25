@@ -215,7 +215,7 @@ class EditProfile extends Component {
       },
       users: {},
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
       suggestionContainer: {
         paddingTop: 10,

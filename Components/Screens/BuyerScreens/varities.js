@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     fontFamily: 'GothamMedium',
   },
   spinnerTextStyle: {
-    color: '#00aa00'
+    color: '#7ea100'
   }, 
 });
 

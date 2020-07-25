@@ -33,7 +33,8 @@ class ProductAction extends Component {
       value: 1,
       availableQuantity: 0,
       productId: null,
-      unitId:null
+      unitId:null,
+      wishlistButtonDisable:false
     };
   }
 
@@ -51,8 +52,8 @@ class ProductAction extends Component {
     ]);
   }
 
-  favoutiteClicked = async () => {
-    this.setState({spinner: true});
+  favoutiteClicked = async () => { 
+    this.setState({wishlistButtonDisable:true})
     let data;
     if (this.props.productData.wishlist) {
       data = JSON.stringify({
@@ -77,19 +78,19 @@ class ProductAction extends Component {
         },
       })
       .then(res => {
-        if (res.status) {
-          this.setState({spinner: false});
+        if (res.status) {        
           this.props.onFetchProduct();
+          this.setState({wishlistButtonDisable:false})
         }
       })
       .catch(err => {
-        this.setState({spinner: false});
+        this.setState({wishlistButtonDisable:false})
         console.log(err);
       });
   };
 
   activateUnitsButton = (param1, param2, param3, param4, param5) => {
-    console.log(param5)
+   
     this.setState({
       activeButton: param1,
       price: param2,
@@ -198,7 +199,7 @@ class ProductAction extends Component {
         paddingLeft: 5,
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
     });
 
@@ -294,7 +295,7 @@ class ProductAction extends Component {
                   if (val === 1) {
                     if (this.props.productData.nano.length >= 1) {
                       this.setState({
-                        availableQuantity: null,
+                        availableQuantity: 0,
                         activeButton: '',
                         value: 1,
                         activeSwitch: val,
@@ -307,7 +308,7 @@ class ProductAction extends Component {
                   } else {
                     if (this.props.productData.micro.length >= 1) {
                       this.setState({
-                        availableQuantity: null,
+                        availableQuantity: 0,
                         activeButton: '',
                         value: 1,
                         activeSwitch: val,
@@ -419,6 +420,7 @@ class ProductAction extends Component {
               Quantity
             </Text>
             <NumericInput
+              editable={Number.parseInt(this.state.availableQuantity, 10) > 0 && this.state.activeButton !== '' ? true : false}
               value={this.state.value}
               onChange={value => this.setState({value: value})}
               totalWidth={80}
@@ -437,6 +439,11 @@ class ProductAction extends Component {
             />
           </View>
           <View style={styles.lotsPageSwitchContainer}>
+            <TouchableOpacity 
+            disabled={this.state.wishlistButtonDisable}
+            onPress={() => {
+                this.favoutiteClicked();
+              }}>
             <Icon
               name={
                 this.props.productData.wishlist === false
@@ -445,10 +452,9 @@ class ProductAction extends Component {
               }
               size={30}
               color={this.props.productData.wishlist ? 'red' : 'grey'}
-              onPress={() => {
-                this.favoutiteClicked();
-              }}
+              
             />
+            </TouchableOpacity>
           </View>
         </View>
       </View>

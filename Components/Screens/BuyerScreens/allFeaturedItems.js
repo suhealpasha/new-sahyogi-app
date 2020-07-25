@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     borderRadius:5
   },
   spinnerTextStyle: {
-    color: '#00aa00',
+    color: '#7ea100',
   },
 });
 

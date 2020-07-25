@@ -16,7 +16,7 @@ class Logo extends Component{
             <View style={styles.logoContainer}>
             <Image
               style={styles.logoImageStyle}
-              source={require('../../assets/Images/logos/Logo_Microffee.png')}></Image>
+              source={require('../../assets/Images/logos/newMicrofeeLogo.png')}></Image>
           </View>
         );
     }
@@ -26,11 +26,12 @@ export default Logo;
 const styles = StyleSheet.create({
     logoContainer: {
         paddingTop:20,
+        
         paddingBottom:10
     },
     logoImageStyle: {
-      width: 300,
-      height: 200,
-      resizeMode: 'stretch',
+        width:210,
+        height:119,
+        resizeMode: 'contain',
     },
 })

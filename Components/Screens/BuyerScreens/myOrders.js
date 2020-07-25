@@ -37,12 +37,12 @@ class MyOrders extends Component {
       comment: '',
       buyerRating: null,
       productId: null,
+      ratingId: null
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   componentDidMount() {
-    console.log(this.props.buyerOrderData)
     BackHandler.addEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -63,21 +63,33 @@ class MyOrders extends Component {
 
   fetchOrderDetails = (args, args1) => {
     this.props.onDisplayOrderNumber(args1);
-    this.props.navigation.navigate('Order Detail', {itemId: args});
+    this.props.navigation.navigate('Order Detail',{itemId: args});
   };
 
-  ratingCompleted = rating => {
+  ratingCompleted = async (rating) => { 
     this.setState({buyerRating: rating});
   };
 
-  giveRatings = async s => {
+  giveRatings = async () => {
     this.setState({dailogBoxOpen: false});
-    let data = JSON.stringify({
-      rating: this.state.buyerRating,
-      comment: this.state.comment,
-      product_Id: this.state.productId,
-    });
+    let data;
+    if(this.state.ratingId === null){
+      data = JSON.stringify({
+        rating: this.state.buyerRating,
+        comment: this.state.comment,
+        product_Id: this.state.productId,
+      });
+    }
+    else{
+      data = JSON.stringify({
+        rating_Id: this.state.ratingId,
+        rating: this.state.buyerRating,
+        comment: this.state.comment,
+        product_Id: this.state.productId,
+      });
+    }    
     const access_token = await AsyncStorage.getItem('isLoggedIn');
+    if(this.state.buyerRating){
     axios
       .post(api.buyerAddOrUpdateFeedbackAPI, data, {
         headers: {
@@ -87,13 +99,14 @@ class MyOrders extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {
-        console.log(res)
+      .then(res => {       
         this.props.onFetchBuyerOrders();
       })
       .catch(err => {
         console.log(err);
       });
+    }
+    
   };
   render() {
     return (
@@ -105,7 +118,7 @@ class MyOrders extends Component {
           // keyExtractor = {(items)=>{items.key}}
 
           renderItem={({item}) => {
-            let ratingIcon = item.rated ? (
+            let ratingIcon = item.feedback ? (
               <View style={{flexDirection: 'row'}}>
                 <Text
                   style={{
@@ -118,9 +131,13 @@ class MyOrders extends Component {
                   }}>
                   Your Ratings
                 </Text>
+                <TouchableOpacity
+                onPress={() => {
+                this.setState({dailogBoxOpen: true,productId:item.product_Id,ratingId:item.feedback.rating_Id})
+                }}>
                 <Text style={styles.ratingStyle}>
                   {'  '}
-                  {item.ratings}{' '}
+                  {item.feedback.rating}{' '}
                   <Icon
                     name="star"
                     size={12}
@@ -131,6 +148,7 @@ class MyOrders extends Component {
                   />
                   {'  '}
                 </Text>
+                </TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity
@@ -239,7 +257,7 @@ class MyOrders extends Component {
 
           <AirbnbRating
             count={5}
-            defaultRating={5}
+            defaultRating={0}
             size={25}
             showRating={false}
             onFinishRating={this.ratingCompleted}

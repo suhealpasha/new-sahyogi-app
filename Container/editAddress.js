@@ -269,7 +269,7 @@ class AddAddress extends Component {
         width: '100%',
       },
       spinnerTextStyle: {
-        color: '#00aa00',
+        color: '#7ea100',
       },
     });
 

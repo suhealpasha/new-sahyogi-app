@@ -40,17 +40,11 @@ class Regions extends Component {
 
   render() {
     const styles = StyleSheet.create({
-      regionstyles: {
-        // marginHorizontal: 5,
-      
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlignVertical: 'center',
-      },
       itemContainer: {
+        marginTop: 10,
         marginBottom: 10,
-        backgroundColor: 'white',      
-        width:this.state.width / 2 - 15,        
+        backgroundColor: 'white',
+        width: this.state.width / 2.4,
         shadowColor: '#000',
         shadowOffset: {
           width: 0,
@@ -58,57 +52,65 @@ class Regions extends Component {
         },
         shadowOpacity: 0.23,
         shadowRadius: 2.62,
-        elevation: 4,
-        paddingBottom: 10,    
+        elevation: 4,   
+        borderRadius: 5,
+        marginRight:10,
         marginLeft:10
-        
       },
-      imageContainer:{
-        backgroundColor:'grey',      
-        aspectRatio:2/1
+      imageContainer: {
+        backgroundColor: 'white',
+        borderRadius: 5,
+        aspectRatio: 2 / 1,
       },
-      itemData: {
-        borderTopWidth: 1,
-        borderColor: '#95A5A6',
+      itemDetailContainer: {
+        paddingTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
       },
-      textData: {
-        paddingTop: 5,
-        paddingLeft: 5,
-        paddingRight: 5,
-        fontFamily: 'Gotham Black Regular',
+      itemData:{
+     
       },
+      textData:{
+        textAlign:'center',
+        fontFamily: 'GothamMedium',
+      
+      }
+    
     });
     return (
       <View style={styles.regionstyles}>
         <FlatList
           data={this.props.regionsData}
           horizontal={true}
+          showsHorizontalScrollIndicator={false}
           keyExtractor={items => {
             items.region_Id;
           }}
           renderItem={({item}) => {
             return (
               <TouchableNativeFeedback
-                style={{width:this.state.width/ 2.2 }}
+                style={{width:this.state.width / 2.1  - 10}}
                 onPress={() => this.fetchOrigins(item.region_Id, item.name)}>
                 <View style={styles.itemContainer}>
                      <View style={styles.imageContainer}>
-                      <ImageBackground
-                        source={{
-                          uri: item.url_thumbnail_image,
-                        }}
-                        style={{width: this.state.width / 2 - 15 ,
-                         aspectRatio:2/1,                     
-                           }}
-                     
-                        // resizeMode='stretch'
-                        >                       
-                      </ImageBackground>
-                      </View>
-                      <View style={styles.itemData}>
+                     <ImageBackground
+                      source={{
+                        uri: item.url_thumbnail_image,
+                      }}
+                      style={{
+                        aspectRatio: 2 / 1,
+                   
+                      }}
+                      imageStyle={{
+                        borderRadius:10
+                      }}
+                        resizeMode="stretch"
+                    />
+                      </View>                    
+                    </View>
+                    <View style={styles.itemData}>
                         <Text style={styles.textData}>{item.name}</Text>
-                      </View>
-                    </View>             
+                      </View>             
               </TouchableNativeFeedback>
             );
           }}

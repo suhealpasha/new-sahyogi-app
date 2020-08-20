@@ -285,7 +285,7 @@ class Login extends Component {
               <TouchableOpacity
                 onPress={() => {
                   this.setState({password: null, mobileNumber: null});
-                  this.props.navigation.navigate('Sign Up');
+                  this.props.navigation.navigate('Register');
                   this.props.onForgotPasswordClicked(null);
                 }}>
                 <Text

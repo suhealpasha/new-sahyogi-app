@@ -79,7 +79,7 @@ class SellerProfile extends Component {
   }
   handleBackButtonClick() {
     this.props.onBottomTabClicked('home');
-    this.props.navigation.goBack(null);
+    this.props.navigation.navigate('Home');
     return true;
   }
 

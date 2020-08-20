@@ -111,7 +111,7 @@ class CheckboxTree extends Component {
               <CheckBox
                 onPress={() => this.checkBox_Test(i)}
                 checked={this.state.check[i]}
-                checkedColor="#00aa00"
+                checkedColor="#7ea100"
               />
 
               <Text style={styles.checkBoxText}>{Object.keys(item)}</Text>
@@ -154,7 +154,7 @@ class CheckboxTree extends Component {
                               ? this.state.check[i]
                               : nestedItem[l].isChecked
                           }
-                          checkedColor="#00aa00"
+                          checkedColor="#7ea100"
                         />
                         <Text style={styles.nestedCheckBoxText}>{k.name}</Text>
                       </View>

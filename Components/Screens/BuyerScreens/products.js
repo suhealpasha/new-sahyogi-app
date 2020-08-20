@@ -9,7 +9,7 @@ import {
   ScrollView,
   Button,
   TouchableOpacity,
-  ImageBackground
+  ImageBackground,
 } from 'react-native';
 import {
   Card,
@@ -63,9 +63,10 @@ class LatestProducts extends Component {
         width: 45,
       },
       itemContainer: {
+        marginTop: 10,
         marginBottom: 10,
-        backgroundColor: 'white',      
-        width:this.state.width / 2 - 15,        
+        backgroundColor: 'white',
+        width: this.state.width / 2.4,
         shadowColor: '#000',
         shadowOffset: {
           width: 0,
@@ -75,20 +76,22 @@ class LatestProducts extends Component {
         shadowRadius: 2.62,
         elevation: 4,
         paddingBottom: 10,
-        borderRadius:5
+        borderRadius: 5,
+        marginRight: 10,
+        marginLeft:10
       },
-      imageContainer:{
-        backgroundColor:'grey',
-        borderTopLeftRadius:5,
-        borderTopRightRadius:5,
-        aspectRatio:2/1
+      imageContainer: {
+        backgroundColor: 'white',
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        aspectRatio: 2 / 1,
       },
-      itemDetailContainer: {      
+      itemDetailContainer: {
         paddingLeft: 10,
         paddingRight: 10,
       },
-      itemTextVariety:{
-        fontFamily: 'Gotham Black Regular',
+      itemTextVariety: {
+        fontFamily: 'GothamBold',
         fontSize: 14,
         paddingTop: 5,
       },
@@ -96,89 +99,86 @@ class LatestProducts extends Component {
         fontSize: 12,
         justifyContent: 'space-around',
         fontFamily: 'GothamMedium',
-        color: '#5C5C5C',      
+        color: '#5C5C5C',
       },
       itemTextFarm: {
         fontSize: 12,
         justifyContent: 'space-around',
         fontFamily: 'GothamMedium',
         color: '#95A5A6',
-        paddingBottom: 10,
       },
       ratingStyle: {
-        backgroundColor: '#00ac00',
-        color: 'white',
-        lineHeight: 20,
         justifyContent: 'center',
         textAlignVertical: 'center',
         fontSize: 14,
-        width: 45,
+        fontFamily: 'GothamLight',
       },
     });
     return (
       <View style={{flex: 1.0}}>
         <FlatList
           data={this.props.latestProductsData}
-          columnWrapperStyle={{paddingLeft:5,paddingRight:5,justifyContent:'space-between'}}
-          numColumns={2}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
           keyExtractor={items => {
             items.product_Id;
           }}
           renderItem={({item}) => {
             let ratingIcon = (
               <View style={{flexDirection: 'row'}}>
-                <Text style={styles.ratingStyle}>
-                  {'  '}
-                  {item.avg_rating}{' '}
-                  <Icon
-                    name="star"
-                    size={12}
-                    style={{
-                      justifyContent: 'center',
-                      textAlignVertical: 'center',
-                    }}
-                  />
-                  {'  '}
-                </Text>
-                <Text
+                <Icon
+                  name="star"
+                  size={20}
+                  color="#ffbd4a"
                   style={{
-                    fontFamily: 'GothamLight',
-                    fontSize: 10,
+                    justifyContent: 'center',
                     textAlignVertical: 'center',
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                  }}>
-                  {item.rating}: ratings
-                </Text>
+                  }}
+                />
+                <Text style={styles.ratingStyle}>{item.avg_rating}</Text>
               </View>
             );
             return (
-              <TouchableNativeFeedback                
+              <TouchableNativeFeedback
                 onPress={() =>
                   this.productDetails(item.product_Id, item.verityname)
                 }>
-                   <View style={styles.itemContainer}>
-                     <View style={styles.imageContainer}>
-                      <ImageBackground
-                        source={{
-                          uri: item.thumbnail_image,
-                        }}
-                        style={{width: this.state.width / 2 - 15,
-                         aspectRatio:2/1,
-                         borderTopLeftRadius:5,borderTopRightRadius:5
-                           }}
-                           imageStyle={{ borderTopLeftRadius:5,borderTopRightRadius:5 }}
-                        // resizeMode='stretch'
-                        >                       
-                      </ImageBackground>
-                      </View>
-                      <View style={styles.itemDetailContainer}>
-                    <Text style={styles.itemTextVariety}>{item.verityname}</Text>
-                    <Text style={styles.itemTextOrigin}>{item.originsname}</Text>
-                    <Text style={styles.itemTextFarm}>{item.farm}</Text>
-                    {ratingIcon}
+                <View style={styles.itemContainer}>
+                  <View style={styles.imageContainer}>
+                    <ImageBackground
+                      source={{
+                        uri: item.thumbnail_image,
+                      }}
+                      style={{
+                        aspectRatio: 2 / 1,
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                      }}
+                      imageStyle={{
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                      }}
+                      // resizeMode=""
+                    />
                   </View>
-                    </View>              
+                  <View style={styles.itemDetailContainer}>
+                    <Text style={styles.itemTextVariety}>
+                      {item.verityname}
+                    </Text>
+                    <Text style={styles.itemTextOrigin}>
+                      {item.originsname}
+                    </Text>
+                    <View
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.itemTextFarm}>{item.farm}</Text>
+                      {ratingIcon}
+                    </View>
+                  </View>
+                </View>
               </TouchableNativeFeedback>
             );
           }}
@@ -187,8 +187,6 @@ class LatestProducts extends Component {
     );
   }
 }
-
-
 
 const mapDispatchToProps = dispatch => {
   return {

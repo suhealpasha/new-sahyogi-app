@@ -31,7 +31,6 @@ import {
 } from 'react-native-material-cards';
 import Spinner from 'react-native-loading-spinner-overlay';
 import * as api from '../assets/api/api';
-import PageTitle from '../Components/utils/pageTitle';
 import {HelperText, TextInput} from 'react-native-paper';
 class ForgotPassword extends Component {
   constructor(props) {
@@ -185,7 +184,6 @@ checkEmailExist = async () => {
     return (
       <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}} style={{ backgroundColor: '#ffff',}}
       scrollEnabled={true}>
-         <PageTitle title="Forgot Password" {...this.props} />
         <View style={styles.container}>
         <Spinner
             visible={this.state.spinner}

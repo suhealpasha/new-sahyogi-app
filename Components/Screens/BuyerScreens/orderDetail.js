@@ -55,7 +55,7 @@ class ProductDescriptionTemplate extends Component {
       Id: this.props.route.params.itemId,
       order_Id: this.props.orderNumber,
     });
-
+    
     this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     axios
@@ -275,7 +275,7 @@ class ProductDescriptionTemplate extends Component {
       buyButton: {
         marginBottom: 5,
         marginTop: 5,
-        backgroundColor: '#00aa00',
+        backgroundColor: '#7ea100',
         paddingLeft: 10,
         paddingRight: 10,
         paddingTop: 5,
@@ -435,16 +435,16 @@ class ProductDescriptionTemplate extends Component {
       currentStepIndicatorSize: 30,
       separatorStrokeWidth: 2,
       currentStepStrokeWidth: 3,
-      stepStrokeCurrentColor: '#00aa00',
+      stepStrokeCurrentColor: '#7ea100',
       stepStrokeWidth: 3,
       separatorStrokeFinishedWidth: 4,
-      stepStrokeFinishedColor: '#00aa00',
+      stepStrokeFinishedColor: '#7ea100',
       stepStrokeUnFinishedColor: '#95A5A6',
-      separatorFinishedColor: '#00aa00',
+      separatorFinishedColor: '#7ea100',
       separatorUnFinishedColor: '#95A5A6',
-      stepIndicatorFinishedColor: '#00aa00',
+      stepIndicatorFinishedColor: '#7ea100',
       stepIndicatorUnFinishedColor: '#95A5A6',
-      stepIndicatorCurrentColor: '#00aa00',
+      stepIndicatorCurrentColor: '#7ea100',
       stepIndicatorLabelFontSize: 13,
       currentStepIndicatorLabelFontSize: 13,
       stepIndicatorLabelCurrentColor: 'white',
@@ -452,7 +452,7 @@ class ProductDescriptionTemplate extends Component {
       stepIndicatorLabelUnFinishedColor: 'white',
       labelColor: '#95A5A6',
       labelSize: 13,
-      currentStepLabelColor: '#00aa00',
+      currentStepLabelColor: '#7ea100',
       labelFontFamily: 'GothamLight',
     };
 

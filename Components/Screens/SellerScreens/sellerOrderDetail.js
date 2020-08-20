@@ -250,7 +250,7 @@ class SellerOrderDetail extends Component {
       buyButton: {
         marginBottom: 5,
         marginTop: 5,
-        backgroundColor: '#00aa00',
+        backgroundColor: '#7ea100',
         paddingLeft: 10,
         paddingRight: 10,
         paddingTop: 5,

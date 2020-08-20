@@ -33,7 +33,7 @@ import {connect} from 'react-redux';
 import * as api from '../assets/api/api';
 import Spinner from 'react-native-loading-spinner-overlay';
 import ModalDropdown from 'react-native-modal-dropdown';
-import PageTitle from '../Components/utils/pageTitle';
+
 import {HelperText, TextInput} from 'react-native-paper';
 class SellerDetails extends Component {
   constructor(props) {
@@ -293,7 +293,6 @@ class SellerDetails extends Component {
         resetScrollToCoords={{x: 0, y: 0}}
         style={{backgroundColor: '#ffff'}}
         scrollEnabled={true}>
-        <PageTitle title="Contact Details" {...this.props} />
         <Spinner
           visible={this.state.spinner}
           textContent={'Loading...'}

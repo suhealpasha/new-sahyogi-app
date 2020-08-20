@@ -57,8 +57,7 @@ class Listing extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {
-        console.log('seller order==>', res.data.data);
+      .then(res => {      
         if (res.status) {
           if (res.data.data.length <= 0) {
             this.setState({noDataAvailable: true, spinner: false});
@@ -84,7 +83,7 @@ class Listing extends Component {
   }
   handleBackButtonClick() {
     this.props.onBottomTabClicked('home');
-    this.props.navigation.goBack(null);
+    this.props.navigation.navigate('Home');
     return true;
   }
  
@@ -209,7 +208,7 @@ class Listing extends Component {
                         {item.buyer_name}
                       </Text>
                     </View>
-                    <Text style={styles.itemTextFarm}>{item.total_amount}</Text>
+                    <Text style={styles.itemTextFarm}>$ {item.total_amount}</Text>
                     <View
                       style={{
                         flexDirection: 'row',

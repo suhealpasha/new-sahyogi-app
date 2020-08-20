@@ -322,7 +322,7 @@ class EditProfile extends Component {
                 paddingRight: 10,
               }}>
               <RadioButton
-                color="#00aa00"
+                color="#7ea100"
                 value={this.state.checked}
                 status={checked === 'male' ? 'checked' : 'unchecked'}
                 onPress={() => {
@@ -331,7 +331,7 @@ class EditProfile extends Component {
               />
               <Text style={styles.checkBoxText}>Male</Text>
               <RadioButton
-                color="#00aa00"
+                color="#7ea100"
                 value={this.state.checked}
                 status={checked === 'female' ? 'checked' : 'unchecked'}
                 onPress={() => {

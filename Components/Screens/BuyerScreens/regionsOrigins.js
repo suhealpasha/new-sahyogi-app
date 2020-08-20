@@ -8,7 +8,8 @@ import {
   Image,
   ScrollView,
   Button,
- BackHandler
+ BackHandler,
+ Dimensions
 } from 'react-native';
 // import { CheckBox } from 'react-native-elements'
 import {
@@ -42,7 +43,7 @@ class RegionsOrigins extends Component {
       selectedParent: null,    
       checkedItems: [],
       check: {},  
-
+      height: Dimensions.get('window').height,
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -182,7 +183,7 @@ class RegionsOrigins extends Component {
               <CheckBox
                 onPress={() => this.checkBox_Test(i)}
                 checked={this.state.checked ? this.state.checked : this.state.check[i]}
-                checkedColor="#00aa00"
+                checkedColor="#7ea100"
               />
 
               <Text style={styles.checkBoxText}>{Object.keys(item)}</Text>
@@ -225,7 +226,7 @@ class RegionsOrigins extends Component {
                               ? this.state.check[i]
                               : nestedItem[l].isChecked
                           }
-                          checkedColor="#00aa00"
+                          checkedColor="#7ea100"
                         />
                         <Text style={styles.nestedCheckBoxText}>{k.name}</Text>
                       </View>
@@ -239,7 +240,13 @@ class RegionsOrigins extends Component {
     });
 
     return (
-      <View style={{flex:1.0}}>
+      <View style={{flex:1.0, backgroundColor: '#7ea100',}}>
+         {/* <View
+          style={{
+            backgroundColor: '#f8f8f8',
+            borderTopRightRadius: 30,
+            borderTopLeftRadius: 30,
+          }}></View> */}
          <Spinner
               visible={this.state.spinner}
               textContent={'Loading...'}
@@ -251,7 +258,7 @@ class RegionsOrigins extends Component {
       <View style={{}}>{checkboxList}</View> 
       </KeyboardAwareScrollView>
       <TouchableOpacity  onPress={this.filterOrigins}>
-         <Text style={{paddingBottom:20,paddingTop:20,textAlign:'center',color:'#004561',textAlign:'center', fontSize:14,fontFamily:'GothamMedium',textAlignVertical:'center'}}>Apply</Text>
+         <Text style={{ backgroundColor: '#f8f8f8',paddingBottom:20,paddingTop:20,textAlign:'center',color:'#004561',textAlign:'center', fontSize:14,fontFamily:'GothamMedium',textAlignVertical:'center'}}>Apply</Text>
        </TouchableOpacity>
       </View>
     );
@@ -265,7 +272,9 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingBottom: 10,
     paddingTop: 10, 
-    backgroundColor: '#efebea'
+    backgroundColor: '#f8f8f8',
+    borderTopRightRadius: 30,
+    borderTopLeftRadius: 30,
 
   },
   applyText:{

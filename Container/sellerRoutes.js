@@ -260,7 +260,7 @@ class SellerRoutes extends Component {
                   Microfee
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerLeft: () => null,
               headerRight: () => (
@@ -312,7 +312,7 @@ class SellerRoutes extends Component {
                   Orders
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerLeft: () => null,
               headerRight: () => (
@@ -364,7 +364,7 @@ class SellerRoutes extends Component {
                   Inventory
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerLeft: () => null,
               headerRight: () => (
@@ -460,7 +460,7 @@ class SellerRoutes extends Component {
                   Order #{this.props.orderNumber}
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -486,7 +486,7 @@ class SellerRoutes extends Component {
                   Notification
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -532,7 +532,7 @@ class SellerRoutes extends Component {
                   Profile
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerLeft: () => null,
               headerRight: () => (
@@ -585,7 +585,7 @@ class SellerRoutes extends Component {
                   Edit Profile
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -626,7 +626,7 @@ class SellerRoutes extends Component {
                   My Address
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerRightContainerStyle: styles.headerRightContainerStyle,
               headerLeft: () => (
@@ -672,7 +672,7 @@ class SellerRoutes extends Component {
                   Add Address
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -714,7 +714,7 @@ class SellerRoutes extends Component {
                   Edit Address
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100'},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback

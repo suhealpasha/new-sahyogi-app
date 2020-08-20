@@ -140,7 +140,14 @@ class AuthRoutes extends Component {
             component={SignUp}
             options={({navigation, route}) => ({
               animationEnabled: false,
-              header: () => null,
+              title: 'Register As',
+              headerStyle: {
+                backgroundColor: '#7ea100'
+              },
+              headerTitleStyle:{ fontFamily:'GothamMedium',
+              fontSize:22},
+              headerTitleAlign: 'center',
+              headerTintColor: '#fff',
             })}
             {...this.props}
           />
@@ -149,7 +156,15 @@ class AuthRoutes extends Component {
             component={SellerType}
             options={({navigation, route}) => ({
               animationEnabled: false,
-              header: () => null,
+              title: 'Who are you?',
+              headerStyle: {
+                backgroundColor: '#7ea100',
+               
+              },
+              headerTitleAlign: 'center',
+              headerTitleStyle:{ fontFamily:'GothamMedium',
+              fontSize:22},
+              headerTintColor: '#fff',
             })}
             {...this.props}
           />
@@ -157,7 +172,15 @@ class AuthRoutes extends Component {
             name="Seller Details"          
             options={({navigation, route}) => ({
               animationEnabled: false,
-              header: () => null,
+              title: 'Contact Details',
+              headerStyle: {
+                backgroundColor: '#7ea100',
+               
+              },
+              headerTitleAlign: 'center',
+              headerTitleStyle:{ fontFamily:'GothamMedium',
+              fontSize:22},
+              headerTintColor: '#fff',
             })}
           
           >
@@ -170,7 +193,15 @@ class AuthRoutes extends Component {
             component={Register}
             options={({navigation, route}) => ({
               animationEnabled: false,
-              header: () => null,
+              title: 'Fill User Details',
+              headerStyle: {
+                backgroundColor: '#7ea100',
+               
+              },
+              headerTitleAlign: 'center',
+              headerTitleStyle:{ fontFamily:'GothamMedium',
+              fontSize:22},
+              headerTintColor: '#fff',
             })}
             {...this.props}
           />
@@ -179,7 +210,15 @@ class AuthRoutes extends Component {
             component={Otp}
             options={({navigation, route}) => ({
               animationEnabled: false,
-              header: () => null,
+              title: 'OTP',
+              headerStyle: {
+                backgroundColor: '#7ea100',
+               
+              },
+              headerTitleAlign: 'center',
+              headerTitleStyle:{ fontFamily:'GothamMedium',
+              fontSize:22},
+              headerTintColor: '#fff',
             })}
             {...this.props}
           />
@@ -188,7 +227,15 @@ class AuthRoutes extends Component {
             component={SetPassword}
             options={({navigation, route}) => ({
               animationEnabled: false,
-              header: () => null,
+               title: 'Register Now',
+              headerStyle: {
+                backgroundColor: '#7ea100',
+               
+              },
+              headerTitleAlign: 'center',
+              headerTitleStyle:{ fontFamily:'GothamMedium',
+              fontSize:22},
+              headerTintColor: '#fff',
             })}
             {...this.props}
           />
@@ -197,7 +244,15 @@ class AuthRoutes extends Component {
             component={ForgotPassword}
             options={({navigation, route}) => ({
               animationEnabled: false,
-              header: () => null,
+               title: 'Forgot Password',
+              headerStyle: {
+                backgroundColor: '#7ea100',
+               
+              },
+              headerTitleAlign: 'center',
+              headerTitleStyle:{ fontFamily:'GothamMedium',
+              fontSize:22},
+              headerTintColor: '#fff',
             })}
             {...this.props}
           />

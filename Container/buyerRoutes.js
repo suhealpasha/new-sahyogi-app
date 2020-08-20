@@ -51,6 +51,8 @@ import ProductDescriptionTemplate from '../Components/Screens/BuyerScreens/produ
 import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
 import * as api from '../assets/api/api';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+
 
 const Stack = createStackNavigator();
 const uiTheme = {
@@ -67,6 +69,7 @@ class Routes extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      open: false,
       isLogout: false,
       isLoggedIn: null,
       sellerHomeScreen: false,
@@ -97,7 +100,8 @@ class Routes extends Component {
       buyerFeedbackData:[],
       cartCount: null,
       buyerOrderData:[],
-      notificationCount:null
+      notificationCount:null,
+      notificationData:[]
     };
   }
 
@@ -109,7 +113,7 @@ class Routes extends Component {
     this.fetchBuyerCart();
     this.fetchCountries();
     this.fetchBuyerOrders();
-
+    this.fetchNotification();
     this.interval = setInterval(() => {this.setState({ time: Date.now() })
     this.fetchHomeScreenData();
     this.fetchDetails();
@@ -118,13 +122,17 @@ class Routes extends Component {
     this.fetchBuyerCart();
     this.fetchCountries();
     this.fetchBuyerOrders(); 
-
+    this.fetchNotification();
   }, 60000);
   }
 
   componentWillUnmount() {
     clearInterval(this.interval);
   }
+
+  toggleOpen = () => {
+    this.setState({ open: !this.state.open });
+  };
 
   goBack = ({navigation}, path) => {
     if (path === 'Home') {
@@ -301,8 +309,7 @@ class Routes extends Component {
           else{
             if (res.data.data.cart_list.length <= 0) {
               this.setState({noDataAvailable: true, spinner: false,cartCount:null});
-            } else { 
-              
+            } else {               
               let count = res.data.data.cart_list.length;            
               this.setState({
                 spinner: false,
@@ -338,6 +345,32 @@ class Routes extends Component {
       });
   };
 
+  fetchNotification = async () =>{
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    axios
+      .get(api.buyerGetNotificationAPI, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {      
+        console.log(res.data.data)    
+        let count = 0;
+        res.data.data.filter(item => { 
+          if(item.status === 'unread'){
+            count+=1
+          }
+         } )
+        this.setState({notificationData: res.data.data,notificationCount : count});
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
  
   updateSearch = search => {
     this.setState({searchBarText: search});
@@ -364,19 +397,26 @@ class Routes extends Component {
             name="Home"
             options={({navigation, route}) => ({
               animationEnabled: false,
-              headerTitle: (
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    flex: 1,
-                    fontFamily: 'Gotham Black Regular',
-                  }}>
-                  microffee
-                </Text>
-              ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerTitle: () => null,
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+              shadowOpacity: 0,
+              borderBottomWidth: 0},
               headerTintColor: '#ffffff',
-              headerLeft: () => null,
+              headerLeft: () => (
+                <View
+                style={{
+                  flexDirection: 'row',
+                  paddingRight: 10,
+                  paddingLeft: 10,
+                }}
+                >
+                <TouchableOpacity 
+                  onPress={() => this.toggleOpen()}>
+                  <Icon name="sort" size={30} color="white" />
+                </TouchableOpacity>
+                </View>
+                
+              ),
               headerRight: () => (
                 <View
                   style={{
@@ -387,9 +427,9 @@ class Routes extends Component {
                     {this.state.notificationCount > 0 ? 
                   <Badge
                     size={15}
-                    text={3}
+                    text={this.state.notificationCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="bell-outline"
@@ -411,7 +451,7 @@ class Routes extends Component {
                     size={15}
                     text={this.state.cartCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="cart-outline"
@@ -438,6 +478,7 @@ class Routes extends Component {
                 featuredProductsData={this.state.featuredProductsData}
                 regionsData={this.state.regionsData}
                 latestProductsData={this.state.latestProductsData}
+                onToggleOpen = {this.toggleOpen}
               />
             )}
           </Stack.Screen>
@@ -455,7 +496,9 @@ class Routes extends Component {
                   {this.props.listingTitle}
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+              shadowOpacity: 0,
+              borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -507,7 +550,9 @@ class Routes extends Component {
                   All Regions
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+              shadowOpacity: 0,
+              borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -539,7 +584,9 @@ class Routes extends Component {
                         {this.props.regionName}
                       </Text>
                     ),
-                    headerStyle: {backgroundColor: '#00aa00'},
+                    headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+              shadowOpacity: 0,
+              borderBottomWidth: 0},
                     headerTintColor: '#ffffff',
                     headerLeft: () => (
                       <TouchableWithoutFeedback
@@ -584,6 +631,7 @@ class Routes extends Component {
                 {...props}
                 searchBarText={this.state.searchBarText}
                 searchBarShow={this.state.searchBarShow}
+                regionsData={this.state.regionsData}
               />
             )}
           </Stack.Screen>
@@ -604,7 +652,9 @@ class Routes extends Component {
                         Varities
                       </Text>
                     ),
-                    headerStyle: {backgroundColor: '#00aa00'},
+                    headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
                     headerTintColor: '#ffffff',
                     headerLeft: () => (
                       <TouchableWithoutFeedback
@@ -665,7 +715,9 @@ class Routes extends Component {
                   Regions and Origins
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+              shadowOpacity: 0,
+              borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -673,18 +725,18 @@ class Routes extends Component {
                   <Icon name="chevron-left" size={35} color="white" />
                 </TouchableWithoutFeedback>
               ),
-              headerRight: () => (
-                <View style={{flexDirection: 'row'}}>
-                  <TouchableWithoutFeedback
-                    onPress={() => navigation.navigate('')}>
-                    <Icon
-                      name="search"
-                      size={24}
-                      style={{padding: 10, color: '#ffffff'}}
-                    />
-                  </TouchableWithoutFeedback>
-                </View>
-              ),
+              // headerRight: () => (
+              //   <View style={{flexDirection: 'row'}}>
+              //     <TouchableWithoutFeedback
+              //       onPress={() => navigation.navigate('')}>
+              //       <Icon
+              //         name="search"
+              //         size={24}
+              //         style={{padding: 10, color: '#ffffff'}}
+              //       />
+              //     </TouchableWithoutFeedback>
+              //   </View>
+              // ),
             })}
             initialParams={{filterOn: this.state.filterOn}}>
             {props => (
@@ -752,7 +804,9 @@ class Routes extends Component {
                   Cart
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -770,9 +824,9 @@ class Routes extends Component {
                     {this.state.notificationCount > 0 ? 
                   <Badge
                     size={15}
-                    text={3}
+                    text={this.state.notificationCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="bell-outline"
@@ -810,7 +864,9 @@ class Routes extends Component {
                   Wishlist
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => null,
               headerRight: () => (
@@ -823,9 +879,9 @@ class Routes extends Component {
                     {this.state.notificationCount > 0 ? 
                   <Badge
                     size={15}
-                    text={3}
+                    text={this.state.notificationCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="bell-outline"
@@ -847,7 +903,7 @@ class Routes extends Component {
                     size={15}
                     text={this.state.cartCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="cart-outline"
@@ -883,7 +939,9 @@ class Routes extends Component {
                   Profile
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => null,
               headerRight: () => (
@@ -896,9 +954,9 @@ class Routes extends Component {
                     {this.state.notificationCount > 0 ? 
                   <Badge
                     size={15}
-                    text={3}
+                    text={this.state.notificationCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="bell-outline"
@@ -920,7 +978,7 @@ class Routes extends Component {
                     size={15}
                     text={this.state.cartCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="cart-outline"
@@ -968,7 +1026,9 @@ class Routes extends Component {
                   Edit Profile
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -1014,7 +1074,9 @@ class Routes extends Component {
                   My Address
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerRightContainerStyle: styles.headerRightContainerStyle,
               headerLeft: () => (
@@ -1061,7 +1123,9 @@ class Routes extends Component {
                   Add Address
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -1098,7 +1162,9 @@ class Routes extends Component {
                   Edit Address
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -1128,8 +1194,7 @@ class Routes extends Component {
             )}
           </Stack.Screen>
           <Stack.Screen
-            name="Notification"
-            component={Notification}
+            name="Notification"            
             options={({navigation, route}) => ({
               animationEnabled: false,
               headerTitle: (
@@ -1142,7 +1207,9 @@ class Routes extends Component {
                   Notification
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -1162,7 +1229,7 @@ class Routes extends Component {
                     size={15}
                     text={this.state.cartCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="cart-outline"
@@ -1181,9 +1248,10 @@ class Routes extends Component {
                   }
                 </View>
               ),
-            })}
-            {...this.props}
-          />
+            })}       
+          >
+             {props => <Notification {...props} {...this.state} />}
+            </Stack.Screen>
           <Stack.Screen
             name="Product Description"
             options={({navigation, route}) => ({
@@ -1198,7 +1266,9 @@ class Routes extends Component {
                   {this.props.varietyName}
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -1216,9 +1286,9 @@ class Routes extends Component {
                     {this.state.notificationCount > 0 ? 
                   <Badge
                     size={15}
-                    text={3}
+                    text={this.state.notificationCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="bell-outline"
@@ -1240,7 +1310,7 @@ class Routes extends Component {
                     size={15}
                     text={this.state.cartCount}
                     style={{
-                      container: {top: 5, right: 0, backgroundColor: '#3e708f'},
+                      container: {top: 5, right: 5, backgroundColor: '#cc0038'},
                     }}>
                     <Icon2
                       name="cart-outline"
@@ -1277,7 +1347,9 @@ class Routes extends Component {
                   My Orders
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
@@ -1305,7 +1377,9 @@ class Routes extends Component {
                   Order #{this.props.orderNumber}
                 </Text>
               ),
-              headerStyle: {backgroundColor: '#00aa00'},
+              headerStyle: {backgroundColor: '#7ea100',elevation: 0,
+                    shadowOpacity: 0,
+                    borderBottomWidth: 0},
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback

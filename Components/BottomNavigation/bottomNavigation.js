@@ -45,7 +45,7 @@ class OwnBottomNavigation extends Component {
       <BottomNavigation
         active={this.props.active}
         style={{
-          container: {height: 50, backgroundColor: '#efebea'},
+          container: {height: 50, backgroundColor: '#ffff'},
         }}>
         <BottomNavigation.Action
           key="home"
@@ -53,9 +53,9 @@ class OwnBottomNavigation extends Component {
           label="Home"
           onPress={() => this.goTo('Home')}
           style={{
-            icon: {color: this.props.active === 'home' ? '#3e708f' : '#95A5A6'},
+            icon: {color: this.props.active === 'home' ? '#7ea100' : '#95A5A6'},
             label: {
-              color: this.props.active === 'home' ? '#3e708f' : '#95A5A6',
+              color: this.props.active === 'home' ? '#7ea100' : '#95A5A6',
               fontSize:13,
               fontFamily:
                 this.props.active === 'home'
@@ -71,10 +71,10 @@ class OwnBottomNavigation extends Component {
           onPress={() => this.goTo('Search')}
           style={{
             icon: {
-              color: this.props.active === 'search' ? '#3e708f' : '#95A5A6',
+              color: this.props.active === 'search' ? '#7ea100' : '#95A5A6',
             },
             label: {
-              color: this.props.active === 'search' ? '#3e708f' : '#95A5A6',
+              color: this.props.active === 'search' ? '#7ea100' : '#95A5A6',
               fontSize:13,
               fontFamily:
                 this.props.active === 'search'
@@ -91,10 +91,10 @@ class OwnBottomNavigation extends Component {
           onPress={() => this.goTo('Wishlist')}
           style={{
             icon: {
-              color: this.props.active === 'wishlist' ? '#3e708f' : '#95A5A6',
+              color: this.props.active === 'wishlist' ? '#7ea100' : '#95A5A6',
             },
             label: {
-              color: this.props.active === 'wishlist' ? '#3e708f' : '#95A5A6',
+              color: this.props.active === 'wishlist' ? '#7ea100' : '#95A5A6',
               fontSize:13,
               fontFamily:
                 this.props.active === 'wishlist'
@@ -111,10 +111,10 @@ class OwnBottomNavigation extends Component {
           onPress={() => this.goToSwitch()}
           style={{
             icon: {
-              color: this.props.active === 'profile' ? '#3e708f' : '#95A5A6',
+              color: this.props.active === 'profile' ? '#7ea100' : '#95A5A6',
             },
             label: {
-              color: this.props.active === 'profile' ? '#3e708f' : '#95A5A6',
+              color: this.props.active === 'profile' ? '#7ea100' : '#95A5A6',
               fontSize:13,
               fontFamily:
                 this.props.active === 'profile'

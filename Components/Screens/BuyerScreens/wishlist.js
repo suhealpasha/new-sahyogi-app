@@ -32,7 +32,7 @@ import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
 import * as api from '../../../assets/api/api';
 import Toast from 'react-native-simple-toast';
-
+import { ConfirmDialog } from 'react-native-simple-dialogs';
 class Wishlist extends Component {
   constructor(props) {
     super(props);
@@ -41,6 +41,8 @@ class Wishlist extends Component {
       noDataAvailable:false,
       height: Dimensions.get('window').height,
       buyerWishlistData: [],
+      dialogVisible:false,
+      singleDelete:null,
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -97,6 +99,7 @@ class Wishlist extends Component {
   }
 
   _deleteWishlist = async param1 => {
+    this.setState({dialogVisible:false,singleDelete:null})
     let data;
     data = JSON.stringify({
       flag: false,
@@ -126,6 +129,7 @@ class Wishlist extends Component {
   };
 
   _deleteAllWishlist = async () => {
+    this.setState({dialogVisible:false})
     const access_token = await AsyncStorage.getItem('isLoggedIn');
 
     await axios
@@ -154,11 +158,15 @@ class Wishlist extends Component {
       });
   };
 
+  singleDelete = (args) =>{
+ this.setState({dialogVisible:true,singleDelete:args})
+  }
+
   render() {
     const styles = StyleSheet.create({
       outerContainer: {
         flex: 1.0,
-        backgroundColor: '#efebea',
+        backgroundColor: '#7ea100',
       },
       noData: {
         justifyContent: 'center',
@@ -173,7 +181,10 @@ class Wishlist extends Component {
       container: {
         flex: 1.0,
         paddingTop: 10,
-    
+         marginTop:10,
+         backgroundColor: '#f8f8f8',
+            borderTopRightRadius: 30,
+            borderTopLeftRadius: 30,
       },
       itemContainer: {
         marginBottom: 10,
@@ -195,7 +206,7 @@ class Wishlist extends Component {
         paddingBottom: 20,
       },
       itemTextVariety: {
-        fontFamily: 'Gotham Black Regular',
+        fontFamily: 'GothamBold',
         fontSize: 14,
         paddingTop: 5,
       },
@@ -210,16 +221,12 @@ class Wishlist extends Component {
         justifyContent: 'space-around',
         fontFamily: 'GothamMedium',
         color: '#95A5A6',
-        paddingBottom: 10,
       },
       ratingStyle: {
-        backgroundColor: '#00ac00',
-        color: 'white',
-        lineHeight: 20,
         justifyContent: 'center',
         textAlignVertical: 'center',
         fontSize: 14,
-        width: 45,
+        fontFamily: 'GothamLight',
       },
       clearAllButton: {
         borderTopWidth: 0.25,
@@ -231,7 +238,22 @@ class Wishlist extends Component {
     });
     return (
       <View style={styles.outerContainer}>
+        
         <View style={styles.container}>
+        <ConfirmDialog
+    title="Delete Wishlist"
+    message="Are you sure to delete?"
+    visible={this.state.dialogVisible}
+    onTouchOutside={() => this.setState({dialogVisible: false})}
+    positiveButton={{
+        title: "YES",
+        onPress: () =>{this.state.singleDelete !== null ? this._deleteWishlist(this.state.singleDelete) : this._deleteAllWishlist()}
+    }}
+    negativeButton={{
+        title: "NO",
+        onPress: () => this.setState({dialogVisible: false})
+    }}
+/>
           <Spinner
             visible={this.state.spinner}
             textContent={'Loading...'}
@@ -241,6 +263,10 @@ class Wishlist extends Component {
             <Text style={styles.noDataText}>No Data</Text>
           </View> :     
           <FlatList
+          style={{           
+            marginTop: 10,
+           
+          }}
             data={
               this.state.buyerWishlistData &&
               this.state.buyerWishlistData.length
@@ -254,28 +280,17 @@ class Wishlist extends Component {
             renderItem={({item}) => {
               let ratingIcon = (
                 <View style={{flexDirection: 'row'}}>
-                  <Text style={styles.ratingStyle}>
-                    {'  '}
-                    {item.avg_rating}{' '}
-                    <Icon
-                      name="star"
-                      size={12}
-                      style={{
-                        justifyContent: 'center',
-                        textAlignVertical: 'center',
-                      }}
-                    />
-                    {'  '}
-                  </Text>
-                  <Text
+                  <Icon
+                    name="star"
+                    size={20}
+                    color="#ffbd4a"
                     style={{
-                      fontFamily: 'GothamLight',
-                      fontSize: 10,
+                      justifyContent: 'center',
                       textAlignVertical: 'center',
-                      paddingLeft: 10,
-                      paddingRight: 10,
-                    }}>
-                    {item.rating}: ratings
+                    }}
+                  />
+                  <Text style={styles.ratingStyle}>
+                    {item.avg_rating}
                   </Text>
                 </View>
               );
@@ -289,7 +304,7 @@ class Wishlist extends Component {
                         }}
                         style={{
                           width: 130,
-                          height: 120,
+                          height: 110,
                           borderTopLeftRadius: 5,
                           borderBottomLeftRadius: 5,
                         }}
@@ -309,7 +324,8 @@ class Wishlist extends Component {
                               size={25}
                               color={'red'}
                               onPress={() => {
-                                this._deleteWishlist(item.product_Id);
+                                this.singleDelete(item.product_Id)
+                               
                               }}
                             />
                           </TouchableWithoutFeedback>
@@ -330,7 +346,9 @@ class Wishlist extends Component {
           {!this.state.noDataAvailable ? 
           <TouchableOpacity
             style={styles.clearAllButton}
-            onPress={this._deleteAllWishlist}>
+            // onPress={this._deleteAllWishlist}
+            onPress={()=>{this.setState({dialogVisible:true})}}
+            >
             <Text
               style={{
                 textAlign: 'center',

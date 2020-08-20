@@ -19,8 +19,10 @@ import BottomNavigation from '../../BottomNavigation/sellerBottomNavigation';
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
 import * as api from '../../../assets/api/api';
+import * as actionTypes from '../../../Store/action';
+import {connect} from 'react-redux';
 
-export default class Inventory extends Component {
+class Inventory extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -58,6 +60,7 @@ componentDidMount() {
         },
       })
       .then(res => {
+        console.log(res.data.data)
         if (res.status) {
           if (res.data.data.length <= 0) {
             this.setState({noDataAvailable: true, spinner: false});
@@ -82,7 +85,8 @@ componentDidMount() {
     );
   }
   handleBackButtonClick() {  
-    BackHandler.exitApp();   
+    this.props.onBottomTabClicked('home');
+    this.props.navigation.navigate('Home');
     return true;
   }
   
@@ -220,7 +224,7 @@ componentDidMount() {
                           }}>
                             
                             <Text style={styles.itemTextOrderText}>
-                          Orders: {item.orders}
+                          Orders: {item.ordered_count}
                         </Text>
                         <View style={{flexDirection:'row'}}>
                         <Text style={{fontFamily:'GothamMedium'}}>
@@ -243,4 +247,14 @@ componentDidMount() {
   }
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+    onBottomTabClicked: value =>
+      dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
+};
+};
 
+export default connect(
+  null,
+  mapDispatchToProps,
+)(Inventory)

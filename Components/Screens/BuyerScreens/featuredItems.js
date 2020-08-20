@@ -8,6 +8,7 @@ import {
   ScrollView,
   Dimensions,
   TouchableWithoutFeedback,
+  ImageBackground
 } from 'react-native';
 import {SliderBox} from 'react-native-image-slider-box';
 import Swiper from 'react-native-swiper';
@@ -15,7 +16,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
-
+import {
+  TouchableHighlight,
+  TouchableNativeFeedback,
+} from 'react-native-gesture-handler';
  class FeaturedItems extends Component {
   constructor(props) {
     super(props);
@@ -42,101 +46,159 @@ import {connect} from 'react-redux';
 
   render() {
 
-    let images = [];
-    this.props.featuredProductsData.map(item =>{
-      images.push(item.thumbnail_image)
-    })
+    const styles = StyleSheet.create({
+      detailsButton: {
+        backgroundColor: 'orange',
+        paddingBottom: 10,
+        paddingTop: 10,
+        borderWidth: 1,
+        borderColor: '#fff',
+      },
+      detailsButtonText: {
+        color: '#fff',
+        textAlign: 'center',
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      ratingStyle: {
+        backgroundColor: '#00ac00',
+        color: 'white',
+        lineHeight: 20,
+        fontSize: 14,
+        width: 45,
+      },
+      itemContainer: {
+        marginTop: 10,
+        marginBottom: 10,
+        backgroundColor: 'white',
+        width: this.state.width / 1.5,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+        elevation: 4,
+        paddingBottom: 10,
+        borderRadius: 5,
+        marginRight: 10,
+        marginLeft:10
+      },
+      imageContainer:{
+        backgroundColor:'grey',
+        borderTopLeftRadius:5,
+        borderTopRightRadius:5,
+        aspectRatio:2/1
+      },
+      itemDetailContainer: {   
+ 
+        paddingLeft: 10,
+        paddingRight: 10,
+      },
+      itemTextVariety:{
+        fontFamily: 'GothamBold',
+        fontSize: 14,
+        paddingTop: 5,
+      },
+      itemTextOrigin: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#5C5C5C',      
+      },
+      itemTextFarm: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#95A5A6',
+      
+      },
+      ratingStyle: {
+        justifyContent: 'center',
+        textAlignVertical: 'center',
+        fontSize: 14,
+        fontFamily: 'GothamLight',
+      },
+    });
+
+  
    
     return (
-      <TouchableOpacity onPress ={()=>{this.productDetails(this.props.featuredProductsData[this.state.currentSelecteditem].product_Id,this.props.featuredProductsData[this.state.currentSelecteditem].verityname)}}>
-      <View style={styles.container}>
-        <SliderBox
-          images={images}
-          sliderBoxHeight={200}          
-          currentImageEmitter={index => this.updateImageDetails(index)}
-          dotColor="#3e708f"
-          inactiveDotColor="#95A5A6"
-          autoplay
-          circleLoop
-          parentWidth={this.state.width - 20}
-          ImageComponentStyle={{borderTopLeftRadius: 15,borderTopRightRadius: 15}}
-        />
-        <View style={{paddingLeft:10,paddingRight:5,flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
-
-        <View>      
-        <Text  style={styles.itemTextVariety}>{this.props.featuredProductsData && this.props.featuredProductsData.length ? this.props.featuredProductsData[this.state.currentSelecteditem].verityname : null}</Text>        
-        <Text style={styles.itemTextOrigin}>{ this.props.featuredProductsData && this.props.featuredProductsData.length? this.props.featuredProductsData[this.state.currentSelecteditem].originsname : null}</Text>
-        <Text style={styles.itemTextFarm}>{ this.props.featuredProductsData && this.props.featuredProductsData.length? this.props.featuredProductsData[this.state.currentSelecteditem].farm : null}</Text>
-        </View>
-        <View>
-        <View style={{flexDirection: 'row'}}>
-                <Text style={styles.ratingStyle}>
-                  {'  '}
-                  { this.props.featuredProductsData && this.props.featuredProductsData.length? this.props.featuredProductsData[this.state.currentSelecteditem].avg_rating : null}{' '}
-                  <Icon
-                    name="star"
-                    size={12}
-                    style={{
-                      justifyContent: 'center',
-                      textAlignVertical: 'center',
-                    }}
-                  />
-                  {'  '}
-                </Text>
-                <Text
+      <View style={{flex: 1.0}}>
+      <FlatList
+          data={this.props.featuredProductsData}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={items => {
+            items.product_Id;
+          }}
+          renderItem={({item}) => {
+            let ratingIcon = (
+              <View style={{flexDirection: 'row'}}>
+                <Icon
+                  name="star"
+                  size={20}
+                  color="#ffbd4a"
                   style={{
-                    fontFamily: 'GothamLight',
-                    fontSize: 10,
+                    justifyContent: 'center',
                     textAlignVertical: 'center',
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                  }}>
-                  { this.props.featuredProductsData && this.props.featuredProductsData.length? this.props.featuredProductsData[this.state.currentSelecteditem].rating : null}: ratings
-                </Text>
+                  }}
+                />
+                <Text style={styles.ratingStyle}>{item.avg_rating}</Text>
               </View>
-              </View>
-      </View>
-      </View>
-      </TouchableOpacity>
+            );
+            return (
+              <TouchableNativeFeedback
+                onPress={() =>
+                  this.productDetails(item.product_Id, item.verityname)
+                }>
+                <View style={styles.itemContainer}>
+                  <View style={styles.imageContainer}>
+                    <ImageBackground
+                      source={{
+                        uri: item.thumbnail_image,
+                      }}
+                      style={{
+                        aspectRatio: 2 / 1,
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                      }}
+                      imageStyle={{
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                      }}
+                      // resizeMode=""
+                    />
+                  </View>
+                  <View style={styles.itemDetailContainer}>
+                    <Text style={styles.itemTextVariety}>
+                      {item.verityname}
+                    </Text>
+                    <Text style={styles.itemTextOrigin}>
+                      {item.originsname}
+                    </Text>
+                    <View
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={styles.itemTextFarm}>{item.farm}</Text>
+                      {ratingIcon}
+                    </View>
+                  </View>
+                </View>
+              </TouchableNativeFeedback>
+            );
+          }}
+        />
+    </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container:{
-    backgroundColor:'white',
-    borderRadius:15,
-    paddingBottom:10
-  },
-  itemTextVariety:{
-    fontFamily: 'Gotham Black Regular',
-    fontSize: 14,
-    paddingTop: 5,
-  },
-  itemTextOrigin: {
-    fontSize: 12,
-    justifyContent: 'space-around',
-    fontFamily: 'GothamMedium',
-    color: '#5C5C5C',
-  
-  },
-  itemTextFarm: {
-    fontSize: 12,
-    justifyContent: 'space-around',
-    fontFamily: 'GothamMedium',
-    color: '#95A5A6',
-    paddingBottom: 10,
-  },
-  ratingStyle: {
-    backgroundColor: '#00ac00',
-    color: 'white',
-    lineHeight: 20,
-    justifyContent: 'center',
-    textAlignVertical: 'center',
-    fontSize: 14,
-    width: 45,
-  },
-});
+
 
 const mapDispatchToProps = dispatch => {
   return {

@@ -10,6 +10,8 @@ import {
   ImageBackground,
   AsyncStorage,
   Dimensions,
+  BackHandler,
+ TouchableNativeFeedback
 } from 'react-native';
 import {
   Card,
@@ -22,16 +24,13 @@ import {
 import BottomNavigation from '../../BottomNavigation/bottomNavigation';
 import {CheckBox} from 'react-native-elements';
 import * as api from '../../../assets/api/api';
-import {
-  TouchableWithoutFeedback,
-  TouchableNativeFeedback,
-} from 'react-native-gesture-handler';
+
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Spinner from 'react-native-loading-spinner-overlay';
 import axios from 'axios';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
-
+import Regions from './regions';
 let filteredData = [];
 
 class AllOrigins extends Component {
@@ -46,10 +45,32 @@ class AllOrigins extends Component {
       originsData: [],
       searchedData: [],
     };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   componentDidMount() {
     this.fetchOrigins();
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  handleBackButtonClick() {
+    this.props.navigation.goBack(null);
+    return true;
+  }
+
+  async UNSAFE_componentWillReceiveProps(){
+    if(this.props.searchBarShow === false){
+    await this.setState({noDataAvailable: false,
+      originsData: [],
+      searchedData: []})
+     this.fetchOrigins();
+    }
   }
 
   fetchOrigins = async () => {
@@ -81,6 +102,7 @@ class AllOrigins extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
+ 
     filteredData = this.state.originsData.filter(item => {
       const itemDataOrigin = item.name.toUpperCase();
       if (this.props.searchBarText) {
@@ -139,11 +161,16 @@ class AllOrigins extends Component {
     this.props.navigation.navigate('Listing');
   };
 
+  selectHandler = (args) =>{
+    this.selectOrigins(args)
+   
+  }
+
   render() {
     const styles = StyleSheet.create({
       container: {
         flex: 1.0,
-        backgroundColor: '#efebea',
+        backgroundColor: '#7ea100',   
       },
       noData: {
         justifyContent: 'center',
@@ -156,29 +183,30 @@ class AllOrigins extends Component {
         fontFamily: 'GothamBold',
       },
       itemContainer: {
+        marginTop: 10,
         marginBottom: 10,
-        backgroundColor: 'white',      
-        width:this.state.width / 2 - 15,
-        
+        backgroundColor: '#ffff',
+        width: this.state.width / 3 - 20,
+        height:this.state.width / 3 - 20,
         shadowColor: '#000',
         shadowOffset: {
           width: 0,
-          height: 2,
+          height: 3,
         },
-        shadowOpacity: 0.23,
-        shadowRadius: 2.62,
-        elevation: 4,
+        shadowOpacity: 0.29,
+        shadowRadius: 5,
+
+        elevation: 7,
         paddingBottom: 10,
-      },
+        borderRadius: 100,
+        
+      }, 
       itemData: {
-        borderTopWidth: 1,
-        borderColor: '#95A5A6',
+      
       },
       textData: {
-        paddingTop: 5,
-        paddingLeft: 5,
-        paddingRight: 5,
-        fontFamily: 'Gotham Black Regular',
+        textAlign:'center',
+        fontFamily: 'GothamMedium',
       },
       spinnerTextStyle: {
         color: '#7ea100',
@@ -187,125 +215,152 @@ class AllOrigins extends Component {
 
     return (
       <View style={styles.container}>
-        <Spinner
-          visible={this.state.spinner}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}
-        />
-        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
-      
-        <Text style={{fontFamily:'GothamMedium',paddingLeft:10,paddingBottom:10,paddingTop:10}}>Select Origins</Text>
-        <CheckBox
-          title={'Select All'}
-          fontFamily={'GothamMedium'}
-          iconRight
-          size={25}
-          checked={this.state.checked}
-          containerStyle={{
-            paddingLeft:0,
-            marginLeft: 0,
-            marginTop: 0,
-            marginBottom: 0,
-            width:105,
-            backgroundColor:'#efebea'
-            
-          }}
-          checkedColor={'#00aa00'}
-          onPress={this.handleAllChecked}
-        />
-        </View>
-        {this.state.noDataAvailable ? (
-          <View style={styles.noData}>
-            <Text style={styles.noDataText}>No Data</Text>
-          </View>
-        ) : (
-          <View style={{flex: 1.0, paddingTop: 10}}>
-            <FlatList
-              data={
-                !this.props.searchBarShow
-                  ? this.state.originsData
-                  : this.state.searchedData
-              }
-              columnWrapperStyle={{marginLeft:10,marginRight:10,justifyContent:'space-between'}}
-              
-              numColumns={2}
-              keyExtractor={items => {
-                items.origin_Id;
-              }}
-              renderItem={({item}) => {               
-                return (
-                  <View style={{}}>
-                    <TouchableNativeFeedback onPress={() => this.selectOrigins(item.origin_Id)}>
-                    <View style={styles.itemContainer}>
-                      <ImageBackground
-                        source={{
-                          uri: item.url_thumbnail_image,
-                        }}
-                        style={{width: this.state.width / 2 - 15,
-                          height: undefined,
-                          aspectRatio: 2/1,
-                           }}
-                        // resizeMode='stretch'
-                        >
-                        <CheckBox
-                          checked={this.state.checked || item.checked}
-                          right                          
-                          checkedColor={'#00aa00'}
-                          onPress={() => this.selectOrigins(item.origin_Id)}
-                          containerStyle={{
-                            paddingLeft: 0,
-                            paddingRight: 0,
-                            paddingTop: 0,
-                            paddingBottom: 0,
-                            justifyContent: 'space-between',
-                          }}
-                        />
-                      </ImageBackground>
-                      <View style={styles.itemData}>
-                        <Text style={styles.textData}>{item.name}</Text>
-                      </View>
-                    </View>
-                    </TouchableNativeFeedback>
-                  </View>
-                );
-              }}
-            />
-          </View>
-        )}
-
-        {!this.state.noDataAvailable ? (
-          <View>
-            <TouchableNativeFeedback onPress={this.onSeeAll}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                }}>
-                <Text
-                  style={{
-                    paddingTop: 15,
-                    paddingBottom: 15,
-                    textAlignVertical: 'center',
-                    color: '#004561',
-                    textAlign: 'center',
-                    fontSize: 14,
-                    fontFamily: 'GothamMedium',
-                    textAlignVertical: 'center',
-                  }}>
-                  Continue
-                </Text>
-                <Icon
-                  name="chevron-right"
-                  color={'#3e708f'}
-                  size={25}
-                  style={{textAlignVertical: 'center'}}
-                />
-              </View>
-            </TouchableNativeFeedback>
-          </View>
-        ) : null}
+         <View style={{backgroundColor:'#f8f8f8',borderTopRightRadius: 30,flex:1.0,
+             borderTopLeftRadius: 30}}>
+      <Spinner
+        visible={this.state.spinner}
+        textContent={'Loading...'}
+        textStyle={styles.spinnerTextStyle}
+      />
+      <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+    
+      <Text style={{fontFamily:'GothamMedium',paddingLeft:10,paddingBottom:10,paddingTop:10}}>Select Origins</Text>
+      <CheckBox
+        title={'Select All'}
+        fontFamily={'GothamMedium'}
+        iconRight
+        size={25}
+        checked={this.state.checked}
+        containerStyle={{
+          paddingLeft:0,
+          marginLeft: 0,
+          marginTop: 10,
+          marginBottom: 0,
+          width:105,
+          backgroundColor:'#f8f8f8',
+          shadowOpacity: 0,
+              borderWidth: 0
+        }}
+        checkedColor={'#7ea100'}
+        onPress={this.handleAllChecked}
+      />
       </View>
+      {this.state.noDataAvailable ? (
+        <View style={styles.noData}>
+          <Text style={styles.noDataText}>No Data</Text>
+        </View>
+      ) : (
+        <View style={{ paddingTop: 10}}>  
+          
+          <FlatList
+            data={
+              !this.props.searchBarShow
+                ? this.state.originsData
+                : this.state.searchedData
+            }
+            columnWrapperStyle={{justifyContent:'space-between',paddingLeft:30,paddingRight:30}}
+            
+            numColumns={2}
+            keyExtractor={items => {
+              items.origin_Id;
+            }}
+            renderItem={({item}) => {               
+              return (
+                <View style={{}}>
+                  <TouchableOpacity  onPress={() => this.selectHandler(item.origin_Id)}>
+                  <View style={styles.itemContainer}>
+                    <ImageBackground
+                      source={{
+                        uri: item.url_thumbnail_image,
+                      }}
+                      style={{
+                        aspectRatio: 2 / 2,       
+                        
+                         borderRadius:100,
+                     
+                      }}
+                      imageStyle={{                     
+                        borderRadius:100,
+                        
+                      }}
+                      resizeMode='cover'
+                     
+                    
+                      >
+                      <CheckBox
+                        checked={this.state.checked || item.checked}
+                        center                                     
+                        checkedColor={'#7ea100'}
+                        checkedIcon='dot-circle-o'                        
+                        onPress={() => this.selectOrigins(item.origin_Id)}
+                        textAlignVertical={'center'}
+                        containerStyle={{
+                          // paddingLeft: 0,
+                          // paddingRight: 0,
+                          paddingTop: 30,
+                          paddingBottom:30,                         
+                          // justifyContent: 'space-between',
+                      
+                          
+                        }}
+                      />
+                    </ImageBackground>                   
+                  </View>
+                  <View style={styles.itemData}>
+                      <Text style={styles.textData}>{item.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              );
+            }}
+          />
+                   
+        </View>
+      )}
+
+     
+    
+    </View>
+    {!this.state.noDataAvailable ? (
+        <View>
+          <View style={{
+             
+                backgroundColor:'#f8f8f8'
+              }}>
+          <Regions {...this.props} regionsData={this.props.regionsData} />   
+          </View>
+          <TouchableNativeFeedback onPress={this.onSeeAll}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignContent: 'center',
+                backgroundColor:'#f8f8f8'
+              }}>
+              <Text
+                style={{
+                  paddingTop: 15,
+                  paddingBottom: 15,
+                  textAlignVertical: 'center',
+                  color: '#004561',
+                  textAlign: 'center',
+                  fontSize: 18,
+                  fontFamily: 'GothamMedium',
+                  textAlignVertical: 'center',
+                }}>
+                Continue
+              </Text>
+              <Icon
+                name="chevron-right"
+                color={'#3e708f'}
+                size={25}
+                style={{textAlignVertical: 'center'}}
+              />
+            </View>
+          </TouchableNativeFeedback>
+        </View>
+      ) : null}
+    </View>   
     );
   }
 }

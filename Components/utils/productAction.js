@@ -188,15 +188,10 @@ class ProductAction extends Component {
         borderRadius: 100,
       },
       ratingStyle: {
-        backgroundColor: '#00ac00',
-        color: 'white',
-        lineHeight: 20,
         justifyContent: 'center',
         textAlignVertical: 'center',
-        fontSize: 14,
-        width: 50,
-        paddingRight: 5,
-        paddingLeft: 5,
+        fontSize: 16,
+        fontFamily: 'GothamLight',
       },
       spinnerTextStyle: {
         color: '#7ea100',
@@ -288,9 +283,10 @@ class ProductAction extends Component {
           textStyle={styles.spinnerTextStyle}
         />
         <View style={styles.actionsContainer}>
-          <View style={{width: '60%'}}>           
+          <View>           
             <View>
               <SwitchButton
+             
                 onValueChange={val => {
                   if (val === 1) {
                     if (this.props.productData.nano.length >= 1) {
@@ -338,36 +334,20 @@ class ProductAction extends Component {
               />
             </View>
           </View>
-          <View style={{flexDirection: 'row', width: '40%'}}>
-            <View style={styles.ratingStyle}>
-              <Text
-                style={{
-                  color: 'white',
-                  textAlign: 'center',
-                  justifyContent: 'space-between',
-                }}>
-                {this.props.productData.rating}{' '}
-                <Icon
-                  name="star"
-                  size={12}
-                  style={{
-                    justifyContent: 'center',
-                    textAlignVertical: 'center',
-                  }}
-                />
-              </Text>
-            </View>
-            <Text
-              style={{
-                fontFamily: 'GothamLight',
-                fontSize: 10,
-                textAlignVertical: 'center',
-                paddingLeft: 10,
-                paddingRight: 10,
-              }}>
-              {this.props.productData.avg_rating}: ratings
-            </Text>
-          </View>
+                   <View style={{flexDirection: 'row',width:'50%',justifyContent:'center'}}>
+                        <Icon
+                          name="star"
+                          size={22}
+                          color="#ffbd4a"
+                          style={{
+                            justifyContent: 'center',
+                            textAlignVertical: 'center',
+                          }}
+                        />
+                        <Text style={styles.ratingStyle}>
+                        {this.props.productData.avg_rating}
+                        </Text>
+                      </View>
         </View>
         <View style={styles.actionsContainer}>
           <View style={styles.unitsContainer}>
@@ -375,7 +355,7 @@ class ProductAction extends Component {
               <Text
                 style={{
                   fontFamily: 'GothamLight',
-                  fontSize: 15,
+                  fontSize: 17,
                   textAlignVertical: 'center',
                 }}>
                 Units:
@@ -413,7 +393,7 @@ class ProductAction extends Component {
             <Text
               style={{
                 fontFamily: 'GothamLight',
-                fontSize: 15,
+                fontSize: 17,
                 textAlignVertical: 'center',
                 paddingRight: 10,
               }}>

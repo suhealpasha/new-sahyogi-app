@@ -127,8 +127,8 @@ filterOption =() =>{
             <View style={styles.caption}>
               <View style={{flexDirection: 'row',paddingBottom:0}}>
               <Text  style={styles.checkBoxText}>Lots:</Text>  
-                <CheckBox  checked={this.props.filterNanoLotData} checkedColor='#00aa00' onPress={() =>this.props.onNanoLotProductsFiltered(!this.props.filterNanoLotData) }/><Text style={styles.checkBoxText}>Nanolots</Text>              
-                <CheckBox checked={this.props.filterMicroLotData} checkedColor='#00aa00'  onPress={() =>this.props.onMicroLotProductsFiltered(!this.props.filterMicroLotData)} /><Text style={styles.checkBoxText}>Microlots</Text> 
+                <CheckBox  checked={this.props.filterNanoLotData} checkedColor='#7ea100' onPress={() =>this.props.onNanoLotProductsFiltered(!this.props.filterNanoLotData) }/><Text style={styles.checkBoxText}>Nanolots</Text>              
+                <CheckBox checked={this.props.filterMicroLotData} checkedColor='#7ea100'  onPress={() =>this.props.onMicroLotProductsFiltered(!this.props.filterMicroLotData)} /><Text style={styles.checkBoxText}>Microlots</Text> 
               </View>
             </View>
           </View>
@@ -138,7 +138,7 @@ filterOption =() =>{
             style={styles.actionsCheckBox}
            > 
             <View style={{flexDirection: 'row',justifyContent:'flex-start',paddingBottom:0}}>
-              <CheckBox  checked={this.props.filterFeaturedData} checkedColor='#00aa00' onPress={() =>this.props.onFeaturedProductsFiltered(!this.props.filterFeaturedData) }/><Text style={styles.checkBoxText}>Featured</Text>
+              <CheckBox  checked={this.props.filterFeaturedData} checkedColor='#7ea100' onPress={() =>this.props.onFeaturedProductsFiltered(!this.props.filterFeaturedData) }/><Text style={styles.checkBoxText}>Featured</Text>
             </View>
           </View>
         

@@ -12,6 +12,7 @@ class Search extends Component {
     super(props);
     this.state = {
       height: Dimensions.get('window').height, 
+      width: Dimensions.get('window').width, 
       allProductsData:[],    
       data: [],
     };
@@ -27,10 +28,17 @@ class Search extends Component {
   }
 
   fetchProducts = async () => {
+   
     this.setState({spinner:true})
     const access_token = await AsyncStorage.getItem('isLoggedIn');
+    const data = {
+      featured: null,
+      origin_Id: null,
+      lot: null,
+      verity_Id: null,
+    };
     await axios
-      .get(api.buyerAllProductAPI, {
+      .post(api.buyerAllProductAPI,data ,{
         headers: {
           accept: 'application/json',
           access_token: access_token,
@@ -39,6 +47,7 @@ class Search extends Component {
         },
       })
       .then(res => {     
+        console.log(res)
         if (res.status) {
           this.setState({
             spinner:false,
@@ -100,35 +109,33 @@ class Search extends Component {
         paddingLeft: 10,
         paddingRight: 10,
         paddingTop:10,
-        paddingBottom:10
+        paddingBottom:10,
+        width:this.state.width /2 + 30 ,
+       
       },
       itemTextVariety: {
-        fontFamily: 'Gotham Black Regular',
+        fontFamily: 'GothamBold',
         fontSize: 14,
         paddingTop: 5,
       },
       itemTextOrigin: {
+        paddingTop: 5,
         fontSize: 12,
         justifyContent: 'space-around',
         fontFamily: 'GothamMedium',
         color: '#5C5C5C',
- 
       },
       itemTextFarm: {
         fontSize: 12,
         justifyContent: 'space-around',
         fontFamily: 'GothamMedium',
         color: '#95A5A6',
-        paddingBottom: 10,
       },
       ratingStyle: {
-        backgroundColor: '#00ac00',
-        color: 'white',
-        lineHeight: 20,
         justifyContent: 'center',
         textAlignVertical: 'center',
         fontSize: 14,
-        width: 45,
+        fontFamily: 'GothamLight',
       },
       searchErrorText:{
         fontFamily:'GothamLight',
@@ -180,30 +187,21 @@ class Search extends Component {
                     <Text style={styles.itemTextVariety}>{i.verityname}</Text>
                     <Text style={styles.itemTextOrigin}>{i.originsname}</Text>
                     <Text style={styles.itemTextFarm}>{i.farm}</Text>
-                    <View style={{flexDirection: 'row'}}>
-                <Text style={styles.ratingStyle}>
-                  {'  '}
-                  {i.avg_rating}{' '}
-                  <Icon
-                    name="star"
-                    size={12}
-                    style={{
-                      justifyContent: 'center',
-                      textAlignVertical: 'center',
-                    }}
-                  />
-                  {'  '}
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: 'GothamLight',
-                    fontSize: 10,
-                    textAlignVertical: 'center',
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                  }}>
-                  {i.rating}: ratings
-                </Text>
+                  
+                    <View style={{flexDirection: 'row-reverse'}}>
+                        <Icon
+                          name="star"
+                          size={20}
+                          color="#ffbd4a"
+                          style={{
+                            justifyContent: 'center',
+                            textAlignVertical: 'center',
+                          }}
+                        />
+                        <Text style={styles.ratingStyle}>
+                          {i.avg_rating}
+                        </Text>
+                      
               </View>
                   </View>
                 </View>

@@ -21,7 +21,7 @@ import OTPInputView from '@twotalltotems/react-native-otp-input';
 import {connect} from 'react-redux';
 import * as actionTypes from '../Store/action';
 import * as api from '../assets/api/api';
-import PageTitle from '../Components/utils/pageTitle';
+
 
 class Otp extends Component {
   constructor(props) {
@@ -140,7 +140,7 @@ class Otp extends Component {
       <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}}
       style={{backgroundColor:'#ffff'}} 
       scrollEnabled={true}>
-          <PageTitle title="      OTP    " {...this.props} />
+
         <View style={styles.container}>         
           <Logo />
 

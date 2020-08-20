@@ -30,7 +30,6 @@ import {
 } from 'react-native-material-cards';
 import * as api from '../assets/api/api';
 import Spinner from 'react-native-loading-spinner-overlay';
-import PageTitle from '../Components/utils/pageTitle';
 import {HelperText, TextInput} from 'react-native-paper';
 class Register extends Component {
   constructor(props) {
@@ -229,8 +228,7 @@ class Register extends Component {
 
     return (
       <View>
-           <PageTitle title="Fill User Details" {...this.props} />
-    
+     
       <KeyboardAwareScrollView
         style={{backgroundColor: '#ffff',display:'flex'}}
         resetScrollToCoords={{x: 0, y: 0}}

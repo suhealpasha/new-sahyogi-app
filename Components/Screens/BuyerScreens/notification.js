@@ -37,11 +37,12 @@ export default class Notification extends Component {
         seenStatus:true       
        },
     ];
+    console.log('insdide notify',this.props.notificationData)
     return (
-      
+   
       <View style={styles.container}>
         <FlatList
-          data={items}
+          data={this.props.notificationData}
           numColumns={1}
           // keyExtractor = {(items)=>{items.key}}
 
@@ -66,9 +67,9 @@ export default class Notification extends Component {
             );
             return (
               <TouchableOpacity onPress={() => console.log('parent')} pointerEvents = {'box-none'}>
-                <View style={item.seenStatus?styles.itemContainer:styles.itemContainerUnread}>
-               <Text style={item.seenStatus?styles.notificationTextStyle:styles.notificationUnreadTextStyle}>{item.message}</Text>
-                <Text style={styles.dateText}>{item.date}</Text>
+                <View style={item.status !== 'unread' ? styles.itemContainer:styles.itemContainerUnread}>
+               <Text style={item.status !== 'unread' ?styles.notificationTextStyle:styles.notificationUnreadTextStyle}>{item.notification_text}</Text>
+                <Text style={styles.dateText}>{item.updated_date}</Text>
                 </View>
               </TouchableOpacity>
             );

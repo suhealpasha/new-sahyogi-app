@@ -135,7 +135,7 @@ import * as api from '../../../assets/api/api';
       itemContainerActive: {
         flexDirection: 'row',
         borderWidth: 1,
-        borderColor: '#00aa00',
+        borderColor: '#7ea100',
         width: this.state.width - 20,     
         paddingTop: 10,
         

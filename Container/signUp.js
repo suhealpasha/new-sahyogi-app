@@ -6,7 +6,7 @@ import BackButton from '../Components/utils/backButton';
 import Logo from '../Components/utils/logo';
 import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
-import PageTitle from '../Components/utils/pageTitle';
+
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 
 class SignUp extends Component {
@@ -39,6 +39,7 @@ class SignUp extends Component {
   }
   userClicked = u => {
     if (u === 'b') {
+      this.props.onUserTypeClicked(null);
       this.setState({
         userImageType1: require('../assets/Images/users/myUserSelected.png'),
       });
@@ -125,8 +126,7 @@ class SignUp extends Component {
     return (
       <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}}
       style={{backgroundColor:'#ffff'}} 
-      scrollEnabled={true}>
-        <PageTitle title="Register As" {...this.props} />      
+      scrollEnabled={true}>           
         <View style={styles.container}>    
           <Logo />         
           <View style={styles.usersContainer}>

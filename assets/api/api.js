@@ -47,6 +47,7 @@ export const buyerOrderListAPI = URL+'buyerOrderList';
 export const buyerOrderDetailsAPI = URL+'getBuyerOrderDetails';
 export const buyerAddOrUpdateFeedbackAPI = URL+'buyerAddOrUpdateFeedback';
 export const buyergetFeedbackAPI = URL+'getBuyerFeedback';
+export const buyerGetNotificationAPI = URL+'buyerNotification';
 
 //////////////////////// Seller API's //////////////////////////
 
@@ -64,3 +65,4 @@ export const sellerOrderAPI = URL+'sellerOrderList';
 export const sellerOrderDetailsAPI = URL+'getSellerOrderDetails';
 export const sellerOrderorderStatusupdateAPI = URL+'orderStatusupdate';
 export const sellerCashoutAPI = URL+'sellerCashout';
+export const sellerGetNotificationAPI = URL+'sellerNotification';

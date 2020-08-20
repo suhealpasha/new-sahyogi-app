@@ -135,8 +135,8 @@ class App extends Component {
       <Animated.View style={[styles.SplashScreen_RootView,animatedStyle]}>
         <View style={styles.SplashScreen_ChildView}>
           <Image
-            source={require('./assets/Images/logos/Logo_Microffee.png')}
-            style={{width: '100%', height: '100%', resizeMode: 'contain'}}
+            source={require('./assets/Images/logos/newMicrofeeLogo.png')}
+            style={{width: '50%', height: '50%', resizeMode: 'contain'}}
           />
         </View>
       </Animated.View>

@@ -21,7 +21,6 @@ import Logo from '../Components/utils/logo';
 import {CheckBox} from 'react-native-elements';
 import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
-import PageTitle from '../Components/utils/pageTitle';
 class SellerType extends Component {
   constructor(props) {
     super(props);
@@ -130,8 +129,7 @@ class SellerType extends Component {
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
         style={{backgroundColor: '#ffff'}}
-        scrollEnabled={true}>
-        <PageTitle title="Who are you?" {...this.props} />
+        scrollEnabled={true}>   
         <View style={styles.container}>
           <Logo />
           

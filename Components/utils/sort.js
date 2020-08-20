@@ -100,7 +100,7 @@ class Sort extends Component {
              Popularity
            </Text>
          <RadioButton
-         color='#00aa00'
+         color='#7ea100'
           value="first"
           status={checked === 'first' ? 'checked' : 'unchecked'}
           onPress={()=>this.sortOption('first')}
@@ -111,7 +111,7 @@ class Sort extends Component {
             Newest First
            </Text>
          <RadioButton
-         color='#00aa00'
+         color='#7ea100'
           value="second"
           status={checked === 'second' ? 'checked' : 'unchecked'}
           onPress={()=>this.sortOption('second')}
@@ -122,7 +122,7 @@ class Sort extends Component {
             Ratings -- high to low
            </Text>
          <RadioButton
-         color='#00aa00'
+         color='#7ea100'
           value="third"
           status={checked === 'third' ? 'checked' : 'unchecked'}
           onPress={()=>this.sortOption('third')}
@@ -133,7 +133,7 @@ class Sort extends Component {
             Ratings -- low to high
            </Text>
          <RadioButton
-         color='#00aa00'
+         color='#7ea100'
           value="forth"
           status={checked === 'forth' ? 'checked' : 'unchecked'}
           onPress={()=>this.sortOption('forth')}
@@ -144,7 +144,7 @@ class Sort extends Component {
             Alphabetical
            </Text>
          <RadioButton
-         color='#00aa00'
+         color='#7ea100'
           value="fifth"
           status={checked === 'fifth' ? 'checked' : 'unchecked'}
           onPress={()=>this.sortOption('fifth')}

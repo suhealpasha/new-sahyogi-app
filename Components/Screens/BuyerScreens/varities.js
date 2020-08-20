@@ -144,18 +144,19 @@ class Varities extends Component {
 
   render() {
       return (
-      <View style={{flex: 1.0}}>
+      <View style={{flex: 1.0 ,backgroundColor: '#7ea100',}}>
      <KeyboardAwareScrollView resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: '#efebea',paddingLeft:10,paddingRight:10}}
+        style={{backgroundColor: '#f8f8f8',paddingLeft:10,paddingRight:10,borderTopRightRadius: 30,
+        borderTopLeftRadius: 30,}}
         scrollEnabled={true} >   
         <Spinner
           visible={this.state.spinner}
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}         
         />
-        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingTop:10}}>
       
-      <Text style={{fontFamily:'GothamMedium',paddingLeft:5,paddingBottom:10,paddingTop:10}}>Select Origins</Text>
+      <Text style={{fontFamily:'GothamMedium',paddingLeft:5,paddingBottom:10,}}>Select Origins</Text>
       
           <CheckBox
             title="Select All"
@@ -167,9 +168,12 @@ class Varities extends Component {
               marginTop: 0,
               marginBottom: 0,
               width:105,
-            backgroundColor:'#efebea'
+              backgroundColor:'#f8f8f8',
+          shadowOpacity: 0,
+              borderWidth: 0
+           
             }}
-            checkedColor={'#00aa00'}
+            checkedColor={'#7ea100'}
             onPress={this.handleAllChecked}
           />
           </View>
@@ -191,7 +195,7 @@ class Varities extends Component {
                     flexDirection: 'row',
                   }}>
                   <CheckBox
-                    checkedColor={'#00aa00'}
+                    checkedColor={'#7ea100'}
                     checked={this.state.checked || item.checked}
                     onPress={() => this.selectVarities(item.verity_Id)}
                   />
@@ -221,6 +225,7 @@ class Varities extends Component {
               fontSize: 14,
               fontFamily: 'GothamMedium',
               textAlignVertical: 'center',
+              backgroundColor: '#f8f8f8'
             }}>
             Apply
           </Text>

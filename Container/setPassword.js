@@ -30,7 +30,7 @@ import {CheckBox} from 'react-native-elements';
 import {TouchableNativeFeedback} from 'react-native-gesture-handler';
 import HTMLView from 'react-native-htmlview';
 import {ceil} from 'react-native-reanimated';
-import PageTitle from '../Components/utils/pageTitle';
+
 
 class SetPassword extends Component {
   constructor(props) {
@@ -53,16 +53,20 @@ class SetPassword extends Component {
   }
 
   handleRegister = async () => {
+  
+    if(this.props.forgotPassword !== null){
+      this.setState({checked :true,checkedError:false})
+    }
          if (
       this.state.password !== null &&
       this.state.confirmPassword !== null &&
       this.state.checked &&
-      this.state.passwordValidationError === false &&
+      this.state.passwordValidationError === false  &&
       this.state.checkedError === false
     ) {
-      if (this.state.password === this.state.confirmPassword) {
+      if (this.state.password === this.state.confirmPassword ) {
         this.setState({spinner: true});
-        if (this.props.forgotPassword === null) {
+        if (this.props.forgotPassword === null ) {
           let data, userType, signUp;
           if (this.props.userType === 'seller') {
             signUp = api.sellerSignupAPI;
@@ -152,7 +156,7 @@ class SetPassword extends Component {
       } else {
         this.setState({confirmPasswordError: false});
       }
-      if (this.state.checked === false) {
+      if (this.state.checked === false && this.props.forgotPassword === null) {
         this.setState({checkedError: true});
       } else {
         this.setState({checkedError: false});
@@ -266,8 +270,7 @@ class SetPassword extends Component {
     });
 
     return (
-      <View style={{flex: 1.0}}>
-        <PageTitle title="Register Now" {...this.props} />
+      <View style={{flex: 1.0}}>       
         {this.state.webView ? (
           <KeyboardAwareScrollView
             resetScrollToCoords={{x: 0, y: 0}}
@@ -390,7 +393,8 @@ class SetPassword extends Component {
                 name="register"
                 click={this.handleRegister}
               />
-
+            { this.props.forgotPassword === null ? 
+            <>
               <CheckBox
                 title={'I have read and accepted'}
                 fontFamily={'GothamMedium'}                
@@ -418,6 +422,10 @@ class SetPassword extends Component {
                 }}>
                 <Text style={styles.viewall}>Terms & Conditions!</Text>
               </TouchableNativeFeedback>
+              </>
+              :
+              null
+              }
               {this.state.checkedError ? (
                 <Text
                   style={{

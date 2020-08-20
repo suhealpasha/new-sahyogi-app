@@ -41,7 +41,8 @@ class ProductDescription extends Component {
       },
       productDetailsContainer: {
         flexDirection: 'column',
-        width: '100%',        
+        width: '100%',     
+        backgroundColor:'#ffff'   
       },
       productDetailHeader: {
         flexDirection: 'column',
@@ -88,20 +89,21 @@ class ProductDescription extends Component {
      },
      col1:{
       fontFamily: 'GothamBold',     
-      fontSize: 15,
+      fontSize: 17,
       width:'35%',
       padding:5
      },
      col2:{
       width:'5%',
       padding:5,
-      fontSize: 15,
+      fontSize: 17,
       fontFamily: 'GothamMedium',
      },
      col3:{
       width:'60%',
       padding:5,
-      fontFamily: 'GothamMedium',
+      fontFamily: 'GothamLight',
+      fontSize: 17,
      },
      commentText:{      
       padding:5,

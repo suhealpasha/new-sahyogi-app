@@ -42,9 +42,7 @@ class AllRegions extends Component {
     const styles = StyleSheet.create({
       container: {
         flex: 1.0,
-        backgroundColor: '#efebea',
-        // paddingLeft:5,paddingRight:5,
-        paddingTop: 10
+        backgroundColor: '#7ea100',   
       },
       noData: {
         justifyContent: 'center',
@@ -57,28 +55,26 @@ class AllRegions extends Component {
         fontFamily: 'GothamBold',
       },
       itemContainer: {
+        marginTop: 10,
         marginBottom: 10,
-        backgroundColor: 'white',      
-        width:this.state.width / 2 - 15,        
+        backgroundColor: 'white',
+        width: this.state.width / 2 - 20,
         shadowColor: '#000',
         shadowOffset: {
           width: 0,
-          height: 2,
+          height: 3,
         },
-        shadowOpacity: 0.23,
-        shadowRadius: 2.62,
-        elevation: 4,
+        shadowOpacity: 0.29,
+        shadowRadius: 5,
+
+        elevation: 7,
         paddingBottom: 10,
-      },
-      itemData: {
-        borderTopWidth: 1,
-        borderColor: '#95A5A6',
-      },
+        borderRadius: 5,
+      },    
+    
       textData: {
-        paddingTop: 5,
-        paddingLeft: 5,
-        paddingRight: 5,
-        fontFamily: 'Gotham Black Regular',
+        textAlign:'center',
+        fontFamily: 'GothamMedium',
       },
       spinnerTextStyle: {
         color: '#7ea100',
@@ -87,9 +83,17 @@ class AllRegions extends Component {
    
     return (
       <View style={styles.container} >
-          
+            <View style={{backgroundColor:'#f8f8f8',borderTopRightRadius: 30,
+             borderTopLeftRadius: 30}}>
+                <View style={{height: this.state.height - 60}}>
             <FlatList data={this.props.allRegionsData}
-            columnWrapperStyle={{marginLeft:10,marginRight:10,justifyContent:'space-between' }}
+             style={{
+              paddingLeft: 10,
+              paddingRight: 10,
+              marginTop: 10,
+              marginBottom: 10,
+            }}
+             columnWrapperStyle={{justifyContent: 'space-between'}}
             numColumns={2}
             keyExtractor = {(items)=>{items.region_Id}}          
             renderItem = {({item})=>{
@@ -102,22 +106,29 @@ class AllRegions extends Component {
                         source={{
                           uri: item.url_thumbnail_image,
                         }}
-                        style={{width: this.state.width / 2 - 15,
-                          height: undefined,
-                          aspectRatio: 2/1,
-                           }}
-                        // resizeMode='stretch'
+                        style={{
+                          aspectRatio: 2 / 1,
+                          borderTopLeftRadius: 5,
+                          borderTopRightRadius: 5,
+                        }}
+                        imageStyle={{
+                          borderTopLeftRadius: 5,
+                          borderTopRightRadius: 5,
+                        }}
+                            // resizeMode='center'
                         >                       
-                      </ImageBackground>
-                      <View style={styles.itemData}>
+                      </ImageBackground>                     
+                    </View>
+                    <View style={styles.itemData}>
                         <Text style={styles.textData}>{item.name}</Text>
                       </View>
-                    </View>
                 </TouchableNativeFeedback>
                  
             );
             }}
             />
+            </View>
+            </View>
             </View>
     );
   }

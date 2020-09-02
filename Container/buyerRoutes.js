@@ -85,6 +85,7 @@ class Routes extends Component {
       saveIconAddress: false,
       saveEditIconAddress: false,
       user_name: '',
+      last_name:'',
       mobile: '',
       email: '',
       profilePic: '',
@@ -118,7 +119,7 @@ class Routes extends Component {
     this.fetchHomeScreenData();
     this.fetchDetails();
     this.fetchAddress();
-    this.fetchAllRegions();
+    // this.fetchAllRegions();
     this.fetchBuyerCart();
     this.fetchCountries();
     this.fetchBuyerOrders(); 
@@ -135,15 +136,23 @@ class Routes extends Component {
   };
 
   goBack = ({navigation}, path) => {
-    if (path === 'Home') {
-      navigation.navigate('Home');
-    } else {
+    if(path === "Profile" || path === "My Address" || path === "My Orders"){
       navigation.goBack(null);
     }
+    else{
+      navigation.navigate('Home');
+      this.setState({home: true});
+    }
+  
+    // if (path === 'Home') {
+    //   navigation.navigate('Home');
+    // } else {
+    //   navigation.goBack(null);
+    // }
     if (path === 'Listing') {
       this.clickedIcon('Filter');
     }
-    this.setState({home: true});
+   
   };
 
   changeTitleText = ({navigation}, param1, param2) => {
@@ -218,10 +227,12 @@ class Routes extends Component {
           'content-type': 'application/x-www-form-urlencoded',
         },
       })
-      .then(res => {        
+      .then(res => {   
+           
         if (res.status) {
           this.setState({
             user_name: res.data.data.first_name,
+            last_name:res.data.data.last_name,
             mobile: res.data.data.mobile_no,
             email: res.data.data.email,
             profilePic: res.data.data.profile_pic,
@@ -489,9 +500,12 @@ class Routes extends Component {
               headerTitle: (
                 <Text
                   style={{
-                    textAlign: 'center',
+                    textAlign: 'right',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18,
+                    
+                    
                   }}>
                   {this.props.listingTitle}
                 </Text>
@@ -546,6 +560,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   All Regions
                 </Text>
@@ -580,6 +595,7 @@ class Routes extends Component {
                           textAlign: 'center',
                           flex: 1,
                           fontFamily: 'Gotham Black Regular',
+                          fontSize:18
                         }}>
                         {this.props.regionName}
                       </Text>
@@ -596,18 +612,18 @@ class Routes extends Component {
                         <Icon name="chevron-left" size={35} color="white" />
                       </TouchableWithoutFeedback>
                     ),
-                    headerRight: () => (
-                      <View style={{flexDirection: 'row'}}>
-                        <TouchableWithoutFeedback
-                          onPress={() => this.setState({searchBarShow: true})}>
-                          <Icon
-                            name="search"
-                            size={24}
-                            style={{padding: 10, color: '#ffffff'}}
-                          />
-                        </TouchableWithoutFeedback>
-                      </View>
-                    ),
+                    // headerRight: () => (
+                    //   <View style={{flexDirection: 'row'}}>
+                    //     <TouchableWithoutFeedback
+                    //       onPress={() => this.setState({searchBarShow: true})}>
+                    //       <Icon
+                    //         name="search"
+                    //         size={24}
+                    //         style={{padding: 10, color: '#ffffff'}}
+                    //       />
+                    //     </TouchableWithoutFeedback>
+                    //   </View>
+                    // ),
                   })
                 : ({navigation, route}) => ({
                     headerTitle: () => null,
@@ -648,6 +664,7 @@ class Routes extends Component {
                           textAlign: 'center',
                           flex: 1,
                           fontFamily: 'Gotham Black Regular',
+                          fontSize:18
                         }}>
                         Varities
                       </Text>
@@ -711,6 +728,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   Regions and Origins
                 </Text>
@@ -800,6 +818,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   Cart
                 </Text>
@@ -860,6 +879,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   Wishlist
                 </Text>
@@ -935,6 +955,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   Profile
                 </Text>
@@ -1006,6 +1027,7 @@ class Routes extends Component {
                 onLogout={this.props.onLogoutSession}
                 saveIcon={this.state.saveIcon}
                 name={this.state.user_name}
+                lName={this.state.last_name}
                 mobile={this.state.mobile}
                 email={this.state.email}
                 profilePic={this.state.profilePic}
@@ -1022,6 +1044,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   Edit Profile
                 </Text>
@@ -1053,6 +1076,7 @@ class Routes extends Component {
                 onFetchDetails={this.fetchDetails}
                 onFetchAddress={this.fetchAddress}
                 name={this.state.user_name}
+                lName={this.state.last_name}
                 mobile={this.state.mobile}
                 email={this.state.email}
                 profilePic={this.state.profilePic}
@@ -1070,6 +1094,8 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
+
                   }}>
                   My Address
                 </Text>
@@ -1119,6 +1145,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   Add Address
                 </Text>
@@ -1158,6 +1185,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   Edit Address
                 </Text>
@@ -1203,6 +1231,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   Notification
                 </Text>
@@ -1250,7 +1279,7 @@ class Routes extends Component {
               ),
             })}       
           >
-             {props => <Notification {...props} {...this.state} />}
+             {props => <Notification {...props} {...this.state} onFetchNotification = {this.fetchNotification}/>}
             </Stack.Screen>
           <Stack.Screen
             name="Product Description"
@@ -1262,6 +1291,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   {this.props.varietyName}
                 </Text>
@@ -1343,6 +1373,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   My Orders
                 </Text>
@@ -1353,7 +1384,7 @@ class Routes extends Component {
               headerTintColor: '#ffffff',
               headerLeft: () => (
                 <TouchableWithoutFeedback
-                  onPress={() => this.goBack({navigation}, 'My Address')}>
+                  onPress={() => this.goBack({navigation}, 'Profile')}>
                   <Icon name="chevron-left" size={35} color="white" />
                 </TouchableWithoutFeedback>
               ),
@@ -1373,6 +1404,7 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
+                    fontSize:18
                   }}>
                   Order #{this.props.orderNumber}
                 </Text>

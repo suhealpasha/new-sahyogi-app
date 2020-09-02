@@ -34,12 +34,15 @@ class EditProfile extends Component {
       height: Dimensions.get('window').height,
       spinner: false,
       name: '',
+      lName:'',
       email: '',
       mobile: '',
       profilePic: '',
       checked: null,
       nameError: false,
       nameValidationError: false,
+      lNameError: false,
+      lNameValidationError: false,
       emailError: false,
       emailValidationError: false,
       mobileError:false,
@@ -52,13 +55,15 @@ class EditProfile extends Component {
 
 
   componentDidMount() {
-    const name = this.props.name;    
+    const name = this.props.name;  
+    const lName = this.props.lName;  
     const mobile = this.props.mobile;
     const email = this.props.email;
     const profilePic = this.props.profilePic;
     const checked = this.props.gender;
     this.setState({
       name: name,
+      lName:lName,
       mobile: mobile,
       email: email,
       profilePic: profilePic,
@@ -144,17 +149,21 @@ class EditProfile extends Component {
 
   async UNSAFE_componentWillReceiveProps() {
       if (
-      this.state.name !== null &&
+      this.state.name !== null &&  
       this.state.mobile !== null &&
       this.state.checked !== null &&
+      this.state.lName !== null &&
       this.state.nameValidationError === false &&
-      this.state.mobileValidationError === false
+      this.state.mobileValidationError === false && 
+      this.state.lNameValidationError === false
     ) {
       let data = JSON.stringify({
         name: this.state.name,
+        last_name:this.state.lName,
         mobile_no: this.state.mobile,
         gender: this.state.checked,
       });
+      console.log(data)
       this.setState({spinner: true});
       const access_token = await AsyncStorage.getItem('isLoggedIn');
       await axios
@@ -190,6 +199,11 @@ class EditProfile extends Component {
       } else {
         this.setState({nameError: false});
       }
+      if (this.state.lName === null) {
+        this.setState({lNameError: true});
+      } else {
+        this.setState({lNameError: false});
+      }
       if (this.state.mobile === null) {
         this.setState({mobileError: true});
       } else {
@@ -203,6 +217,10 @@ class EditProfile extends Component {
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
+        backgroundColor:'#f8f8f8',
+        borderTopRightRadius: 30,
+        borderTopLeftRadius: 30,
+        height:this.state.height
       },
       photoUploadContainer: {
         flexDirection: 'row',
@@ -233,7 +251,7 @@ class EditProfile extends Component {
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 10, y: 0}}
         scrollEnabled={true}
-        style={{backgroundColor: '#efebea'}}>
+        style={{backgroundColor: '#7ea100'}}>
         <View style={styles.container}>
           <Spinner
             visible={this.state.spinner}
@@ -286,7 +304,7 @@ class EditProfile extends Component {
           </View>
           <View style={styles.EditProfileFormContainer}>
             <Input
-              placeholder="Name"
+              placeholder="First Name"
               style={styles.inputStyle}
               value={this.state.name}
               inputStyle={{fontFamily: 'GothamMedium', fontSize: 16}}
@@ -309,6 +327,36 @@ class EditProfile extends Component {
                   ? 'Enter the User Name'
                   : this.state.nameValidationError
                   ? 'Invalid User Name'
+                  : false
+              }
+            />
+            <Input
+              placeholder="Last Name"
+              style={styles.inputStyle}
+              value={this.state.lName}
+              inputStyle={{fontFamily: 'GothamMedium', fontSize: 16}}
+              onChangeText={lname => {
+                console.log(lname)
+                if (/[^a-zA-Z\s]/.test(lname)) {
+                  this.setState({lNameValidationError: true});
+                } else {
+                  console.log(lname)
+                  this.setState({
+                    lName:lname,
+                    lNameError: false,
+                    lNameValidationError: false,
+                  });
+                }
+              }
+            }
+              onBlur={
+                this.state.lName === '' ? this.setState({lName: null}) : null
+              }
+              errorMessage={
+                this.state.lNameError === true
+                  ? 'Enter the last Name'
+                  : this.state.lNnameValidationError
+                  ? 'Invalid Last Name'
                   : false
               }
             />

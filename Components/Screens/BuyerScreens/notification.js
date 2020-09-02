@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
-import {StyleSheet,FlatList,View,Text,Image,ScrollView,Dimensions,TouchableWithoutFeedback,TouchableOpacity,} from 'react-native';
+import {StyleSheet,FlatList,View,Text,Image,ScrollView,Dimensions,TouchableWithoutFeedback,TouchableOpacity,AsyncStorage} from 'react-native';
 import {Card,CardTitle,CardContent,CardAction,CardButton,CardImage,} from 'react-native-material-cards';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavigation from '../../BottomNavigation/bottomNavigation';
 import ProductAction from '../../utils/productAction';
 import { Button } from 'react-native-paper';
+import * as api from '../../../assets/api/api'; 
+import axios from 'axios';
+
 export default class Notification extends Component {
 
   constructor(props) {
@@ -19,33 +22,48 @@ export default class Notification extends Component {
 
     console.log('Child')
   }
+
+  sawNotification = async (args) =>{
+    const access_token = await AsyncStorage.getItem('isLoggedIn');  
+    const data = JSON.stringify({
+      notification_id: args,
+      
+    });    
+    axios
+      .post(api.buyerUpdateNotificationAPI, data, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {       
+        this.props.onFetchNotification();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    
+  }
   render() {
-    const items = [
-      {
-        message: 'LA Savaldor new nano lots are available for sale, Kindly checkout for new stocks',
-        date:'18-Mar-2020',
-        seenStatus:false       
-       },
-       {
-        message: '10% Discount on all the products,Terms & conditions applied.',
-        date:'02-Mar-2020',
-        seenStatus:false       
-       },
-       {
-        message: 'We are currently delivering all kind of coffe lots in all regions of Europe.',
-        date:'15-Mar-2020',
-        seenStatus:true       
-       },
-    ];
+   
     console.log('insdide notify',this.props.notificationData)
     return (
    
       <View style={styles.container}>
+        <View
+          style={{
+            backgroundColor: '#f8f8f8',
+            borderTopRightRadius: 30,
+            borderTopLeftRadius: 30,
+            height:this.state.height
+          }}>
         <FlatList
           data={this.props.notificationData}
           numColumns={1}
           // keyExtractor = {(items)=>{items.key}}
-
+          style={{paddingTop:30}}
           renderItem={({item}) => {
             let ratingIcon = (
                 <View style={{flexDirection:'row'}}>
@@ -66,7 +84,7 @@ export default class Notification extends Component {
               </View>
             );
             return (
-              <TouchableOpacity onPress={() => console.log('parent')} pointerEvents = {'box-none'}>
+              <TouchableOpacity onPress={() => this.sawNotification(item.buyer_nofication_id)} pointerEvents = {'box-none'}>
                 <View style={item.status !== 'unread' ? styles.itemContainer:styles.itemContainerUnread}>
                <Text style={item.status !== 'unread' ?styles.notificationTextStyle:styles.notificationUnreadTextStyle}>{item.notification_text}</Text>
                 <Text style={styles.dateText}>{item.updated_date}</Text>
@@ -75,7 +93,7 @@ export default class Notification extends Component {
             );
           }}
         />
-     
+     </View>
       </View>
      
     );
@@ -85,7 +103,7 @@ export default class Notification extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1.0,
-    backgroundColor:'#efebea',
+    backgroundColor:'#7ea100',
     paddingBottom: 10,
    
     

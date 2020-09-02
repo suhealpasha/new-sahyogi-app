@@ -49,6 +49,7 @@ class SetPassword extends Component {
       webView: false,
       checked: false,
       checkedError: false,
+      registeredMessage:null
     };
   }
 
@@ -73,7 +74,7 @@ class SetPassword extends Component {
             userType = 'Seller';
             data = JSON.stringify({
               first_name: this.props.name,
-              last_name: '',
+              last_name: this.props.lastName,
               type: this.props.sellerUserType,
               company: this.props.company,
               EIN: this.props.ein,
@@ -94,15 +95,17 @@ class SetPassword extends Component {
             userType = 'Buyer';
             signUp = api.buyerSignupAPI;
             data = JSON.stringify({
-              name: this.props.name,
+              first_name: this.props.name,
+              last_name:this.props.lastName,
               gender: '',
               email: this.props.email,
               mobile_no: this.props.mobile,
               password: this.state.password,
               user_type: userType,
             });
+            console.log(data)
           }
-
+          
           await axios
             .post(signUp, data, {
               headers: {
@@ -112,7 +115,7 @@ class SetPassword extends Component {
               },
             })
             .then(res => {
-              this.setState({spinner: false, dailogBoxOpen: true});
+              this.setState({spinner: false, dailogBoxOpen: true,registeredMessage:res.data.message});
             })
             .catch(err => {
               this.setState({spinner: false});
@@ -463,7 +466,7 @@ class SetPassword extends Component {
                 ) : (
                   <Dialog.Description
                     style={{textAlign: 'center', fontFamily: 'GothamLight'}}>
-                    Registration is complete and you can login.
+                    {this.state.registeredMessage}
                   </Dialog.Description>
                 )}
 
@@ -497,6 +500,7 @@ const mapStateToProps = state => {
   return {
     forgotPassword: state.reducer.forgotPassword,
     name: state.reducer.name,
+    lastName:state.reducer.lastName,
     mobile: state.reducer.mobile,
     email: state.reducer.email,
     userType: state.reducer.userType,

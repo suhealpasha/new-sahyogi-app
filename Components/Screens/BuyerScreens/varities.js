@@ -27,6 +27,7 @@ import {connect} from 'react-redux';
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 
 let filteredData =[]
@@ -156,7 +157,7 @@ class Varities extends Component {
         />
         <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',paddingTop:10}}>
       
-      <Text style={{fontFamily:'GothamMedium',paddingLeft:5,paddingBottom:10,}}>Select Origins</Text>
+      <Text style={{fontFamily:'GothamMedium',paddingLeft:5,paddingBottom:10,}}>Select Varities</Text>
       
           <CheckBox
             title="Select All"
@@ -214,7 +215,7 @@ class Varities extends Component {
             }}
           />
         </KeyboardAwareScrollView>   
-        <TouchableOpacity onPress={this.filterVarities}>
+        <TouchableWithoutFeedback onPress={this.filterVarities}>
           <Text
             style={{
               paddingBottom: 20,
@@ -229,7 +230,7 @@ class Varities extends Component {
             }}>
             Apply
           </Text>
-        </TouchableOpacity>
+        </TouchableWithoutFeedback>
       </View>
     );
   }

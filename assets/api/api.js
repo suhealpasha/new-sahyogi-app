@@ -1,4 +1,4 @@
-const URL = 'http://mathtech.co.in/microffee_api/API/'
+const URL = 'https://www.dollarbirdinc.com/db_dev/microffee_api/'
 
 //////////////////////// Common API's //////////////////////////
 
@@ -48,6 +48,7 @@ export const buyerOrderDetailsAPI = URL+'getBuyerOrderDetails';
 export const buyerAddOrUpdateFeedbackAPI = URL+'buyerAddOrUpdateFeedback';
 export const buyergetFeedbackAPI = URL+'getBuyerFeedback';
 export const buyerGetNotificationAPI = URL+'buyerNotification';
+export const buyerUpdateNotificationAPI = URL+'updateBuyerNotification';
 
 //////////////////////// Seller API's //////////////////////////
 

@@ -10,6 +10,7 @@ import {
   BackHandler,
   TouchableNativeFeedback,
   AsyncStorage,
+  Dimensions
 } from 'react-native';
 import {
   Card,
@@ -33,6 +34,7 @@ class MyOrders extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      height: Dimensions.get('window').height,
       dailogBoxOpen: false,
       comment: '',
       buyerRating: null,
@@ -109,10 +111,93 @@ class MyOrders extends Component {
     
   };
   render() {
+    const styles = StyleSheet.create({
+      container: {
+        flex: 1.0,
+        backgroundColor: '#7ea100',
+        height:this.state.height
+      },
+      itemContainer: {
+        paddingRight: 10,
+        justifyContent: 'space-between',
+        marginBottom: 10,
+        flexDirection: 'row',
+        borderRadius: 5,
+        backgroundColor: 'white',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.23,
+        shadowRadius: 2.62,
+        elevation: 4,
+      },
+      itemDetailContainer: {},
+      itemTextOrderText: {
+        fontSize: 10,
+        fontFamily: 'GothamLight',
+        paddingTop: 5,
+      },
+      itemTextVariety: {
+        fontFamily: 'GothamBold',
+        fontSize: 14,
+        paddingTop: 5,
+      },
+      itemTextOrigin: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#5C5C5C',
+      },
+      itemTextFarm: {
+        fontSize: 12,
+        justifyContent: 'space-around',
+        fontFamily: 'GothamMedium',
+        color: '#95A5A6',
+        paddingBottom:10
+      },
+      ratingStyle: {
+        justifyContent: 'center',
+        textAlignVertical: 'center',
+        fontSize: 14,
+        fontFamily: 'GothamLight',
+      },
+      statusDelivered: {
+        fontFamily: 'GothamMedium',
+        color: 'green',
+        paddingBottom: 5,
+        fontSize: 12,
+      },
+      statusRejected: {
+        fontFamily: 'GothamMedium',
+        color: 'red',
+        paddingBottom: 5,
+        fontSize: 12,
+      },
+      statusOrdered: {
+        fontFamily: 'GothamMedium',
+        paddingBottom: 5,
+        fontSize: 12,
+      },
+      itemTextPrice: {
+        fontFamily: 'Gotham Black Regular',
+        fontSize: 14,
+        marginLeft: 5,
+      },
+    });
     return (
       <View style={styles.container}>
+        <View
+          style={{
+            backgroundColor: '#f8f8f8',
+            borderTopRightRadius: 30,
+            borderTopLeftRadius: 30,
+            height:this.state.height,
+            paddingTop:20
+          }}>
         <FlatList
-          style={{paddingLeft: 10, paddingRight: 10}}
+          style={{paddingLeft: 10, paddingRight: 10,paddingTop:10}}
           data={this.props.buyerOrderData}
           numColumns={1}
           // keyExtractor = {(items)=>{items.key}}
@@ -135,7 +220,7 @@ class MyOrders extends Component {
                 onPress={() => {
                 this.setState({dailogBoxOpen: true,productId:item.product_Id,ratingId:item.feedback.rating_Id})
                 }}>
-                <Text style={styles.ratingStyle}>
+                {/* <Text style={styles.ratingStyle}>
                   {'  '}
                   {item.feedback.rating}{' '}
                   <Icon
@@ -147,7 +232,21 @@ class MyOrders extends Component {
                     }}
                   />
                   {'  '}
-                </Text>
+                </Text> */}
+                <View style={{flexDirection: 'row'}}>
+                        <Icon
+                          name="star"
+                          size={20}
+                          color="#ffbd4a"
+                          style={{
+                            justifyContent: 'center',
+                            textAlignVertical: 'center',
+                          }}
+                        />
+                        <Text style={styles.ratingStyle}>
+                          {item.feedback.rating}
+                        </Text>
+                      </View>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -292,90 +391,12 @@ class MyOrders extends Component {
           />
         </Dialog.Container>
       </View>
+      </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1.0,
 
-    paddingBottom: 10,
-    paddingTop: 10,
-  },
-  itemContainer: {
-    paddingRight: 10,
-    justifyContent: 'space-between',
-    marginBottom: 10,
-    flexDirection: 'row',
-    borderRadius: 5,
-    backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-  },
-  itemDetailContainer: {},
-  itemTextOrderText: {
-    fontSize: 10,
-    fontFamily: 'GothamLight',
-    paddingTop: 5,
-  },
-  itemTextVariety: {
-    fontFamily: 'Gotham Black Regular',
-    fontSize: 14,
-    paddingTop: 5,
-  },
-  itemTextOrigin: {
-    fontSize: 12,
-    justifyContent: 'space-around',
-    fontFamily: 'GothamMedium',
-    color: '#5C5C5C',
-  },
-  itemTextFarm: {
-    fontSize: 12,
-    justifyContent: 'space-around',
-    fontFamily: 'GothamMedium',
-    color: '#95A5A6',
-    paddingBottom: 10,
-  },
-  ratingStyle: {
-    backgroundColor: '#00ac00',
-    color: 'white',
-    lineHeight: 20,
-    justifyContent: 'center',
-    textAlignVertical: 'center',
-    fontSize: 14,
-    width: 45,
-    borderRadius: 5,
-  },
-  statusDelivered: {
-    fontFamily: 'GothamMedium',
-    color: 'green',
-    paddingBottom: 5,
-    fontSize: 12,
-  },
-  statusRejected: {
-    fontFamily: 'GothamMedium',
-    color: 'red',
-    paddingBottom: 5,
-    fontSize: 12,
-  },
-  statusOrdered: {
-    fontFamily: 'GothamMedium',
-    paddingBottom: 5,
-    fontSize: 12,
-  },
-  itemTextPrice: {
-    fontFamily: 'Gotham Black Regular',
-    fontSize: 14,
-    marginLeft: 5,
-  },
-});
 const mapDispatchToProps = dispatch => {
   return {
     onBottomTabClicked: value =>

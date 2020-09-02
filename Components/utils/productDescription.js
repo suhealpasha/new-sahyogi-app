@@ -89,24 +89,31 @@ class ProductDescription extends Component {
      },
      col1:{
       fontFamily: 'GothamBold',     
-      fontSize: 17,
+      fontSize: 14,
       width:'35%',
-      padding:5
+      paddingLeft:10,
+      paddingRight:10,
+      paddingTop:5,
+           paddingBottom:5,
      },
      col2:{
       width:'5%',
-      padding:5,
-      fontSize: 17,
+     paddingLeft:10,
+      fontSize: 14,
       fontFamily: 'GothamMedium',
+      paddingTop:5,
+           paddingBottom:5,
      },
      col3:{
       width:'60%',
-      padding:5,
+           paddingRight:10,
+           paddingTop:5,
+           paddingBottom:5,
       fontFamily: 'GothamLight',
-      fontSize: 17,
+      fontSize: 14,
      },
      commentText:{      
-      padding:5,
+      padding:10,
       fontFamily: 'GothamLight',
      }
     });

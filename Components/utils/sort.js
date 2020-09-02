@@ -93,19 +93,8 @@ class Sort extends Component {
         <View style={styles.sortHeader}>
           <Text style={styles.sortHeaderText}>Sort By</Text>
         </View>
-        <View style={styles.actionContainer}>
-         
-         <View style={{flexDirection: 'row',justifyContent:'space-between',paddingBottom:10}}>
-           <Text style={styles.checkBoxText} onPress={()=>this.sortOption('first')}>
-             Popularity
-           </Text>
-         <RadioButton
-         color='#7ea100'
-          value="first"
-          status={checked === 'first' ? 'checked' : 'unchecked'}
-          onPress={()=>this.sortOption('first')}
-        />
-        </View>
+        <View style={styles.actionContainer}>         
+     
         <View style={{flexDirection: 'row',justifyContent:'space-between',paddingBottom:10}}>
            <Text style={styles.checkBoxText}  onPress={()=>this.sortOption('second')}>
             Newest First

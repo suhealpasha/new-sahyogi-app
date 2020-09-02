@@ -81,6 +81,7 @@ class Listing extends Component {
   fetchProducts = async () => {
     this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
+    console.log("F",this.props.filterFeaturedData,"N",this.props.filterNanoLotData,"M",this.props.filterMicroLotData,"v",this.props.filterVaritiesData)
     const data = {
       featured: this.props.filterFeaturedData
         ? this.props.filterFeaturedData
@@ -143,7 +144,7 @@ class Listing extends Component {
   }
 
   handleBackButtonClick() {
-    this.props.navigation.goBack(null);
+    this.props.navigation.navigate("Home");
     return true;
   }
 
@@ -240,7 +241,7 @@ class Listing extends Component {
         justifyContent: 'center',
         flexDirection: 'row',
         alignItems: 'center',
-        height: this.state.height - 150,
+        height: this.state.height ,
       },
       noDataText: {
         fontSize: 20,
@@ -303,7 +304,7 @@ class Listing extends Component {
       buttonText: {
         color: '#fff',
         fontFamily: 'GothamMedium',
-        fontSize: 14,
+        fontSize: 12,
       },
       imageContainer: {
         backgroundColor: 'grey',

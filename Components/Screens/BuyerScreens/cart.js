@@ -143,7 +143,7 @@ class Cart extends Component {
       shipping_address_Id: args1,
       invoice_address_Id: args1,
     });
-   
+   console.log(data)
     this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
@@ -209,6 +209,7 @@ class Cart extends Component {
         paddingLeft: 10,
         paddingRight: 10,
         paddingTop: 10,
+        
       },
       itemListContainer: {},
       itemContainer: {
@@ -230,7 +231,7 @@ class Cart extends Component {
         paddingRight: 10,
       },
       itemTextVariety: {
-        fontFamily: 'Gotham Black Regular',
+        fontFamily: 'GothamBold',
         fontSize: 14,
         paddingTop: 5,
       },
@@ -245,7 +246,6 @@ class Cart extends Component {
         justifyContent: 'space-around',
         fontFamily: 'GothamMedium',
         color: '#95A5A6',
-        paddingBottom: 10,
       },
       quantityContainer: {
         flexDirection: 'row',
@@ -364,7 +364,10 @@ class Cart extends Component {
         justifyContent: 'center',
         flexDirection: 'row',
         alignItems: 'center',
-        height: this.state.height - 150,
+        height: this.state.height,
+        backgroundColor: '#f8f8f8',
+          borderTopRightRadius: 30,
+          borderTopLeftRadius: 30,
       },
       noDataText: {
         fontSize: 20,
@@ -443,18 +446,21 @@ class Cart extends Component {
     });
 
     return (
-      <View style={{flex: 1.0}}>
+      <View style={{flex: 1.0 ,backgroundColor:'#7ea100'}}>
         <Spinner
           visible={this.state.spinner}
           textContent={'Loading...'}
           textStyle={styles.spinnerTextStyle}
         />
         {this.state.cartCount >= 1 ? (
-          <View style={{flex: 1.0}}>
-            <ScrollView ref={scrollView => (this.scrollView = scrollView)}>
+          <View style={{flex: 1.0,backgroundColor: '#f8f8f8',
+          borderTopRightRadius: 30,
+          borderTopLeftRadius: 30,}}>
+            <ScrollView ref={scrollView => (this.scrollView = scrollView)} style={{marginTop:20}}>
               <View style={styles.container}>
                 <View style={styles.itemListContainer}>
                   <FlatList
+                    
                     data={this.state.buyerCartData.cart_list}
                     numColumns={1}
                     // keyExtractor = {(items)=>{items.key}}
@@ -669,9 +675,9 @@ class Cart extends Component {
                           <Text style={styles.orderPlacementContainerText}>
                             Total
                           </Text>
-                          <Text style={styles.orderPlacementContainerText}>
+                          {/* <Text style={styles.orderPlacementContainerText}>
                             Tax
-                          </Text>
+                          </Text> */}
                           <Text style={styles.orderPlacementContainerText}>
                             Shipping
                           </Text>
@@ -683,9 +689,9 @@ class Cart extends Component {
                           <Text style={styles.orderPlacementContainerText}>
                             $ {amount}
                           </Text>
-                          <Text style={styles.orderPlacementContainerText}>
+                          {/* <Text style={styles.orderPlacementContainerText}>
                             $ {tax}
-                          </Text>
+                          </Text> */}
                           <Text style={styles.orderPlacementContainerText}>
                             $ {shipping}
                           </Text>
@@ -718,6 +724,7 @@ class Cart extends Component {
                 </Text>
               </View>
               <TouchableOpacity
+                disabled={addressId ? false : true }
                 style={styles.buyButton}
                 onPress={() => this.placeOrder(cartId, addressId)}
                 underlayColor="#fff">

@@ -42,6 +42,7 @@ class Profile extends Component {
       confirmPasswordError: false,
       oldPasswordValidity:false,
       name: '',
+      lName:'',
       mobile: '',
       email: '',
       profilePic:''
@@ -52,6 +53,7 @@ class Profile extends Component {
   componentDidMount() {
     this.setState({
       name: this.props.name,
+      lName:this.props.lName,
       mobile: this.props.mobile,
       email: this.props.email,
       profilePic:this.props.profilePic
@@ -142,8 +144,14 @@ class Profile extends Component {
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
-        backgroundColor: '#efebea',
+        backgroundColor: '#7ea100',
         flex: 1,
+      },
+      innerContainer:{
+        height:this.state.height,
+        backgroundColor: '#f8f8f8',
+        borderTopRightRadius: 30,
+        borderTopLeftRadius: 30,
       },
       userContainer: {
         flexDirection: 'column',
@@ -202,8 +210,8 @@ class Profile extends Component {
     return (
      
       <View style={styles.container}>
-         <ScrollView>
-        <View style={styles.container}>
+         <ScrollView >
+        <View style={styles.innerContainer}>
           <View style={{borderBottomWidth: 1, borderBottomColor: '#95A5A6'}}>
             <View style={styles.editIconContainer}>
               <TouchableNativeFeedback onPress={() => {
@@ -261,7 +269,8 @@ class Profile extends Component {
               </PhotoUpload>
             </View>
             <View style={styles.userDetailsContainer}>
-              <Text style={styles.userName}>{this.state.name}</Text>
+              <Text style={styles.userName}>{this.state.name} {this.state.lName}</Text>
+              
               <Text style={styles.otherDetails}>{this.state.mobile}</Text>
               <Text style={styles.otherDetails}>{this.state.email}</Text>
             </View>

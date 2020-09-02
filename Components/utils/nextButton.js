@@ -37,7 +37,7 @@ class NextButton extends Component{
         })
         return(
             <View style={styles.nextButtonContainer}>
-            <TouchableOpacity style={styles.loginButton} onPress={this.props.click}>
+            <TouchableOpacity style={styles.loginButton} onPress={this.props.click} disabled={this.props.disabled}>
         <Text style={styles.buttonText}>{this.props.label}</Text>
             </TouchableOpacity>
           </View>

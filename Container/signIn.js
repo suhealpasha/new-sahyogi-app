@@ -189,7 +189,7 @@ class Login extends Component {
     return (
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: '#ffff'}}
+        style={{backgroundColor: '#ffff',paddingTop:30}}
         scrollEnabled={true}>
         <View style={styles.container}>
           <Spinner

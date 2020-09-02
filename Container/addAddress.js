@@ -286,6 +286,10 @@ class AddAddress extends Component {
         paddingRight: 10,
         flexDirection: 'column',
         justifyContent: 'flex-start',
+        backgroundColor: '#f8f8f8',
+        borderTopRightRadius: 30,
+        borderTopLeftRadius: 30,
+        height:this.state.height
       },
       registerFormContainer: {
         width: '100%',
@@ -307,7 +311,7 @@ class AddAddress extends Component {
     return (
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
-        style={{backgroundColor: '#efebea'}}
+        style={{backgroundColor: '#7ea100'}}
         scrollEnabled={true}>
         <View style={styles.container}>
           <Spinner

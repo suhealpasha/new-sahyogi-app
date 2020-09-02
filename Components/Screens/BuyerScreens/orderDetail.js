@@ -119,13 +119,14 @@ class ProductDescriptionTemplate extends Component {
     const styles = StyleSheet.create({
       parentContaier: {
         backgroundColor: '#efebea',
-        paddingBottom: 10,
+       
       },
       container: {
         width: this.state.width,
         alignItems: 'center',
         paddingRight: 10,
         paddingLeft: 10,
+        backgroundColor:'#f8f8f8'
       },
       originHeaderContainer: {
         width: this.state.width,
@@ -141,15 +142,10 @@ class ProductDescriptionTemplate extends Component {
         textAlign: 'center',
       },
       ratingStyle: {
-        backgroundColor: '#00ac00',
-        color: 'white',
-        lineHeight: 20,
         justifyContent: 'center',
         textAlignVertical: 'center',
         fontSize: 14,
-        width: 45,
-        borderRadius: 5,
-        
+        fontFamily: 'GothamLight',
       },
       productImageContainer: {
         justifyContent: 'center',
@@ -215,6 +211,7 @@ class ProductDescriptionTemplate extends Component {
         fontSize: 15,
         fontFamily: 'GothamMedium',
         padding: 2,
+       
       },
       priceText: {
         fontFamily: 'Gotham Black Regular',
@@ -464,6 +461,7 @@ class ProductDescriptionTemplate extends Component {
           textStyle={styles.spinnerTextStyle}
         />
         <ScrollView>
+        <View style={{backgroundColor:'#7ea100'}}>
           <View style={styles.productImageContainer}>
             <SliderBox
               images={
@@ -481,7 +479,8 @@ class ProductDescriptionTemplate extends Component {
               autoplay
               circleLoop
               parentWidth={this.state.width}
-              ImageComponentStyle={{}}
+              ImageComponentStyle={{ borderTopLeftRadius: 30,
+                borderTopRightRadius: 30,}}
             />
           </View>
 
@@ -496,7 +495,7 @@ class ProductDescriptionTemplate extends Component {
                       </Text>
                       <Text style={styles.productDetailHeaderText}>Origin</Text>
                       <Text style={styles.productDetailHeaderText}>Farm</Text>
-                      <Text style={styles.productDetailHeaderText}>Your Rating</Text>
+                   
                       {this.state.orderDetailsData.comment !== ''  ? <Text style={styles.productDetailHeaderText}>Comments</Text> : null }
                     </View>
                     <View style={styles.productDetail}>
@@ -509,23 +508,27 @@ class ProductDescriptionTemplate extends Component {
                       <Text style={styles.productDetailText}>
                         : {this.state.orderDetailsData.farm}
                       </Text>
-                      <View style={{display:'flex',flexDirection:'row'}}><Text style={styles.productDetailText}>: </Text><Text style={styles.ratingStyle}>
+                           
+                  </View>                  
+                  </View>
+                  <View style={{paddingLeft:5,paddingRight:5}}><Text style={styles.commentText}>{this.state.orderDetailsData.comment}</Text></View> 
+                  {/* <View style={{paddingBottom:10,flexDirection:'row'}}><Text style={styles.productDetailHeaderText}>Your Ratings</Text>
+                  <View style={{display:'flex',flexDirection:'row',alignItems:'flex-end',justifyContent:'flex-start'}}><Text style={styles.productDetailText}>: </Text><Text style={styles.ratingStyle}>
                   {'  '}
                   {this.state.orderDetailsData.rating}{' '}
                   <Icon
-                    name="star"
-                    size={12}
-                    style={{
-                      justifyContent: 'center',
-                      textAlignVertical: 'center',
-                    }}
-                  />
+                          name="star"
+                          size={20}
+                          color="#ffbd4a"
+                          style={{
+                            justifyContent: 'center',
+                            textAlignVertical: 'center',
+                          }}
+                        />
                   {'  '}
                 </Text>
-                </View>            
-                  </View>                  
-                  </View>
-                  <View style={{paddingBottom:10,paddingLeft:5,paddingRight:5}}><Text style={styles.commentText}>{this.state.orderDetailsData.comment}</Text></View> 
+                </View>
+                  </View>  */}
                   <View
                     style={{
                       flexDirection: 'row',
@@ -673,8 +676,10 @@ class ProductDescriptionTemplate extends Component {
               </View>
             </View>
           </View>
+          </View>
         </ScrollView>
       </View>
+      
     );
   }
 }

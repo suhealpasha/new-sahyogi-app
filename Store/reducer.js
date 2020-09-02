@@ -8,6 +8,7 @@ const initialState = {
   sellerUserType: null,
   forgotPassword: null,
   name: null,
+  lastName:null,
   mobile: null,
   email: null,
   company: null,
@@ -63,9 +64,10 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         name: action.payload,
-        mobile: action.payload2,
-        email: action.payload3,
-        otp: action.payload4,
+        lastName:action.payload2,
+        mobile: action.payload3,
+        email: action.payload4,
+        otp: action.payload5,
       };
     case actionTypes.REGISTER_SELLER_ADDITIONAL_DETAILS:
       return {

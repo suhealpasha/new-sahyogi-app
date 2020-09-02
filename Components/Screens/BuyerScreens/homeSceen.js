@@ -98,7 +98,9 @@ class HomeScreen extends Component {
         flexDirection: 'column',
         alignItems: 'center',
         width: '100%',
-       backgroundColor:'#f8f8f8'
+        backgroundColor: '#f8f8f8',
+        borderTopRightRadius: 30,
+        borderTopLeftRadius: 30,
       },
       featuredItems: {
         width: '100%',
@@ -250,12 +252,8 @@ class HomeScreen extends Component {
     });
 
     return (
-      <View style={{backgroundColor:'#7ea100'}}>
-      <View style={{ backgroundColor: '#f8f8f8',
-      borderTopRightRadius: 30,
-      borderTopLeftRadius: 30, }}>
-      <ScrollView style={{marginTop:30}}>
-        <View style={{backgroundColor: '#7ea100',}}>
+      <ScrollView style={{backgroundColor: '#f8f8f8'}}>
+        <View style={{backgroundColor: '#7ea100'}}>
           <View style={styles.container}>          
             <View style={styles.regions}>
               <View
@@ -265,10 +263,10 @@ class HomeScreen extends Component {
                   justifyContent: 'space-between',
                   paddingLeft: 10,
                   paddingRight: 10,
-                  // paddingTop: 10,
+                  paddingTop: 10,
                
                 }}>
-                <Text style={styles.microalign}>Featured Crops</Text>
+                <Text style={styles.microalign}>Featured Products</Text>
                 <Text
                   style={styles.viewall}
                   onPress={() => this.onSeeAll('All Featured Crops')}>
@@ -350,8 +348,6 @@ class HomeScreen extends Component {
           </View>
         </View>
       </ScrollView>
-      </View>
-      </View>
     );
   }
 }

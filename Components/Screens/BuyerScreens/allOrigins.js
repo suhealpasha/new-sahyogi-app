@@ -11,7 +11,7 @@ import {
   AsyncStorage,
   Dimensions,
   BackHandler,
- TouchableNativeFeedback
+  TouchableNativeFeedback,
 } from 'react-native';
 import {
   Card,
@@ -23,6 +23,7 @@ import {
 } from 'react-native-material-cards';
 import BottomNavigation from '../../BottomNavigation/bottomNavigation';
 import {CheckBox} from 'react-native-elements';
+import RoundCheckbox from 'rn-round-checkbox';
 import * as api from '../../../assets/api/api';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -64,12 +65,14 @@ class AllOrigins extends Component {
     return true;
   }
 
-  async UNSAFE_componentWillReceiveProps(){
-    if(this.props.searchBarShow === false){
-    await this.setState({noDataAvailable: false,
-      originsData: [],
-      searchedData: []})
-     this.fetchOrigins();
+  async UNSAFE_componentWillReceiveProps() {
+    if (this.props.searchBarShow === false) {
+      await this.setState({
+        noDataAvailable: false,
+        originsData: [],
+        searchedData: [],
+      });
+      this.fetchOrigins();
     }
   }
 
@@ -102,7 +105,6 @@ class AllOrigins extends Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
- 
     filteredData = this.state.originsData.filter(item => {
       const itemDataOrigin = item.name.toUpperCase();
       if (this.props.searchBarText) {
@@ -161,16 +163,15 @@ class AllOrigins extends Component {
     this.props.navigation.navigate('Listing');
   };
 
-  selectHandler = (args) =>{
-    this.selectOrigins(args)
-   
-  }
+  selectHandler = args => {
+    this.selectOrigins(args);
+  };
 
   render() {
     const styles = StyleSheet.create({
       container: {
         flex: 1.0,
-        backgroundColor: '#7ea100',   
+        backgroundColor: '#7ea100',
       },
       noData: {
         justifyContent: 'center',
@@ -187,7 +188,7 @@ class AllOrigins extends Component {
         marginBottom: 10,
         backgroundColor: '#ffff',
         width: this.state.width / 3 - 20,
-        height:this.state.width / 3 - 20,
+        height: this.state.width / 3 - 20,
         shadowColor: '#000',
         shadowOffset: {
           width: 0,
@@ -199,13 +200,10 @@ class AllOrigins extends Component {
         elevation: 7,
         paddingBottom: 10,
         borderRadius: 100,
-        
-      }, 
-      itemData: {
-      
       },
+      itemData: {},
       textData: {
-        textAlign:'center',
+        textAlign: 'center',
         fontFamily: 'GothamMedium',
       },
       spinnerTextStyle: {
@@ -215,79 +213,108 @@ class AllOrigins extends Component {
 
     return (
       <View style={styles.container}>
-         <View style={{backgroundColor:'#f8f8f8',borderTopRightRadius: 30,flex:1.0,
-             borderTopLeftRadius: 30}}>
-      <Spinner
-        visible={this.state.spinner}
-        textContent={'Loading...'}
-        textStyle={styles.spinnerTextStyle}
-      />
-      <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
-    
-      <Text style={{fontFamily:'GothamMedium',paddingLeft:10,paddingBottom:10,paddingTop:10}}>Select Origins</Text>
-      <CheckBox
-        title={'Select All'}
-        fontFamily={'GothamMedium'}
-        iconRight
-        size={25}
-        checked={this.state.checked}
-        containerStyle={{
-          paddingLeft:0,
-          marginLeft: 0,
-          marginTop: 10,
-          marginBottom: 0,
-          width:105,
-          backgroundColor:'#f8f8f8',
-          shadowOpacity: 0,
-              borderWidth: 0
-        }}
-        checkedColor={'#7ea100'}
-        onPress={this.handleAllChecked}
-      />
-      </View>
-      {this.state.noDataAvailable ? (
-        <View style={styles.noData}>
-          <Text style={styles.noDataText}>No Data</Text>
-        </View>
-      ) : (
-        <View style={{ paddingTop: 10}}>  
-          
-          <FlatList
-            data={
-              !this.props.searchBarShow
-                ? this.state.originsData
-                : this.state.searchedData
-            }
-            columnWrapperStyle={{justifyContent:'space-between',paddingLeft:30,paddingRight:30}}
-            
-            numColumns={2}
-            keyExtractor={items => {
-              items.origin_Id;
-            }}
-            renderItem={({item}) => {               
-              return (
-                <View style={{}}>
-                  <TouchableOpacity  onPress={() => this.selectHandler(item.origin_Id)}>
-                  <View style={styles.itemContainer}>
-                    <ImageBackground
-                      source={{
-                        uri: item.url_thumbnail_image,
-                      }}
-                      style={{
-                        aspectRatio: 2 / 2,       
-                        
-                         borderRadius:100,
-                     
-                      }}
-                      imageStyle={{                     
-                        borderRadius:100,
-                        
-                      }}
-                      resizeMode='cover'
-                     
-                    
-                      >
-                      <CheckBox
+        <View
+          style={{
+            backgroundColor: '#f8f8f8',
+            borderTopRightRadius: 30,
+            flex: 1.0,
+            borderTopLeftRadius: 30,
+          }}>
+          <Spinner
+            visible={this.state.spinner}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+            <Text
+              style={{
+                fontFamily: 'GothamMedium',
+                paddingLeft: 10,
+                paddingBottom: 10,
+                paddingTop: 10,
+              }}>
+              Select Origins
+            </Text>
+            <CheckBox
+              title={'Select All'}
+              fontFamily={'GothamMedium'}
+              iconRight
+              size={25}
+              checked={this.state.checked}
+              containerStyle={{
+                paddingLeft: 0,
+                marginLeft: 0,
+                marginTop: 10,
+                marginBottom: 0,
+                width: 105,
+                backgroundColor: '#f8f8f8',
+                shadowOpacity: 0,
+                borderWidth: 0,
+              }}
+              checkedColor={'#7ea100'}
+              onPress={this.handleAllChecked}
+            />
+          </View>
+          {this.state.noDataAvailable ? (
+            <View style={styles.noData}>
+              <Text style={styles.noDataText}>No Data</Text>
+            </View>
+          ) : (
+            <View style={{paddingTop: 10}}>
+              <FlatList
+                style={{height: this.state.height / 2}}
+                data={
+                  !this.props.searchBarShow
+                    ? this.state.originsData
+                    : this.state.searchedData
+                }
+                columnWrapperStyle={{
+                  justifyContent: 'space-between',
+                  paddingLeft: 30,
+                  paddingRight: 30,
+                }}
+                numColumns={2}
+                keyExtractor={items => {
+                  items.origin_Id;
+                }}
+                renderItem={({item}) => {
+                  return (
+                    <View style={{}}>
+                      <TouchableOpacity
+                        onPress={() => this.selectHandler(item.origin_Id)}>
+                        <View style={styles.itemContainer}>
+                          <ImageBackground
+                            source={{
+                              uri: item.url_thumbnail_image,
+                            }}
+                            style={{
+                              aspectRatio: 2 / 2,
+
+                              borderRadius: 100,
+                            }}
+                            imageStyle={{
+                              borderRadius: 100,
+                            }}
+                            resizeMode="cover">
+                            {this.state.checked || item.checked ?
+                            <View style={{alignItems:'center',height:100,justifyContent:'center'}}>
+                             <RoundCheckbox
+                            size={20}
+                            checked={this.state.checked || item.checked}
+                            onValueChange={() => this.selectOrigins(item.origin_Id)}
+                            iconColor='#ffff'
+                            backgroundColor	='#7ea100'
+                            />
+                            </View>
+                           
+                            : null}  
+                           
+                            {/* <CheckBox
                         checked={this.state.checked || item.checked}
                         center                                     
                         checkedColor={'#7ea100'}
@@ -303,64 +330,61 @@ class AllOrigins extends Component {
                       
                           
                         }}
-                      />
-                    </ImageBackground>                   
-                  </View>
-                  <View style={styles.itemData}>
-                      <Text style={styles.textData}>{item.name}</Text>
+                      /> */}
+                          </ImageBackground>
+                        </View>
+                        <View style={styles.itemData}>
+                          <Text style={styles.textData}>{item.name}</Text>
+                        </View>
+                      </TouchableOpacity>
                     </View>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-          />
-                   
-        </View>
-      )}
-
-     
-    
-    </View>
-    {!this.state.noDataAvailable ? (
-        <View>
-          <View style={{
-             
-                backgroundColor:'#f8f8f8'
-              }}>
-          <Regions {...this.props} regionsData={this.props.regionsData} />   
-          </View>
-          <TouchableNativeFeedback onPress={this.onSeeAll}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignContent: 'center',
-                backgroundColor:'#f8f8f8'
-              }}>
-              <Text
-                style={{
-                  paddingTop: 15,
-                  paddingBottom: 15,
-                  textAlignVertical: 'center',
-                  color: '#004561',
-                  textAlign: 'center',
-                  fontSize: 18,
-                  fontFamily: 'GothamMedium',
-                  textAlignVertical: 'center',
-                }}>
-                Continue
-              </Text>
-              <Icon
-                name="chevron-right"
-                color={'#3e708f'}
-                size={25}
-                style={{textAlignVertical: 'center'}}
+                  );
+                }}
               />
             </View>
-          </TouchableNativeFeedback>
+          )}
         </View>
-      ) : null}
-    </View>   
+        {!this.state.noDataAvailable ? (
+          <View>
+            <View
+              style={{
+                backgroundColor: '#f8f8f8',
+                paddingBottom: 10,
+              }}>
+              <Regions {...this.props} regionsData={this.props.regionsData} />
+            </View>
+            <TouchableNativeFeedback onPress={this.onSeeAll}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  backgroundColor: '#f8f8f8',
+                }}>
+                <Text
+                  style={{
+                    paddingTop: 15,
+                    paddingBottom: 15,
+                    textAlignVertical: 'center',
+                    color: '#004561',
+                    textAlign: 'center',
+                    fontSize: 18,
+                    fontFamily: 'GothamMedium',
+                    textAlignVertical: 'center',
+                  }}>
+                  Continue
+                </Text>
+                <Icon
+                  name="chevron-right"
+                  color={'#3e708f'}
+                  size={25}
+                  style={{textAlignVertical: 'center'}}
+                />
+              </View>
+            </TouchableNativeFeedback>
+          </View>
+        ) : null}
+      </View>
     );
   }
 }
@@ -371,14 +395,14 @@ const mapDispatchToProps = dispatch => {
       dispatch({type: actionTypes.LISTING_TITLE, payload: value}),
     onOriginProductsFiltered: value =>
       dispatch({type: actionTypes.FILTER_ORIGINS_DATA, payload: value}),
-      onFeaturedProductsFiltered:  value =>
+    onFeaturedProductsFiltered: value =>
       dispatch({type: actionTypes.FILTER_FEATURED_DATA, payload: value}),
-      onNanoLotProductsFiltered:  value =>
-      dispatch({type: actionTypes.FILTER_NANO_LOT_DATA, payload: value}),   
-      onMicroLotProductsFiltered:  value =>
-      dispatch({type: actionTypes.FILTER_MICRO_LOT_DATA, payload: value}),     
-      onVaritieyProductsFiltered:value =>
-      dispatch({type: actionTypes.FILTER_VARITIES_DATA, payload: value}), 
+    onNanoLotProductsFiltered: value =>
+      dispatch({type: actionTypes.FILTER_NANO_LOT_DATA, payload: value}),
+    onMicroLotProductsFiltered: value =>
+      dispatch({type: actionTypes.FILTER_MICRO_LOT_DATA, payload: value}),
+    onVaritieyProductsFiltered: value =>
+      dispatch({type: actionTypes.FILTER_VARITIES_DATA, payload: value}),
   };
 };
 export default connect(

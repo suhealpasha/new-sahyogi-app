@@ -9,6 +9,7 @@ import {
   ScrollView,
   Button,
   Dimensions,
+  TouchableNativeFeedback,
 } from 'react-native';
 import {
   Card,
@@ -17,7 +18,7 @@ import {
   CardAction,
   CardButton,
   CardImage,
-  TouchableOpacity,
+ 
 } from 'react-native-material-cards';
 import {TouchableHighlight} from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -37,6 +38,7 @@ import {
   AccordionList,
 } from 'accordion-collapse-react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon1 from 'react-native-vector-icons/MaterialIcons';
 class ProductDescriptionTemplate extends Component {
   constructor(props) {
     super(props);
@@ -46,7 +48,9 @@ class ProductDescriptionTemplate extends Component {
       spinner: false,
       productData: [],
       thumbnailImages: [require('../../../assets/Images/coffeeFarms/img4.png')],
-      dropUp:false
+      dropUp: true,
+      favouriteColor: 'grey',
+      wishlistButtonDisable:false
     };
   }
 
@@ -80,28 +84,62 @@ class ProductDescriptionTemplate extends Component {
       });
   };
 
+  favoutiteClicked = async () => { 
+    this.setState({wishlistButtonDisable:true})
+    let data;
+    if (this.state.productData.wishlist) {
+      data = JSON.stringify({
+        flag: false,
+        product_Id: this.state.productData.product_Id,
+      });
+    } else {
+      data = JSON.stringify({
+        flag: true,
+        product_Id: this.state.productData.product_Id,
+      });
+    }
+
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    await axios
+      .post(api.buyerWishlistAddOrRemoveAPI, data, {
+        headers: {
+          access_token: access_token,
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {
+        if (res.status) {        
+          this.fetchProduct();
+          this.setState({wishlistButtonDisable:false})
+        }
+      })
+      .catch(err => {
+        this.setState({wishlistButtonDisable:false})
+        console.log(err);
+      });
+  };
+
   render() {
     const styles = StyleSheet.create({
       outerContaier: {
         flex: 1.0,
-        marginTop: 10,
-        backgroundColor: '#f8f8f8',
-        borderTopRightRadius: 30,
-        borderTopLeftRadius: 30,
+         backgroundColor: '#f8f8f8',
       },
       innerContainer: {
         flex: 1.0,
-        paddingLeft: 10,
-        paddingRight: 10,
+        alignItems:'flex-end'
       },
       spinnerTextStyle: {
         color: '#7ea100',
       },
       container: {
-        width: this.state.width - 20,
-        alignItems: 'center',
-        // paddingRight: 10,
+        flex: 1.0,
+        paddingTop:10,
         // paddingLeft: 10,
+        // paddingRight: 10,
+        backgroundColor:'#f8f8f8'
       },
       originHeaderContainer: {
         width: this.state.width,
@@ -117,9 +155,11 @@ class ProductDescriptionTemplate extends Component {
         textAlign: 'center',
       },
       productImageContainer: {
-        justifyContent: 'center',
         width: '100%',
         height: 190,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+      
       },
       buttonContainer: {
         flexDirection: 'row',
@@ -161,96 +201,148 @@ class ProductDescriptionTemplate extends Component {
     let imageList = [];
     if (this.state.productData.images) {
       this.state.productData.images.length >= 1
-        ? this.state.productData.images.map(i => {
+        ? this.state.productData.images.map(i => {  
             imageList.push(i.url_image);
           })
         : null;
     }
 
     return (
-      <View style={{flex: 1.0, backgroundColor: '#7ea100'}}>
-        <View style={styles.outerContaier}>
-          <KeyboardAwareScrollView
-            resetScrollToCoords={{x: 10, y: 0}}
-            scrollEnabled={true}
-            style={{backgroundColor: '#f8f8f8', marginTop: 30}}>
-            <View style={styles.innerContainer}>
-              <Spinner
-                visible={this.state.spinner}
-                textContent={'Loading...'}
-                textStyle={styles.spinnerTextStyle}
+      <View style={styles.outerContaier}>
+        <KeyboardAwareScrollView
+          resetScrollToCoords={{x: 10, y: 0}}
+          scrollEnabled={true}
+          
+          >
+          <View style={styles.innerContainer}>
+            <Spinner
+              visible={this.state.spinner}
+              textContent={'Loading...'}
+              textStyle={styles.spinnerTextStyle}
+            />
+              <TouchableNativeFeedback 
+            disabled={this.state.wishlistButtonDisable}
+            onPress={() => {
+                this.favoutiteClicked();
+              }}>
+            <Icon1
+            name={
+              this.state.productData.wishlist === false
+                ? 'favorite-border'
+                : 'favorite'
+            }
+       
+            size={30}
+            color={this.state.productData.wishlist ? 'red' : '#7ea100'}
+              style={{
+                top: 150,
+                position: 'absolute',
+                zIndex: 1,
+                paddingRight:10
+              }}
+            />
+            </TouchableNativeFeedback>
+            <View style={{backgroundColor:'#7ea100'}}>
+            <View style={styles.productImageContainer}>
+              <SliderBox
+             
+                images={
+                  this.state.productData.images &&
+                  this.state.productData.images.length >= 1
+                    ? imageList
+                    : this.state.thumbnailImages
+                }
+                sliderBoxHeight={190}
+                onCurrentImagePressed={index =>
+                  console.warn(`image ${index} pressed`)
+                }
+                dotColor="#3e708f"
+                inactiveDotColor="#95A5A6"
+                autoplay
+                circleLoop
+                parentWidth={this.state.width}
+                ImageComponentStyle={{
+                  width: '100%',
+                  borderTopLeftRadius: 30,
+                  borderTopRightRadius: 30,
+                
+                }}
               />
+            </View>
+            </View>
+            <View style={styles.container}>
+              <Collapse
+                onToggle={() => this.setState({dropUp: !this.state.dropUp})}
+                isCollapsed={true}
+                style={{backgroundColor: '#ffff',borderBottomWidth:0.5, borderBottomColor: '#95A5A6',}}>
+                <CollapseHeader>
+                  <View
+                    style={{
+                      borderBottomWidth: 0.5,
+                      borderBottomColor: '#95A5A6',
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingTop: 10,
+                      width: this.state.width ,
+                      paddingLeft:10,
+                      paddingRight:10
 
-              <View style={styles.productImageContainer}>
-                <SliderBox
-                  images={
-                    this.state.productData.images &&
-                    this.state.productData.images.length >= 1
-                      ? imageList
-                      : this.state.thumbnailImages
-                  }
-                  sliderBoxHeight={190}
-                  onCurrentImagePressed={index =>
-                    console.warn(`image ${index} pressed`)
-                  }
-                  dotColor="#3e708f"
-                  inactiveDotColor="#95A5A6"
-                  autoplay
-                  circleLoop
-                  parentWidth={this.state.width - 20}
-                  ImageComponentStyle={{}}
-                />
-              </View>
-
-              <View style={styles.container}>
-                <Collapse onToggle={()=>this.setState({dropUp:!this.state.dropUp})}>
-                  <CollapseHeader >
-                    <View style={{borderBottomWidth:0.25, borderBottomColor: '#95A5A6',display:'flex',flexDirection:'row',justifyContent:'space-between',paddingTop:10 ,width:this.state.width -20}}>
-                      <Text style={{color:'#004561',fontFamily:'GothamMedium',fontSize:20,fontWeight:'500',paddingTop:5,paddingBottom:5}} >Details</Text>
-                     {!this.state.dropUp ?
+                    }}>
+                    <Text
+                      style={{
+                        color: '#004561',
+                        fontFamily: 'GothamMedium',
+                        fontSize: 20,
+                        fontWeight: '500',
+                        paddingTop: 5,
+                        paddingBottom: 5,
+                      }}>
+                      Profile
+                    </Text>
+                    {!this.state.dropUp ? (
                       <Icon
-                          name="arrow-down-drop-circle-outline"
-                          size={30}
-                          color="#004561"
-                          style={{
-                            justifyContent: 'center',
-                            textAlignVertical: 'center',
-                          }}
-                        />
-                        :
-                        <Icon
-                        name="arrow-up-drop-circle-outline"
+                        name="arrow-down-drop-circle-outline"
                         size={30}
-                        color="#004561"
+                        color="#727c8e"
                         style={{
                           justifyContent: 'center',
                           textAlignVertical: 'center',
                         }}
                       />
-  }
-                    </View>
-                  </CollapseHeader>
-                  <CollapseBody>
-                    <ProductDescription {...this.state} />
-                  </CollapseBody>
-                </Collapse>
+                    ) : (
+                      <Icon
+                        name="arrow-up-drop-circle-outline"
+                        size={30}
+                        color="#727c8e"
+                        style={{
+                          justifyContent: 'center',
+                          textAlignVertical: 'center',
+                        }}
+                      />
+                    )}
+                  </View>
+                </CollapseHeader>
+                <CollapseBody>
+                  <ProductDescription {...this.state} />
+                </CollapseBody>
+              </Collapse>
 
-                <ProductAction
-                  {...this.state}
-                  onFetchProduct={this.fetchProduct}
-                />
-              </View>
+              <ProductAction
+                {...this.state}
+                onFetchProduct={this.fetchProduct}
+              />
             </View>
-          </KeyboardAwareScrollView>
-          <StickyButton
-            cancel="Add to Cart"
-            proceed="Buy Now"
-            {...this.props}
-            buy={this.props.buyProduct}
-            buyer={true}
-            onfetchBuyerCart={this.props.onfetchBuyerCart}
-          />
-        </View>
+          </View>
+        </KeyboardAwareScrollView>
+        <StickyButton
+          cancel="Add to Cart"
+          proceed="Buy Now"
+          {...this.props}
+          buy={this.props.buyProduct}
+          buyer={true}
+          onfetchBuyerCart={this.props.onfetchBuyerCart}
+        />
       </View>
     );
   }

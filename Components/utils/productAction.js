@@ -18,6 +18,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import * as actionTypes from '../../Store/action';
 import {connect} from 'react-redux';
+import {RadioButton} from 'react-native-paper';
 
 class ProductAction extends Component {
   constructor(props) {
@@ -33,8 +34,8 @@ class ProductAction extends Component {
       value: 1,
       availableQuantity: 0,
       productId: null,
-      unitId:null,
-      wishlistButtonDisable:false
+      unitId: null,
+      wishlistButtonDisable: false,
     };
   }
 
@@ -45,15 +46,15 @@ class ProductAction extends Component {
   componentDidUpdate(prevProps, prevState) {
     this.props.onProductAddToCartDetails([
       this.state.productId,
-      this.state.unitId,   
+      this.state.unitId,
       this.state.value,
       this.state.price,
-      this.state.activeButton, 
+      this.state.activeButton,
     ]);
   }
 
-  favoutiteClicked = async () => { 
-    this.setState({wishlistButtonDisable:true})
+  favoutiteClicked = async () => {
+    this.setState({wishlistButtonDisable: true});
     let data;
     if (this.props.productData.wishlist) {
       data = JSON.stringify({
@@ -78,25 +79,24 @@ class ProductAction extends Component {
         },
       })
       .then(res => {
-        if (res.status) {        
-          this.props.onFetchProduct();
-          this.setState({wishlistButtonDisable:false})
+        if (res.status) {
+          this.onFetchProduct();
+          this.setState({wishlistButtonDisable: false});
         }
       })
       .catch(err => {
-        this.setState({wishlistButtonDisable:false})
+        this.setState({wishlistButtonDisable: false});
         console.log(err);
       });
   };
 
   activateUnitsButton = (param1, param2, param3, param4, param5) => {
-   
     this.setState({
       activeButton: param1,
       price: param2,
       availableQuantity: param3,
       productId: param4,
-      unitId:param5
+      unitId: param5,
     });
   };
 
@@ -105,13 +105,16 @@ class ProductAction extends Component {
       productActionsContainer: {
         alignItems: 'center',
         paddingTop: 10,
-        width: this.state.width - 20,
+        width: this.state.width ,
+        paddingRight:10,
+        paddingLeft:10
       },
       actionsContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         width: '100%',
         justifyContent: 'space-between',
+      
       },
 
       priceText: {
@@ -121,7 +124,7 @@ class ProductAction extends Component {
       },
       unitsContainer: {
         flexDirection: 'column',
-        width: '50%',
+        width: '100%',
         paddingBottom: 10,
         paddingTop: 10,
       },
@@ -134,9 +137,9 @@ class ProductAction extends Component {
 
       quantityContainer: {
         flexDirection: 'row',
-        width: '50%',
         paddingBottom: 10,
         paddingTop: 10,
+        width: '100%',
       },
       unitsButton: {
         paddingTop: 5,
@@ -171,10 +174,10 @@ class ProductAction extends Component {
       lotsPageSwitchContainer: {
         marginLeft: 10,
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         paddingTop: 10,
         paddingBottom: 10,
-        width: '50%',
+        width: '100%',
         alignItems: 'center',
       },
       lotsPageSwitchButton: {
@@ -217,7 +220,7 @@ class ProductAction extends Component {
                       i.price,
                       i.available_quantity,
                       i.product_Id,
-                      i.unit_Id
+                      i.unit_Id,
                     )
                   }>
                   <Text
@@ -252,7 +255,7 @@ class ProductAction extends Component {
                       i.price,
                       i.available_quantity,
                       i.product_Id,
-                      i.unit_Id
+                      i.unit_Id,
                     )
                   }>
                   <Text
@@ -275,6 +278,14 @@ class ProductAction extends Component {
       : this.props.onBuyProduct(true);
 
     let noItem = <Text style={styles.unavailableText}>No Item available</Text>;
+    const data1 = [
+      {
+        label: 'data 1',
+      },
+      {
+        label: 'data 2',
+      },
+    ];
     return (
       <View style={styles.productActionsContainer}>
         <Spinner
@@ -283,71 +294,85 @@ class ProductAction extends Component {
           textStyle={styles.spinnerTextStyle}
         />
         <View style={styles.actionsContainer}>
-          <View>           
+          <View>
             <View>
-              <SwitchButton
              
-                onValueChange={val => {
-                  if (val === 1) {
-                    if (this.props.productData.nano.length >= 1) {
-                      this.setState({
-                        availableQuantity: 0,
-                        activeButton: '',
-                        value: 1,
-                        activeSwitch: val,
-                      });
-                    } else {
-                      this.setState({activeButton: '', activeSwitch: 1});
-                      this.setState({unavailableNanoUnits: true});
-                      // Toast.show('No Nano Lots');
+              <View style={styles.quantityContainer}>
+              
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <RadioButton
+                  color='#7ea100'
+                    status={
+                      this.state.activeSwitch === 1 ? 'checked' : 'unchecked'
                     }
-                  } else {
-                    if (this.props.productData.micro.length >= 1) {
-                      this.setState({
-                        availableQuantity: 0,
-                        activeButton: '',
-                        value: 1,
-                        activeSwitch: val,
-                      });
-                    } else {
-                      this.setState({activeButton: '', activeSwitch: 2});
-                      this.setState({unavailableMicroUnits: true});
-                      // Toast.show('No Micro Lots');
-                      return;
+                    onPress={() => {
+                      if ( this.props.productData.nano && this.props.productData.nano.length >= 1) {
+                        this.setState({
+                          availableQuantity: 0,
+                          activeButton: '',
+                          value: 1,
+                          activeSwitch: 1,
+                        });
+                      } else {
+                        this.setState({activeButton: '', activeSwitch: 1});
+                        this.setState({unavailableNanoUnits: true});
+                        // Toast.show('No Nano Lots');
+                      }
+                    }}
+                  />
+                  <Text
+                    style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
+                    Nano Lots
+                  </Text>
+                  <RadioButton
+                    value="second"
+                    color='#7ea100'
+                    status={
+                      this.state.activeSwitch === 2 ? 'checked' : 'unchecked'
                     }
-                  }
-                }}
-                // this is necessary for this component
-                text1="N" // optional: first text in switch button --- default ON
-                text2="M" // optional: second text in switch button --- default OFF
-                switchWidth={80} // optional: switch width --- default 44
-                switchHeight={30} // optional: switch height --- default 100
-                switchdirection="ltl" // optional: switch button direction ( ltr and rtl ) --- default ltr
-                switchBorderRadius={0} // optional: switch border radius --- default oval
-                switchSpeedChange={100} // optional: button change speed --- default 100
-                switchBorderColor="#95A5A6" // optional: switch border color --- default #d4d4d4
-                switchBackgroundColor="white" // optional: switch background color --- default #fff
-                btnBorderColor="#004561" // optional: button border color --- default #00a4b9
-                btnBackgroundColor="#004561" // optional: button background color --- default #00bcd4
-                fontColor="#004561" // optional: text font color --- default #b1b1b1
-                activeFontColor="#fff" // optional: active font color --- default #fff
-              />
+                    onPress={() => {
+                      if ( this.props.productData.micro && this.props.productData.micro.length >= 1) {
+                        this.setState({
+                          availableQuantity: 0,
+                          activeButton: '',
+                          value: 1,
+                          activeSwitch: 2,
+                        });
+                      }
+                      else {
+                        this.setState({activeButton: '', activeSwitch: 2});
+                        this.setState({unavailableMicroUnits: true});
+                        // Toast.show('No Nano Lots');
+                      }
+                    }}
+                  />
+                  <Text
+                    style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
+                    Mico Lots
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
-                   <View style={{flexDirection: 'row',width:'50%',justifyContent:'center'}}>
-                        <Icon
-                          name="star"
-                          size={22}
-                          color="#ffbd4a"
-                          style={{
-                            justifyContent: 'center',
-                            textAlignVertical: 'center',
-                          }}
-                        />
-                        <Text style={styles.ratingStyle}>
-                        {this.props.productData.avg_rating}
-                        </Text>
-                      </View>
+          <View
+            style={{
+              flexDirection: 'row',
+              width: '50%',
+              justifyContent: 'center',
+            }}>
+            <Icon
+              name="star"
+              size={22}
+              color="#ffbd4a"
+              style={{
+                justifyContent: 'center',
+                textAlignVertical: 'center',
+              }}
+            />
+            <Text style={styles.ratingStyle}>
+              {this.props.productData.avg_rating}
+            </Text>
+          </View>
         </View>
         <View style={styles.actionsContainer}>
           <View style={styles.unitsContainer}>
@@ -379,14 +404,7 @@ class ProductAction extends Component {
                 : noItem}
             </View>
           </View>
-          <View style={styles.lotsPageSwitchContainer}>        
-             <Text style={styles.priceText}>
-              $ {''}
-              {this.state.activeButton === ''
-                ? 0
-                : this.state.value * this.state.price}
-            </Text>
-          </View>
+          
         </View>
         <View style={styles.actionsContainer}>
           <View style={styles.quantityContainer}>
@@ -400,7 +418,12 @@ class ProductAction extends Component {
               Quantity
             </Text>
             <NumericInput
-              editable={Number.parseInt(this.state.availableQuantity, 10) > 0 && this.state.activeButton !== '' ? true : false}
+              editable={
+                Number.parseInt(this.state.availableQuantity, 10) > 0 &&
+                this.state.activeButton !== ''
+                  ? true
+                  : false
+              }
               value={this.state.value}
               onChange={value => this.setState({value: value})}
               totalWidth={80}
@@ -418,25 +441,20 @@ class ProductAction extends Component {
               }}
             />
           </View>
-          <View style={styles.lotsPageSwitchContainer}>
-            <TouchableOpacity 
-            disabled={this.state.wishlistButtonDisable}
-            onPress={() => {
-                this.favoutiteClicked();
-              }}>
-            <Icon
-              name={
-                this.props.productData.wishlist === false
-                  ? 'favorite-border'
-                  : 'favorite'
-              }
-              size={30}
-              color={this.props.productData.wishlist ? 'red' : 'grey'}
-              
-            />
-            </TouchableOpacity>
+        </View>
+
+        <View style={styles.actionsContainer}>
+        <View style={styles.lotsPageSwitchContainer}>
+            <Text style={styles.priceText}>
+              $ {''}
+              {this.state.activeButton === ''
+                ? 0
+                : this.state.value * this.state.price}
+            </Text>
           </View>
         </View>
+
+       
       </View>
     );
   }

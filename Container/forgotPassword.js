@@ -108,7 +108,7 @@ checkEmailExist = async () => {
 };
 
   handleForgotPassword = async () => {  
-    if (this.state.emailId !== null && this.state.emailValidationError === false && this.state.emailExist === false) {     
+    if (this.state.emailId !== null && this.state.emailValidationError === false ) {     
       let data = JSON.stringify({
         email_id: this.state.emailId,
       });
@@ -121,9 +121,10 @@ checkEmailExist = async () => {
             'content-type': 'application/x-www-form-urlencoded',
           },
         })
-        .then(res => {          
+        .then(res => {             
           if (res.status) {
-            this.setState({spinner: false})
+            this.setState({spinner: false})        
+            if(res.data.status === true){
             this.props.onForgotPasswordDetails(
               this.state.emailId,
               String(res.data.data.otp),
@@ -131,13 +132,18 @@ checkEmailExist = async () => {
             this.props.navigation.navigate('OTP');
           }
           else{
+            this.setState({emailExist:true})
+          }
+        }
+        
+          else{
             this.setState({spinner: false})
           }
         })
         .catch(err => {
           console.log(err);
         });
-      this.props.navigation.navigate('OTP');
+     
     } else {
       if (this.state.emailId === null) {
         this.setState({emailIdError: true});
@@ -255,7 +261,7 @@ checkEmailExist = async () => {
                   emailExist: false
                 })
               }
-              onBlur={this.emailValidate}
+              // onBlur={this.emailValidate}
               autoCapitalize="none"
               autoCapitalize="none"             
               value={this.state.emailId}

@@ -99,7 +99,7 @@ filterOption =() =>{
           <Text style={styles.FilterHeaderText}>Filter Option</Text>
         </View>
         <View style={styles.actionContainer}>        
-          <TouchableNativeFeedback onPress={()=>{this._goto('Regions and Origins')}}>
+          <TouchableNativeFeedback onPress={()=>{this._goto('All Regions')}}>
             <View  style={styles.actions}>
               <View style={{flexDirection:'row',justifyContent:'space-between'}}>
             <View style={styles.caption}>

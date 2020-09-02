@@ -120,10 +120,10 @@ import * as api from '../../../assets/api/api';
         flex: 1,
         flexDirection: 'column',
         alignItems: 'center',
-        paddingLeft: 10,
-        paddingRight: 10,   
-        backgroundColor: '#efebea',
-        paddingTop:10
+        // paddingLeft: 10,
+        // paddingRight: 10,   
+        backgroundColor: '#7ea100',
+        // paddingTop:10
       },
       itemContainer: {
         flexDirection: 'row',
@@ -189,8 +189,15 @@ import * as api from '../../../assets/api/api';
     });  
     return (
       <View style={styles.container}>
+        <View
+          style={{
+            backgroundColor: '#f8f8f8',
+            borderTopRightRadius: 30,
+            borderTopLeftRadius: 30,
+          }}>
         <FlatList
           data={this.state.addressData}
+          style={{paddingTop:20,paddingLeft:10,paddingRight:10}}
           keyExtractor = {(items)=>{items.address_Id}}
           numColumns={1}
           renderItem={({item}) => {           
@@ -214,6 +221,7 @@ import * as api from '../../../assets/api/api';
             );
           }}
         />
+      </View>
       </View>
     );
   }

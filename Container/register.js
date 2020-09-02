@@ -38,6 +38,7 @@ class Register extends Component {
       height: Dimensions.get('window').height,
       spinner: false,
       userName: null,
+      lastName:null,
       emailId: null,
       mobileNumber: null,
       mobileNumberError: false,
@@ -45,16 +46,19 @@ class Register extends Component {
       userNameError: false,
       emailIdError: false,
       userNameValidationError: false,
+      lastNameValidationError: false,
       emailValidationError: false,
       otp: null,
       mobileExist: false,
       emailExist: false,
+      nextButtonDisable:false,
+      checkEmailMsg:null
     };
   }
 
   checkMobileExist = async () => {
     if (this.state.mobileNumber === '') {
-      this.setState({mobileNumber: null});
+      this.setState({mobileNumber: null,nextButtonDisable:true});
       return;
     } else {
       if (String(this.state.mobileNumber).length !== 12) {
@@ -93,6 +97,7 @@ class Register extends Component {
   };
 
   checkEmailExist = async () => {
+    this.setState({nextButtonDisable:true})
     if (this.state.emailId === '') {
       this.setState({emailId: null});
     } else {
@@ -114,13 +119,18 @@ class Register extends Component {
               },
             })
             .then(res => {
-              if (res.data.message === 'Mobile exist') {
+              console.log(res)
+              if (res.data.status === false) {
                 this.setState({
                   emailExist: true,
+                  checkEmailMsg:res.data.message,
+                  nextButtonDisable:true,
                 });
               } else {
                 this.setState({
                   emailExist: false,
+                  checkEmailMsg:null,
+                  nextButtonDisable:false,
                 });
               }
             })
@@ -136,10 +146,12 @@ class Register extends Component {
     if (
       this.state.mobileNumber !== null &&
       this.state.userName !== null &&
+      this.state.lastName !== null &&
       this.state.emailId !== null &&
       this.state.mobileExist === false &&
       this.state.emailExist === false &&
       this.state.userNameValidationError === false &&
+      this.state.lastNameValidationError === false &&
       this.state.mobileValidationError === false &&
       this.state.emailValidationError === false
     ) {
@@ -156,10 +168,12 @@ class Register extends Component {
           },
         })
         .then(res => {
+          console.log(res.data.data)
           if (res.status) {
             this.setState({spinner: false});
             this.props.onRegisterDetails(
               this.state.userName,
+              this.state.lastName,
               this.state.mobileNumber,
               this.state.emailId,
               String(res.data.data.otp),
@@ -181,6 +195,11 @@ class Register extends Component {
         this.setState({userNameError: true});
       } else {
         this.setState({userNameError: false});
+      }
+      if (this.state.lastName === null) {
+        this.setState({lastNameError: true});
+      } else {
+        this.setState({lastNameError: false});
       }
       if (this.state.emailId === null) {
         this.setState({emailIdError: true});
@@ -246,7 +265,7 @@ class Register extends Component {
           <View style={styles.registerFormContainer}>
             <TextInput
               type="text"
-              label="Name"
+              label="First Name"
               mode="flat"
               style={styles.inputFieldsStyle}
               underlineColor="transparent"
@@ -280,9 +299,50 @@ class Register extends Component {
                 this.state.userNameValidationError
               }>
               {this.state.userNameError === true
-                ? 'Enter the User Name'
+                ? 'Enter the First Name'
                 : this.state.userNameValidationError
-                ? 'Invalid User Name'
+                ? 'Invalid First Name'
+                : false}
+            </HelperText>
+            <TextInput
+              type="text"
+              label="Last Name"
+              mode="flat"
+              style={styles.inputFieldsStyle}
+              underlineColor="transparent"
+              theme={{
+                colors: {text: 'black', primary: 'grey'},
+                fonts: {medium: 'Open Sans'},
+              }}
+              spellCheck={false}
+              autoCorrect={false}
+              onChangeText={lastName => {
+                if (/[^a-zA-Z\s]/.test(lastName)) {
+                  this.setState({lastNameValidationError: true});
+                } else {
+                  this.setState({
+                    lastName,
+                    lastNameError: false,
+                    lastNameValidationError: false,
+                  });
+                }
+              }}
+              onBlur={
+                this.state.lastName === ''
+                  ? this.setState({lastName: null})
+                  : null
+              }            
+            />
+            <HelperText
+              type="error"
+              visible={
+                this.state.lastNameError === true ||
+                this.state.lastNameValidationError
+              }>
+              {this.state.lastNameError === true
+                ? 'Enter the last Name'
+                : this.state.lastNameValidationError
+                ? 'Invalid last Name'
                 : false}
             </HelperText>
             <TextInput
@@ -321,7 +381,7 @@ class Register extends Component {
                   : this.state.emailValidationError
                   ? 'Invalid Email address'
                   : this.state.emailExist
-                  ? 'Email already registered'
+                  ? this.state.checkEmailMsg
                   : null
               }
             </HelperText>            
@@ -386,6 +446,7 @@ class Register extends Component {
             </HelperText>
           </View>    
           <NextButton
+            disabled={this.state.nextButtonDisable}
             click={() => this.handleRegister()}
             {...this.state}
             color="#7ea100"
@@ -405,13 +466,14 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    onRegisterDetails: (value, value2, value3, value4) =>
+    onRegisterDetails: (value, value2, value3, value4, value5) =>
       dispatch({
         type: actionTypes.REGISTER_DETAILS,
         payload: value,
         payload2: value2,
         payload3: value3,
         payload4: value4,
+        payload5: value5,
       }),
   };
 };

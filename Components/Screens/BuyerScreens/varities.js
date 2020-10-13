@@ -160,7 +160,7 @@ class Varities extends Component {
       <Text style={{fontFamily:'GothamMedium',paddingLeft:5,paddingBottom:10,}}>Select Varities</Text>
       
           <CheckBox
-            title="Select All"
+            title={<Text style={{fontSize:14,fontFamily:'GothamMedium',marginRight:4}}>Select All</Text>}
             iconRight
             size={25}
             checked={this.state.checked}

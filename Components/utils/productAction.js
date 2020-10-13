@@ -10,6 +10,7 @@ import {
   AsyncStorage,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Stars from 'react-native-stars';
 import NumericInput from 'react-native-numeric-input';
 import SwitchButton from 'switch-button-react-native';
 import axios from 'axios';
@@ -121,6 +122,11 @@ class ProductAction extends Component {
         fontFamily: 'Gotham Black Regular',
         color: '#004561',
         fontSize: 25,
+        textAlign:'center',
+        justifyContent:'center',
+ 
+        width:'50%',
+      
       },
       unitsContainer: {
         flexDirection: 'column',
@@ -140,6 +146,7 @@ class ProductAction extends Component {
         paddingBottom: 10,
         paddingTop: 10,
         width: '100%',
+ 
       },
       unitsButton: {
         paddingTop: 5,
@@ -202,7 +209,7 @@ class ProductAction extends Component {
     });
 
     let microUnits, nanoUnits;
-
+    let cents = <Text>.00</Text>
     if (this.props.productData.nano) {
       {
         this.props.productData.nano.length >= 1
@@ -321,8 +328,23 @@ class ProductAction extends Component {
                     }}
                   />
                   <Text
+                   onPress={() => {
+                    if ( this.props.productData.nano && this.props.productData.nano.length >= 1) {
+                      this.setState({
+                        availableQuantity: 0,
+                        activeButton: '',
+                        value: 1,
+                        activeSwitch: 1,
+                      });
+                    } else {
+                      this.setState({activeButton: '', activeSwitch: 1});
+                      this.setState({unavailableNanoUnits: true});
+                      // Toast.show('No Nano Lots');
+                    }
+                  }}
                     style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
                     Nano Lots
+                   
                   </Text>
                   <RadioButton
                     value="second"
@@ -347,32 +369,31 @@ class ProductAction extends Component {
                     }}
                   />
                   <Text
-                    style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
-                    Mico Lots
+                    style={{textAlign: 'center', fontFamily: 'GothamMedium'}}
+                    onPress={() => {
+                      if ( this.props.productData.micro && this.props.productData.micro.length >= 1) {
+                        this.setState({
+                          availableQuantity: 0,
+                          activeButton: '',
+                          value: 1,
+                          activeSwitch: 2,
+                        });
+                      }
+                      else {
+                        this.setState({activeButton: '', activeSwitch: 2});
+                        this.setState({unavailableMicroUnits: true});
+                        // Toast.show('No Nano Lots');
+                      }
+                    }}
+                    >
+                    Micro Lots
+
                   </Text>
                 </View>
               </View>
             </View>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              width: '50%',
-              justifyContent: 'center',
-            }}>
-            <Icon
-              name="star"
-              size={22}
-              color="#ffbd4a"
-              style={{
-                justifyContent: 'center',
-                textAlignVertical: 'center',
-              }}
-            />
-            <Text style={styles.ratingStyle}>
-              {this.props.productData.avg_rating}
-            </Text>
-          </View>
+        
         </View>
         <View style={styles.actionsContainer}>
           <View style={styles.unitsContainer}>
@@ -413,11 +434,12 @@ class ProductAction extends Component {
                 fontFamily: 'GothamLight',
                 fontSize: 17,
                 textAlignVertical: 'center',
-                paddingRight: 10,
+                paddingRight: 10,              
               }}>
               Quantity
             </Text>
             <NumericInput
+           containerStyle={{marginTop:10}}
               editable={
                 Number.parseInt(this.state.availableQuantity, 10) > 0 &&
                 this.state.activeButton !== ''
@@ -440,21 +462,19 @@ class ProductAction extends Component {
                   : Toast.show('Quantity is not available.');
               }}
             />
-          </View>
-        </View>
-
-        <View style={styles.actionsContainer}>
-        <View style={styles.lotsPageSwitchContainer}>
+            <View style={styles.lotsPageSwitchContainer}>
             <Text style={styles.priceText}>
               $ {''}
               {this.state.activeButton === ''
                 ? 0
-                : this.state.value * this.state.price}
+                : this.state.value * this.state.price}<Text style={{fontSize:20}}>.00</Text>  
             </Text>
           </View>
+          </View>
+          
         </View>
 
-       
+          
       </View>
     );
   }

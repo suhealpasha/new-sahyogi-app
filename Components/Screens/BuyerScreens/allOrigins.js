@@ -237,11 +237,12 @@ class AllOrigins extends Component {
                 paddingLeft: 10,
                 paddingBottom: 10,
                 paddingTop: 10,
+                fontSize:14
               }}>
               Select Origins
             </Text>
             <CheckBox
-              title={'Select All'}
+              title={<Text style={{fontSize:14,fontFamily:'GothamMedium',marginRight:4}}>Select All</Text>}
               fontFamily={'GothamMedium'}
               iconRight
               size={25}
@@ -267,7 +268,7 @@ class AllOrigins extends Component {
           ) : (
             <View style={{paddingTop: 10}}>
               <FlatList
-                style={{height: this.state.height / 2}}
+                style={{height: this.state.height }}
                 data={
                   !this.props.searchBarShow
                     ? this.state.originsData
@@ -353,13 +354,28 @@ class AllOrigins extends Component {
               }}>
               <Regions {...this.props} regionsData={this.props.regionsData} />
             </View>
-            <TouchableNativeFeedback onPress={this.onSeeAll}>
+            <TouchableNativeFeedback onPress={this.onSeeAll} style={{
+               shadowColor: 'rgba(0,0,0, .4)', // IOS
+               shadowOffset: { height: 1, width: 1 }, // IOS
+               shadowOpacity: 1, // IOS
+               shadowRadius: 1, //IOS
+               backgroundColor: '#fff',
+               elevation: 2, // Android
+        
+            }}>
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignContent: 'center',
                   backgroundColor: '#f8f8f8',
+                 
+                  shadowColor: 'rgba(0,0,0, .4)', // IOS
+                  shadowOffset: { height: 1, width: 1 }, // IOS
+                  shadowOpacity: 1, // IOS
+                  shadowRadius: 1, //IOS
+                  backgroundColor: '#fff',
+                  elevation: 10, // Android
                 }}>
                 <Text
                   style={{
@@ -368,7 +384,7 @@ class AllOrigins extends Component {
                     textAlignVertical: 'center',
                     color: '#004561',
                     textAlign: 'center',
-                    fontSize: 18,
+                    fontSize: 14,
                     fontFamily: 'GothamMedium',
                     textAlignVertical: 'center',
                   }}>

@@ -51,6 +51,9 @@ class Profile extends Component {
   }
 
   componentDidMount() {
+    if(this.props.open){
+      this.props.onToggleOpen();
+    }
     this.setState({
       name: this.props.name,
       lName:this.props.lName,

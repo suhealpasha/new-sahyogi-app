@@ -131,7 +131,9 @@ class Cart extends Component {
       }
     }
   };
-
+ noAddress = () =>{
+   Toast.show("Please add the address!")
+ }
   productDetails = (args, args1) => {
     this.props.onDisplayVarietyName(args1);
     this.props.navigation.navigate('Product Description', {productId: args});
@@ -724,9 +726,10 @@ class Cart extends Component {
                 </Text>
               </View>
               <TouchableOpacity
-                disabled={addressId ? false : true }
+
+                // disabled={addressId ? false : true }
                 style={styles.buyButton}
-                onPress={() => this.placeOrder(cartId, addressId)}
+                onPress={() => {addressId ? this.placeOrder(cartId, addressId) : this.noAddress()}}
                 underlayColor="#fff">
                 <Text style={styles.buyText}>Place order</Text>
               </TouchableOpacity>

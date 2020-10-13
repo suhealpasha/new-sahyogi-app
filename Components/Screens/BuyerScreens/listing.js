@@ -81,7 +81,7 @@ class Listing extends Component {
   fetchProducts = async () => {
     this.setState({spinner: true});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
-    console.log("F",this.props.filterFeaturedData,"N",this.props.filterNanoLotData,"M",this.props.filterMicroLotData,"v",this.props.filterVaritiesData)
+    
     const data = {
       featured: this.props.filterFeaturedData
         ? this.props.filterFeaturedData
@@ -100,6 +100,7 @@ class Listing extends Component {
         ? String(this.props.filterVaritiesData)
         : null,
     };
+    console.log(data)
     await axios
       .post(api.buyerAllProductAPI, data, {
         headers: {
@@ -118,17 +119,9 @@ class Listing extends Component {
               spinner: false,
               allProductsData: res.data.data,
             });
-            if(res.data.data.length % 2 !== 0){
-              this.state.allProductsData.push({dummy: '\n'});
-            }
-            this.state.allProductsData.push({button: 'Region / Origin'});
-            this.state.allProductsData.push({
-              button: this.props.filterFeaturedData
-                ? 'All Products'
-                : 'Fetured Products',
-            });
-          }
+            
         }
+      }
       })
       .catch(err => {
         this.setState({spinner: false});
@@ -137,6 +130,7 @@ class Listing extends Component {
   };
 
   componentWillUnmount() {
+   
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -144,6 +138,9 @@ class Listing extends Component {
   }
 
   handleBackButtonClick() {
+    // if(this.props.open){
+    // this.props.onToggleOpen()
+    // }
     this.props.navigation.navigate("Home");
     return true;
   }
@@ -210,12 +207,15 @@ class Listing extends Component {
     this.fetchProducts();
   };
 
-  fetchProductDetails = (args, args1) => {
+  fetchProductDetails = (args, args1) => {   
+    this.RBSheet.close();
     this.props.onDisplayVarietyName(args1);
     this.props.navigation.navigate('Product Description', {productId: args});
   };
 
   onSeeAll = args => {
+    
+    this.setState({allProductsData:[]})
     this.RBSheet.close();
     this.props.onProductListingTitle(args);
     if (args === 'Products') {
@@ -231,10 +231,12 @@ class Listing extends Component {
   };
 
   render() {
+ 
     const styles = StyleSheet.create({
       container: {
         flex: 1.0,
         backgroundColor: '#7ea100',
+      
       },
 
       noData: {
@@ -351,123 +353,106 @@ class Listing extends Component {
           ) : (
             <View>
               <View style={{height: this.state.height - 60}}>
-                <FlatList
-                  style={{
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                    marginTop: 10,
-                    marginBottom: 30,
-                  }}
-                  data={this.state.allProductsData}
-                  columnWrapperStyle={{justifyContent: 'space-between'}}
-                  //   ListFooterComponent={() => <View style={{display:'flex',flexDirection:'row',justifyContent:'space-around',paddingTop:10,paddingBottom:20}}>
-                  //   <TouchableOpacity style={styles.loginButton} >
-                  // <Text style={styles.buttonText}>Regions / Origins</Text>
-                  //     </TouchableOpacity>
-                  //     <TouchableOpacity style={styles.loginButton}  onPress={() => this.onSeeAll('All Featured Crops')}>
-                  // <Text style={styles.buttonText}>Featured Product</Text>
-                  //     </TouchableOpacity>
-                  // </View>}
-                  numColumns={2}
-                  keyExtractor={items => {
-                    items.product_Id;
-                  }}
-                  renderItem={({item}) => {
-                    let itemType = Object.keys(item)[0];
-                    let ratingIcon = (
-                      <View style={{flexDirection: 'row'}}>
-                        <Icon
-                          name="star"
-                          size={20}
-                          color="#ffbd4a"
-                          style={{
-                            justifyContent: 'center',
-                            textAlignVertical: 'center',
-                          }}
-                        />
-                        <Text style={styles.ratingStyle}>
-                          {item.avg_rating}
-                        </Text>
-                      </View>
-                    );
-                    return itemType !== 'button'  ? (
-                      <TouchableNativeFeedback
-                        style={itemType === 'dummy' ? {display: 'none'} : null}
-                        onPress={() =>
-                          this.fetchProductDetails(
-                            item.product_Id,
-                            item.verityname,
-                          )                          
-                        }>
-                        <View style={styles.itemContainer}>
-                          <View style={styles.imageContainer}>
-                            <ImageBackground
-                              source={{
-                                uri: item.thumbnail_image,
-                              }}
-                              style={{
-                                aspectRatio: 2 / 1,
-                                borderTopLeftRadius: 5,
-                                borderTopRightRadius: 5,
-                              }}
-                              imageStyle={{
-                                borderTopLeftRadius: 5,
-                                borderTopRightRadius: 5,
-                              }}
-                              // resizeMode='stretch'
-                            />
-                          </View>
-                          <View style={styles.itemDetailContainer}>
-                            <Text style={styles.itemTextVariety}>
-                              {item.verityname}
-                            </Text>
-                            <Text style={styles.itemTextOrigin}>
-                              {item.originsname}
-                            </Text>
-                            <View
-                              style={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                              }}>
-                              <Text style={styles.itemTextFarm}>
-                                {item.farm}
-                              </Text>
-                              {ratingIcon}
-                            </View>
-                          </View>
-                        </View>
-                      </TouchableNativeFeedback>
-                    )                 
-                                    
-                    :(
-                      <View
-                        style={{
-                          display: 'flex',
-                          width: this.state.width / 2 - 20,
-                        }}>
-                        <TouchableOpacity
-                          style={styles.loginButton}
-                          onPress={() => {
-                            switch (item.button) {
-                              case 'Region / Origin':
-                                this.props.navigation.navigate('All Regions');
-                                break;
-                              case 'All Products':
-                                this.onSeeAll('Products');
-                                break;
-                              case 'Fetured Products':
-                                this.onSeeAll('All Featured Crops');
-                                break;
-                            }
-                          }}>
-                          <Text style={styles.buttonText}>{item.button}</Text>
-                        </TouchableOpacity>
-                      </View>
-                    );                 
-                  }}
-                
-                />
+               
+              <FlatList data={this.state.allProductsData}
+             style={{
+              paddingLeft: 10,
+              paddingRight: 10,
+              marginTop: 10,
+         
+            }}
+             columnWrapperStyle={{justifyContent: 'space-between'}}
+            numColumns={2}
+            keyExtractor = {(items)=>{items.product_Id}}          
+            renderItem = {({item})=>{
+              let ratingIcon = (
+                <View style={{flexDirection: 'row'}}>
+                  <Icon
+                    name="star"
+                    size={20}
+                    color="#ffbd4a"
+                    style={{
+                      justifyContent: 'center',
+                      textAlignVertical: 'center',
+                    }}
+                  />
+                  <Text style={styles.ratingStyle}>
+                    {item.avg_rating}
+                  </Text>
+                </View>
+              );
+            return(   
+              <TouchableNativeFeedback
+              
+              onPress={() =>
+                this.fetchProductDetails(
+                  item.product_Id,
+                  item.verityname,
+                )                          
+              }>
+              <View style={styles.itemContainer}>
+                <View style={styles.imageContainer}>
+                  <ImageBackground
+                    source={{
+                      uri: item.thumbnail_image,
+                    }}
+                    style={{
+                      aspectRatio: 2 / 1,
+                      borderTopLeftRadius: 5,
+                      borderTopRightRadius: 5,
+                    }}
+                    imageStyle={{
+                      borderTopLeftRadius: 5,
+                      borderTopRightRadius: 5,
+                    }}
+                    // resizeMode='stretch'
+                  />
+                </View>
+                <View style={styles.itemDetailContainer}>
+                  <Text style={styles.itemTextVariety}>
+                    {item.verityname}
+                  </Text>
+                  <Text style={styles.itemTextOrigin}>
+                    {item.originsname}
+                  </Text>
+                  <View
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text style={styles.itemTextFarm}>
+                      {item.farm}
+                    </Text>
+                    {ratingIcon}
+                  </View>
+                </View>
+              </View>
+            </TouchableNativeFeedback>
+                 
+            );
+            }}
+            />
+            
+
+<View style={{display:'flex',flexDirection:'row',justifyContent:'space-around',paddingTop:20,paddingBottom:20}}>
+                     <TouchableOpacity style={styles.loginButton} onPress = {()=>this.props.navigation.navigate('All Regions')} >
+                  <Text style={styles.buttonText}>Regions / Origins</Text>
+                       </TouchableOpacity>
+                      {/* <TouchableOpacity style={styles.loginButton}  onPress={() => {this.props.filterFeaturedData ? this.onSeeAll('All Featured Crops') : this.onSeeAll('Products')}}>
+                   <Text style={styles.buttonText}>{this.props.filterFeaturedData ? "All Products" : "Featured Products"}</Text>
+                     </TouchableOpacity> */}
+                     {this.props.filterFeaturedData ?
+                     <TouchableOpacity style={styles.loginButton}  onPress={() =>this.onSeeAll('Products')}>
+                     <Text style={styles.buttonText}>All Products</Text>
+                       </TouchableOpacity>
+                     : null}
+                     {!this.props.filterFeaturedData ?
+                     <TouchableOpacity style={styles.loginButton}  onPress={() =>this.onSeeAll('All Featured Crops')}>
+                     <Text style={styles.buttonText}>Featured Products</Text>
+                       </TouchableOpacity>
+                     : null}
+                   </View>
               </View>
             </View>
           )}

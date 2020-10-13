@@ -44,7 +44,8 @@ class ForgotPassword extends Component {
       emailId:null,
       emailIdError:false,
       emailValidationError:false,
-      emailIdExist:false
+      emailIdExist:false,
+      emailIdErrorMessage:null
     };
   }
 validateMobile = () =>{
@@ -60,7 +61,7 @@ validateMobile = () =>{
 }
 
 emailValidate = () => {
-  if (this.state.emailId === '') {
+  if (this.state.emailId === '' || this.state.emailId === null) {
     this.setState({emailId: null});
   } else {
     const emailReg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -68,12 +69,13 @@ emailValidate = () => {
       this.setState({emailValidationError: true});
     } else {
       this.setState({emailIdError: false, emailValidationError: false});
-      this.checkEmailExist();
+      
     }
   }
 };
 
 checkEmailExist = async () => {  
+    this.emailValidate()
     this.setState({spinner:true})
       if (this.state.emailId !== null) {
         let data = JSON.stringify({
@@ -87,7 +89,7 @@ checkEmailExist = async () => {
             },
           })
           .then(res => {
-            console.log("Yse exists")
+            
             if (res.data.message === 'Mobile exist') {
               this.setState({
                 emailExist: false,
@@ -108,7 +110,8 @@ checkEmailExist = async () => {
 };
 
   handleForgotPassword = async () => {  
-    if (this.state.emailId !== null && this.state.emailValidationError === false ) {     
+    if (this.state.emailId !== null && this.state.emailValidationError === false || this.state.emailId === '') {  
+       
       let data = JSON.stringify({
         email_id: this.state.emailId,
       });
@@ -121,7 +124,8 @@ checkEmailExist = async () => {
             'content-type': 'application/x-www-form-urlencoded',
           },
         })
-        .then(res => {             
+        .then(res => {  
+          console.log(res.data.message)           
           if (res.status) {
             this.setState({spinner: false})        
             if(res.data.status === true){
@@ -132,7 +136,7 @@ checkEmailExist = async () => {
             this.props.navigation.navigate('OTP');
           }
           else{
-            this.setState({emailExist:true})
+            this.setState({emailExist:true,emailIdErrorMessage:res.data.message})
           }
         }
         
@@ -261,7 +265,7 @@ checkEmailExist = async () => {
                   emailExist: false
                 })
               }
-              // onBlur={this.emailValidate}
+              onBlur={this.emailValidate}
               autoCapitalize="none"
               autoCapitalize="none"             
               value={this.state.emailId}
@@ -269,11 +273,11 @@ checkEmailExist = async () => {
              <HelperText type="error" visible={ this.state.emailIdError === true || this.state.emailValidationError || this.state.emailExist }>
              {
                 this.state.emailIdError === true
-                  ? 'Enter the emailId'
+                  ? 'Enter the email Id'
                   : this.state.emailValidationError
                   ? 'Invalid Email address'
                   :  this.state.emailExist
-                  ? 'Email not exist'
+                  ? this.state.emailIdErrorMessage
                   : null
               }
             </HelperText>

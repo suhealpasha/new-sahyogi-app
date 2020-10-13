@@ -1,4 +1,4 @@
-const URL = 'https://www.dollarbirdinc.com/db_dev/microffee_api/'
+const URL = 'http://dollarbirdinc.com/db_dev/microffee_api/'
 
 //////////////////////// Common API's //////////////////////////
 

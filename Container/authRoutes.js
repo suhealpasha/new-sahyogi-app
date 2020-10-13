@@ -12,6 +12,7 @@ import SetPassword from './setPassword';
 import ForgotPassword from './forgotPassword';
 import SellerType from './sellerType';
 import SellerDetails from './sellerDetails';
+import WebView from './webView.js';
 import {HeaderBackground} from 'react-navigation-stack';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
@@ -245,6 +246,23 @@ class AuthRoutes extends Component {
             options={({navigation, route}) => ({
               animationEnabled: false,
                title: 'Forgot Password',
+              headerStyle: {
+                backgroundColor: '#7ea100',
+               
+              },
+              headerTitleAlign: 'center',
+              headerTitleStyle:{ fontFamily:'GothamMedium',
+              fontSize:22},
+              headerTintColor: '#fff',
+            })}
+            {...this.props}
+          />
+          <Stack.Screen
+            name="Web View"
+            component={WebView}
+            options={({navigation, route}) => ({
+              animationEnabled: false,
+               title: 'Terms & Conditions',
               headerStyle: {
                 backgroundColor: '#7ea100',
                

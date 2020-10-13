@@ -38,6 +38,12 @@ class Regions extends Component {
     this.props.navigation.navigate('All Origins', {regionId: args});
   };
 
+  
+  functionHandler = (arg1,arg2) =>{
+    this.fetchOrigins(arg1,arg2);
+    // this.props.onToggleOpen();
+  }
+
   render() {
     const styles = StyleSheet.create({
       itemContainer: {
@@ -55,7 +61,10 @@ class Regions extends Component {
         elevation: 4,   
         borderRadius: 5,
         marginRight:10,
-        marginLeft:10
+        marginLeft:10,
+      
+        // paddingBottom:10
+       
       },
       imageContainer: {
         backgroundColor: 'white',
@@ -74,12 +83,19 @@ class Regions extends Component {
         textAlign:'center',
         fontFamily: 'GothamMedium',
       
+      },
+      regionstyles:{
+
+      paddingBottom:20,
+      paddingRight:10
       }
     
     });
+
     return (
       <View style={styles.regionstyles}>
         <FlatList
+       
           data={this.props.regionsData}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -90,7 +106,7 @@ class Regions extends Component {
             return (
               <TouchableNativeFeedback
                 style={{width:this.state.width / 2.1  - 10}}
-                onPress={() => this.fetchOrigins(item.region_Id, item.name)}>
+                onPress={() => this.functionHandler(item.region_Id, item.name)}>
                 <View style={styles.itemContainer}>
                      <View style={styles.imageContainer}>
                      <ImageBackground

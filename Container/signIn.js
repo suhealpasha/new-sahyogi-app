@@ -12,7 +12,7 @@ import {
   AsyncStorage,
   TouchableOpacity
 } from 'react-native';
-import {Input} from 'react-native-elements';
+import {Input, ThemeConsumer} from 'react-native-elements';
 
 import {KeyboardAwareView} from 'react-native-keyboard-aware-view';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
@@ -40,6 +40,9 @@ class Login extends Component {
       emailId: null,
       emailIdError: false,
       emailValidationError: false,
+      invalidEmail:false,
+      invalidPassword:false,
+      invalidEmailMessage:null
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -76,7 +79,7 @@ class Login extends Component {
   };
 
   _handleLogin = async () => {
-    if (this.state.emailId !== null && this.state.password !== null) {
+    if (this.state.emailId !== null && this.state.password !== null && this.state.invalidEmail === false) {
       let data;
       this.setState({spinner: true});
       data = JSON.stringify({
@@ -92,6 +95,7 @@ class Login extends Component {
           },
         })
         .then(res => {
+          console.log(res)
           if (res.data.status === 'success' && res.data.user_type === 'Buyer') {
             AsyncStorage.setItem('isLoggedIn', res.data.access_token);
             AsyncStorage.setItem('userType', res.data.user_type);
@@ -106,10 +110,11 @@ class Login extends Component {
             AsyncStorage.setItem('userType', res.data.user_type);
             this.props.onBottomTabClicked('home');
             this.props.onSellerSignIn();
-            this.setState({spinner: false, emailId: null, password: null});
+            this.setState({spinner: false, emailId: null, password: null,invalidEmailMessage:null,invalidEmail:false});
           } else {
             this.setState({spinner: false});
-            alert('Invalid Credentials!');
+            console.log(res.data.message)
+            this.setState({invalidEmail:true,invalidEmailMessage:res.data.message})
           }
         })
         .catch(err => {
@@ -215,6 +220,7 @@ class Login extends Component {
                   emailId,
                   emailIdError: false,
                   emailValidationError: false,
+                  invalidEmail:false,
                 })
               }
               onBlur={this.emailValidate}
@@ -226,7 +232,7 @@ class Login extends Component {
                   ? 'Enter the email Id'
                   : this.state.emailValidationError
                   ? 'Invalid Email address'
-                  : null}
+                  : null }
             </HelperText>
             
               <TextInput
@@ -239,7 +245,7 @@ class Login extends Component {
               spellCheck={false}
               autoCorrect={false}
               onChangeText={password =>
-                this.setState({password, passwordError: false})
+                this.setState({password, passwordError: false,invalidEmail:false,})
               }
               onBlur={
                 this.state.password === ''
@@ -249,8 +255,8 @@ class Login extends Component {
               autoCapitalize="none"             
               value={this.state.password}
             />
-             <HelperText type="error" visible={this.state.passwordError === true }>
-             {this.state.passwordError === true ? 'Enter the Password' : false}
+             <HelperText type="error" visible={this.state.passwordError === true  }>
+             {this.state.passwordError === true ? 'Enter the Password' : false }
             </HelperText>
           </View>
           <View style={styles.forgotPasswordContainer}>
@@ -274,6 +280,9 @@ class Login extends Component {
                 Forgot your Password?
               </Text>
             </TouchableOpacity>
+            <HelperText type="error" visible={this.state.invalidEmail } style={{textAlign:'center',paddingTop:10}}>
+             {this.state.invalidEmail === true ? this.state.invalidEmailMessage : false }
+            </HelperText>
           </View>
 
           <NextButton click={() => this._handleLogin()} color="#7ea100" label="Login"/>

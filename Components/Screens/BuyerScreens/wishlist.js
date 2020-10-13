@@ -47,6 +47,10 @@ class Wishlist extends Component {
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
   componentDidMount() {
+    console.log("inside Wishlist",this.props.open)
+    if(this.props.open){      
+      this.props.onToggleOpen();
+    }
     this.fetchBuyerWishlist();
     BackHandler.addEventListener(
       'hardwareBackPress',

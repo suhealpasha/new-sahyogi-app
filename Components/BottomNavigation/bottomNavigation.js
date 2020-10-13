@@ -20,7 +20,11 @@ class OwnBottomNavigation extends Component {
     };
   }
 
+
+
   goTo = arg1 => {
+    // this.props.onToggleOpen();
+
     this.props.navigation.navigate(arg1);
     const lowerArg1 = String(arg1).toLowerCase();
     this.props.onBottomTabClicked(lowerArg1);
@@ -41,6 +45,7 @@ class OwnBottomNavigation extends Component {
   };
 
   render() {
+  // console.log(this.props.onToggleOpen)
     return (
       <BottomNavigation
         active={this.props.active}

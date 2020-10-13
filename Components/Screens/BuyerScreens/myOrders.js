@@ -115,7 +115,8 @@ class MyOrders extends Component {
       container: {
         flex: 1.0,
         backgroundColor: '#7ea100',
-        height:this.state.height
+        height:this.state.height,
+        paddingBottom:10
       },
       itemContainer: {
         paddingRight: 10,
@@ -132,6 +133,8 @@ class MyOrders extends Component {
         shadowOpacity: 0.23,
         shadowRadius: 2.62,
         elevation: 4,
+      
+        
       },
       itemDetailContainer: {},
       itemTextOrderText: {
@@ -197,7 +200,7 @@ class MyOrders extends Component {
             paddingTop:20
           }}>
         <FlatList
-          style={{paddingLeft: 10, paddingRight: 10,paddingTop:10}}
+          style={{paddingLeft: 10, paddingRight: 10,paddingTop:10,marginBottom:60}}
           data={this.props.buyerOrderData}
           numColumns={1}
           // keyExtractor = {(items)=>{items.key}}

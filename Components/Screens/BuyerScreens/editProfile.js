@@ -244,6 +244,7 @@ class EditProfile extends Component {
         fontWeight: 'normal',
         textAlignVertical: 'center',
         fontSize: 16,
+        marginRight:50
       },
     });
 
@@ -368,6 +369,9 @@ class EditProfile extends Component {
                 paddingTop: 10,
                 paddingLeft: 10,
                 paddingRight: 10,
+                width:'100%',
+            
+                
               }}>
               <RadioButton
                 color="#7ea100"
@@ -376,8 +380,11 @@ class EditProfile extends Component {
                 onPress={() => {
                   this.setState({checked: 'male'});
                 }}
+                
               />
-              <Text style={styles.checkBoxText}>Male</Text>
+              <Text style={styles.checkBoxText} onPress={() => {
+                  this.setState({checked: 'male'});
+                }}>Male</Text>
               <RadioButton
                 color="#7ea100"
                 value={this.state.checked}
@@ -386,7 +393,9 @@ class EditProfile extends Component {
                   this.setState({checked: 'female'});
                 }}
               />
-              <Text style={styles.checkBoxText}>Female</Text>
+              <Text style={styles.checkBoxText} onPress={() => {
+                  this.setState({checked: 'female'});
+                }}>Female</Text>
             </View>
             <Input
             disabled

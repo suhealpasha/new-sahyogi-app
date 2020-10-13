@@ -102,7 +102,8 @@ class Routes extends Component {
       cartCount: null,
       buyerOrderData:[],
       notificationCount:null,
-      notificationData:[]
+      notificationData:[],
+      spinner: false,
     };
   }
 
@@ -132,6 +133,7 @@ class Routes extends Component {
   }
 
   toggleOpen = () => {
+    console.log(this.state.open)
     this.setState({ open: !this.state.open });
   };
 
@@ -192,6 +194,7 @@ class Routes extends Component {
 
   fetchHomeScreenData = async () => {
     const access_token = await AsyncStorage.getItem('isLoggedIn');
+    this.setState({spinner:true})
     await axios
       .get(api.buyerHomeAPI, {
         headers: {
@@ -204,6 +207,7 @@ class Routes extends Component {
       .then(res => {
         if (res.status) {
           this.setState({
+            spinner:false,
             featuredProductsData: res.data.data.featured_products,
             latestProductsData: res.data.data.latest_products,
             regionsData: res.data.data.regions,
@@ -211,6 +215,7 @@ class Routes extends Component {
         }
       })
       .catch(err => {
+        this.setState({spinner:false})
         console.log(err);
       });
   };
@@ -497,19 +502,22 @@ class Routes extends Component {
             name="Listing"
             options={({navigation, route}) => ({
               animationEnabled: false,
+            
               headerTitle: (
                 <Text
-                  style={{
-                    textAlign: 'right',
+                  style={{                 
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18,
+                    fontSize:16,            
                     
                     
                   }}>
                   {this.props.listingTitle}
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
               shadowOpacity: 0,
               borderBottomWidth: 0},
@@ -517,7 +525,7 @@ class Routes extends Component {
               headerLeft: () => (
                 <TouchableWithoutFeedback
                   onPress={() => this.goBack({navigation})}>
-                  <Icon name="chevron-left" size={35} color="white" />
+                  <Icon name="chevron-left" size={35} color="white" backgroundColor='pink' />
                 </TouchableWithoutFeedback>
               ),
               headerRight: () => (
@@ -545,8 +553,11 @@ class Routes extends Component {
             {props => (
               <Listing
                 {...props}
+                // {...this.state}
+                open = {this.state.open}
                 clickedIcon={this.state.clickedIcon}
                 functionalIcon={this.state.functionalIcon}
+                onToggleOpen = {this.toggleOpen}
               />
             )}
           </Stack.Screen>
@@ -560,11 +571,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   All Regions
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
               shadowOpacity: 0,
               borderBottomWidth: 0},
@@ -580,6 +594,8 @@ class Routes extends Component {
               <AllRegions
                 {...props}
                 allRegionsData={this.state.allRegionsData}
+
+                onToggleOpen = {this.toggleOpen}
               />
             )}
           </Stack.Screen>
@@ -595,11 +611,14 @@ class Routes extends Component {
                           textAlign: 'center',
                           flex: 1,
                           fontFamily: 'Gotham Black Regular',
-                          fontSize:18
+                          fontSize:16
                         }}>
                         {this.props.regionName}
                       </Text>
                     ),
+                    headerTitleContainerStyle: {
+                      left: 40,
+                    },
                     headerStyle: {backgroundColor: '#7ea100',elevation: 0,
               shadowOpacity: 0,
               borderBottomWidth: 0},
@@ -648,6 +667,7 @@ class Routes extends Component {
                 searchBarText={this.state.searchBarText}
                 searchBarShow={this.state.searchBarShow}
                 regionsData={this.state.regionsData}
+                onToggleOpen = {this.toggleOpen}
               />
             )}
           </Stack.Screen>
@@ -664,11 +684,14 @@ class Routes extends Component {
                           textAlign: 'center',
                           flex: 1,
                           fontFamily: 'Gotham Black Regular',
-                          fontSize:18
+                          fontSize:16
                         }}>
                         Varities
                       </Text>
                     ),
+                    headerTitleContainerStyle: {
+                      left: 40,
+                    },
                     headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -728,11 +751,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   Regions and Origins
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
               shadowOpacity: 0,
               borderBottomWidth: 0},
@@ -767,10 +793,13 @@ class Routes extends Component {
           </Stack.Screen>
           <Stack.Screen
             name="Search"
-            component={Search}
+           
             options={({navigation, route}) => ({
               animationEnabled: false,
               // headerTransparent:true,
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {
                 backgroundColor: '#efebea',
                 elevation: 0,
@@ -807,7 +836,11 @@ class Routes extends Component {
             })}
             initialParams={{keyword: this.state.searchText}}
             {...this.props}
-          />
+          >
+            {props => (
+              <Search {...props}  {...this.state} onToggleOpen = {this.toggleOpen}/>
+            )}
+            </Stack.Screen>
           <Stack.Screen
             name="Cart"
             options={({navigation, route}) => ({
@@ -818,11 +851,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   Cart
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -879,11 +915,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   Wishlist
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -943,7 +982,7 @@ class Routes extends Component {
                 </View>
               ),
             })}>
-            {props => <Wishlist {...props} />}
+            {props => <Wishlist {...props} {...this.state} onToggleOpen={this.toggleOpen}/>}
           </Stack.Screen>
           <Stack.Screen
             name="Profile"
@@ -955,11 +994,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   Profile
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -1023,6 +1065,7 @@ class Routes extends Component {
             {props => (
               <Profile
                 {...props}
+                {...this.state}
                 onFetchDetails={this.fetchDetails}               
                 onLogout={this.props.onLogoutSession}
                 saveIcon={this.state.saveIcon}
@@ -1031,6 +1074,7 @@ class Routes extends Component {
                 mobile={this.state.mobile}
                 email={this.state.email}
                 profilePic={this.state.profilePic}
+                onToggleOpen = {this.toggleOpen}
               />
             )}
           </Stack.Screen>
@@ -1044,11 +1088,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   Edit Profile
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -1094,12 +1141,15 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
 
                   }}>
                   My Address
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -1145,11 +1195,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   Add Address
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -1185,11 +1238,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   Edit Address
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -1231,11 +1287,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   Notification
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -1291,11 +1350,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   {this.props.varietyName}
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -1360,7 +1422,9 @@ class Routes extends Component {
                 </View>
               ),
             })}>
-            {props => <ProductDescriptionTemplate {...props} onfetchBuyerCart={this.fetchBuyerCart}/>}
+            {props => <ProductDescriptionTemplate {...props} onfetchBuyerCart={this.fetchBuyerCart}
+            onToggleOpen = {this.toggleOpen}
+            />}
           </Stack.Screen>
 
           <Stack.Screen
@@ -1373,11 +1437,15 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   My Orders
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
+              
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -1404,11 +1472,14 @@ class Routes extends Component {
                     textAlign: 'center',
                     flex: 1,
                     fontFamily: 'Gotham Black Regular',
-                    fontSize:18
+                    fontSize:16
                   }}>
                   Order #{this.props.orderNumber}
                 </Text>
               ),
+              headerTitleContainerStyle: {
+                left: 40,
+              },
               headerStyle: {backgroundColor: '#7ea100',elevation: 0,
                     shadowOpacity: 0,
                     borderBottomWidth: 0},
@@ -1423,6 +1494,7 @@ class Routes extends Component {
           >
             {props => <OrderDetail {...props} {...this.state} onFetchBuyerOrders={this.fetchBuyerOrders} />}
           </Stack.Screen>
+         
         </Stack.Navigator>
       </NavigationContainer>
     );

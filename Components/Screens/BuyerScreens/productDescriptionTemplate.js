@@ -8,6 +8,7 @@ import {
   Image,
   ScrollView,
   Button,
+  BackHandler,
   Dimensions,
   TouchableNativeFeedback,
 } from 'react-native';
@@ -52,13 +53,36 @@ class ProductDescriptionTemplate extends Component {
       favouriteColor: 'grey',
       wishlistButtonDisable:false
     };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   componentDidMount() {
+    // if(this.props.open){
+    //   this.props.onToggleOpen();
+    // }
     this.fetchProduct();
     this.props.onBuyProduct(true);
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
   }
 
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+  handleBackButtonClick() {
+    if(this.props.open){   
+      this.props.onToggleOpen();
+    }
+    // this.props.onBottomTabClicked('home');
+    this.props.navigation.goBack(null);
+    return true;
+  }
+  
   fetchProduct = async () => {
     this.setState({spinner: true});
     let data = JSON.stringify({
@@ -110,6 +134,7 @@ class ProductDescriptionTemplate extends Component {
         },
       })
       .then(res => {
+        console.log(res)
         if (res.status) {        
           this.fetchProduct();
           this.setState({wishlistButtonDisable:false})

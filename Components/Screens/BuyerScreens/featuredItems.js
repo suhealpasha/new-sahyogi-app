@@ -6,6 +6,7 @@ import {
   Text,
   Image,
   ScrollView,
+  BackHandler,
   Dimensions,
   TouchableWithoutFeedback,
   ImageBackground
@@ -28,7 +29,7 @@ import {
       currentSelecteditem:0,
       featuredProductsData:[]
     };
-   
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   updateImageDetails = ( image ) => {
@@ -42,6 +43,29 @@ import {
   
    componentDidMount(){
    this.setState({featuredProductsData:this.props.featuredProductsData})
+   BackHandler.addEventListener(
+    'hardwareBackPress',
+    this.handleBackButtonClick,
+  );
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick,
+    );
+  }
+
+  handleBackButtonClick() {
+    // this.props.onToggleOpen();
+    // this.props.onBottomTabClicked('home');
+    this.props.navigation.goBack(null);
+    return true;
+  }
+
+  functionHandler = (arg1,arg2) =>{
+    this.productDetails(arg1,arg2);
+    // this.props.onToggleOpen();
   }
 
   render() {
@@ -122,6 +146,7 @@ import {
       },
     });
 
+      
   
    
     return (
@@ -151,7 +176,7 @@ import {
             return (
               <TouchableNativeFeedback
                 onPress={() =>
-                  this.productDetails(item.product_Id, item.verityname)
+                this.functionHandler(item.product_Id, item.verityname)
                 }>
                 <View style={styles.itemContainer}>
                   <View style={styles.imageContainer}>

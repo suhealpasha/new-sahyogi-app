@@ -40,6 +40,12 @@ class LatestProducts extends Component {
     this.props.navigation.navigate('Product Description', {productId: args});
   };
 
+  
+  functionHandler = (arg1,arg2) =>{
+    this.productDetails(arg1,arg2);
+    // this.props.onToggleOpen();
+  }
+
   render() {
     const styles = StyleSheet.create({
       detailsButton: {
@@ -114,6 +120,7 @@ class LatestProducts extends Component {
         fontFamily: 'GothamLight',
       },
     });
+
     return (
       <View style={{flex: 1.0}}>
         <FlatList
@@ -141,7 +148,7 @@ class LatestProducts extends Component {
             return (
               <TouchableNativeFeedback
                 onPress={() =>
-                  this.productDetails(item.product_Id, item.verityname)
+                  this.functionHandler(item.product_Id, item.verityname)
                 }>
                 <View style={styles.itemContainer}>
                   <View style={styles.imageContainer}>

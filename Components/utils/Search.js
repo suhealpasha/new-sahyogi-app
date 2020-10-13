@@ -20,6 +20,9 @@ class Search extends Component {
   }
 
   componentDidMount() {
+    if(this.props.open){
+      this.props.onToggleOpen();
+    }
     this.fetchProducts();
     BackHandler.addEventListener(
       'hardwareBackPress',

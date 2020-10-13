@@ -26,6 +26,7 @@ import * as api from '../../../assets/api/api';
     super(props);
     this.state = {
       width: Dimensions.get('window').width,  
+      height:Dimensions.get('window').height,  
       addressData:[]    
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
@@ -185,8 +186,27 @@ import * as api from '../../../assets/api/api';
         // paddingRight: 10,
         textAlign: 'center',
       },
+      noData: {
+        justifyContent: 'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+       width:this.state.width,
+       height:this.state.height
+
+      },
+      noDataText: {
+        fontSize: 20,
+        fontFamily: 'GothamBold',
+      },
 
     });  
+    let addressExist
+    if(this.state.addressData.length > 0){
+      addressExist = true
+    } 
+    else{
+      addressExist = false
+    }
     return (
       <View style={styles.container}>
         <View
@@ -195,6 +215,7 @@ import * as api from '../../../assets/api/api';
             borderTopRightRadius: 30,
             borderTopLeftRadius: 30,
           }}>
+        {addressExist ?   
         <FlatList
           data={this.state.addressData}
           style={{paddingTop:20,paddingLeft:10,paddingRight:10}}
@@ -221,6 +242,12 @@ import * as api from '../../../assets/api/api';
             );
           }}
         />
+        :
+        <View style={styles.noData}>
+            <Text style={styles.noDataText}>No Address</Text>
+          </View> 
+     
+  }
       </View>
       </View>
     );

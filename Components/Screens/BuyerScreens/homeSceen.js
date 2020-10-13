@@ -22,7 +22,7 @@ import Regions from './regions';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
 import {YellowBox} from 'react-native';
-
+import Spinner from 'react-native-loading-spinner-overlay';
 YellowBox.ignoreWarnings(['VirtualizedLists should never be nested']);
 
 class HomeScreen extends Component {
@@ -34,6 +34,7 @@ class HomeScreen extends Component {
       regionsData: [],
       featuredProductsData: [],
       latestProductsData: [],
+      open:true
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -79,6 +80,7 @@ class HomeScreen extends Component {
   };
 
   onSeeAll = args => {
+    // this.props.onToggleOpen();
     this.props.onProductListingTitle(args);
     if (args === 'Products') {
       this.props.onFeaturedProductsFiltered(false);
@@ -91,6 +93,27 @@ class HomeScreen extends Component {
     this.props.onMicroLotProductsFiltered(false);
     this.props.navigation.navigate('Listing');
   };
+
+  functionHandler = () =>{
+    this.props.navigation.navigate('All Regions');
+    if(this.props.open){
+    this.props.onToggleOpen();
+  }
+}
+
+  fun1 = () =>{
+    this.onSeeAll('All Featured Crops')
+    if(this.props.open){
+      this.props.onToggleOpen();
+    }
+  }
+
+  fun2 = () =>{
+    this.onSeeAll('Products')
+ if(this.props.open){
+    this.props.onToggleOpen();
+  }
+  }
 
   render() {
     const styles = StyleSheet.create({
@@ -249,11 +272,129 @@ class HomeScreen extends Component {
         paddingBottom: 5,
         fontSize: 12,
       },
+      spinnerTextStyle: {
+        color: '#7ea100',
+      },
+      container1:{
+        flexDirection: 'column',
+        alignItems: 'center',
+        width: '100%',
+        backgroundColor: '#f8f8f8',
+        borderTopRightRadius: 30,
+        borderTopLeftRadius: 30,
+        opacity: 0.3,
+      }
     });
+
+
 
     return (
       <ScrollView style={{backgroundColor: '#f8f8f8'}}>
-        <View style={{backgroundColor: '#7ea100'}}>
+         <Spinner
+            visible={this.props.spinner}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
+        <View style={{backgroundColor: '#7ea100'}} >
+          {this.props.open ?
+          <TouchableWithoutFeedback onPress={()=>this.props.onToggleOpen()}>
+            <View style={styles.container1} >          
+            <View style={styles.regions} pointerEvents={this.state.open ? "none" : "auto"}>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  paddingTop: 10,
+               
+                }}>
+                <Text style={styles.microalign}>Featured Products</Text>
+                <Text
+                  style={styles.viewall}
+                  onPress={() => this.fun1()}>
+                  View All
+                </Text>
+              </View>
+              <View
+                style={{
+                  borderBottomColor: 'black',
+                  borderBottomWidth: 0.25,
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+              />
+               <FeaturedItems
+                {...this.props}
+                featuredProductsData={this.state.featuredProductsData}
+                onToggleOpen = {this.props.onToggleOpen}
+              />
+            </View>
+
+            <View style={styles.regions} pointerEvents={this.state.open ? "none" : "auto"}>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  paddingTop: 10,
+               
+                }}>
+                <Text style={styles.microalign}>Latest Products</Text>
+                <Text
+                  style={styles.viewall}
+                  onPress={() => this.fun2()}>
+                  View All
+                </Text>
+              </View>
+              <View
+                style={{
+                  borderBottomColor: 'black',
+                  borderBottomWidth: 0.25,
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+              />
+              <Products
+                {...this.props}
+                latestProductsData={this.state.latestProductsData}
+                // onToggleOpen = {this.props.onToggleOpen}
+              />
+            </View>
+            <View style={styles.regions} pointerEvents={this.state.open ? "none" : "auto"}>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  paddingTop: 10,
+                }}>
+                <Text style={styles.microalign}>Origins/Regions</Text>
+                <Text
+                  style={styles.viewall}
+                  onPress={() => this.functionHandler()}>
+                 
+                  View All
+                </Text>
+              </View>
+              <View
+                style={{
+                  borderBottomColor: 'black',
+                  borderBottomWidth: 0.25,
+                  marginLeft: 10,
+                  marginRight: 10,
+                }}
+              />
+              <Regions {...this.props} regionsData={this.state.regionsData}/>
+            </View>
+          </View>
+            </TouchableWithoutFeedback>
+          :
           <View style={styles.container}>          
             <View style={styles.regions}>
               <View
@@ -269,7 +410,7 @@ class HomeScreen extends Component {
                 <Text style={styles.microalign}>Featured Products</Text>
                 <Text
                   style={styles.viewall}
-                  onPress={() => this.onSeeAll('All Featured Crops')}>
+                  onPress={() => this.fun1()}>
                   View All
                 </Text>
               </View>
@@ -284,6 +425,7 @@ class HomeScreen extends Component {
                <FeaturedItems
                 {...this.props}
                 featuredProductsData={this.state.featuredProductsData}
+                onToggleOpen = {this.props.onToggleOpen}
               />
             </View>
 
@@ -301,7 +443,7 @@ class HomeScreen extends Component {
                 <Text style={styles.microalign}>Latest Products</Text>
                 <Text
                   style={styles.viewall}
-                  onPress={() => this.onSeeAll('Products')}>
+                  onPress={() => this.fun2()}>
                   View All
                 </Text>
               </View>
@@ -316,6 +458,7 @@ class HomeScreen extends Component {
               <Products
                 {...this.props}
                 latestProductsData={this.state.latestProductsData}
+                // onToggleOpen = {this.props.onToggleOpen}
               />
             </View>
             <View style={styles.regions}>
@@ -331,7 +474,8 @@ class HomeScreen extends Component {
                 <Text style={styles.microalign}>Origins/Regions</Text>
                 <Text
                   style={styles.viewall}
-                  onPress={() => this.props.navigation.navigate('All Regions')}>
+                  onPress={() => this.functionHandler()}>
+                 
                   View All
                 </Text>
               </View>
@@ -343,9 +487,10 @@ class HomeScreen extends Component {
                   marginRight: 10,
                 }}
               />
-              <Regions {...this.props} regionsData={this.state.regionsData} />
+              <Regions {...this.props} regionsData={this.state.regionsData}/>
             </View>
           </View>
+  }
         </View>
       </ScrollView>
     );

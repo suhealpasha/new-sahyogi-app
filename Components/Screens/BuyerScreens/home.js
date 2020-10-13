@@ -17,7 +17,9 @@ import {createStore, applyMiddleware, compose} from 'redux';
 import Reducer from '../../../Store/reducer';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
-import MenuDrawer from 'react-native-side-drawer'
+import MenuDrawer from 'react-native-side-drawer';
+import Spinner from 'react-native-loading-spinner-overlay';
+
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
 const uiTheme = {
@@ -49,6 +51,10 @@ class App extends Component {
   }
 
   componentWillUnmount() {
+
+    if(this.props.open){
+      this.props.onToggleOpen();
+    }
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -96,8 +102,9 @@ class App extends Component {
        <ImageBackground
         source={require('../../../assets/Images/logos/newMicrofeeLogo.png')}
                       style={{                 
-                        width: 100,
-                        height: 120,                       
+                        width: 80,
+                        height: 100, 
+                        resizeMode:'cover'                      
                    
                       }}
            
@@ -109,6 +116,10 @@ class App extends Component {
     );
   };
 
+  close = () =>{
+    // this.props.onToggleOpen();
+    console.log("there")
+  }
   render() {
 
   
@@ -125,11 +136,12 @@ class App extends Component {
           opacity={0.4}
           
         >
-              </MenuDrawer>
-          <HomeScreen {...this.props} {...this.state}  />
-      
+          </MenuDrawer>
+        
+          <HomeScreen {...this.props} {...this.state} onToggleOpen = {this.props.onToggleOpen} />
+        
         </View>
-        <BottomNavigation {...this.props} {...this.state} />
+        <BottomNavigation {...this.props} {...this.state} onToggleOpen = {this.props.onToggleOpen}/>
       </ThemeContext.Provider>
     );
   }

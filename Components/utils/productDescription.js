@@ -19,7 +19,8 @@ import {
 } from 'react-native-material-cards';
 
 import { Table, TableWrapper, Row, Rows, Col, Cols, Cell } from 'react-native-table-component';
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Stars from 'react-native-stars';
 
 
 class ProductDescription extends Component {
@@ -86,6 +87,10 @@ class ProductDescription extends Component {
      row6:{
       flexDirection:'row',
       justifyContent:'flex-start'
+      
+     },
+     row7:{
+       paddingBottom:10
      },
      col1:{
       fontFamily: 'GothamBold',     
@@ -115,7 +120,16 @@ class ProductDescription extends Component {
      commentText:{      
       padding:10,
       fontFamily: 'GothamLight',
-     }
+      lineHeight:20
+     },
+     myStarStyle: {
+      color: '#ffbd4a',
+      fontSize:22
+        },
+        myEmptyStarStyle: {
+          fontSize:22,
+          color:'#ffbd4a'
+        }
     });
 
     return (
@@ -126,13 +140,30 @@ class ProductDescription extends Component {
                   {this.props.productData.farm ? <View style={styles.row3}><Text style={styles.col1}>Farm</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.farm}</Text></View> : null}
                   {this.props.productData.altitude ? <View style={styles.row4}><Text style={styles.col1}>Altitude</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.altitude}</Text></View> : null}
                   {this.props.productData.note ? <View style={styles.row5}><Text style={styles.col1}>Notes</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.note}</Text></View>: null}
-                  {this.props.productData.process ?<View style={styles.row6}><Text style={styles.col1}>Process</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.process}</Text></View>: null}
+                 
                   {this.props.productData.dry_method ?<View style={styles.row6}><Text style={styles.col1}>Dry Method</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.dry_method}</Text></View>: null}
                   {this.props.productData.certification ?<View style={styles.row6}><Text style={styles.col1}>Certification</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.certification}</Text></View>: null}
-                  {this.props.productData.grade ?<View style={styles.row6}><Text style={styles.col1}>Grade</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.grade}</Text></View>: null}
-                  {this.props.productData.appearance ?<View style={styles.row6}><Text style={styles.col1}>Appearance</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.appearance}</Text></View>: null}
-                  {this.props.productData.seller_comment ?<View style={styles.row7}><Text style={styles.col1}>Comments</Text><Text style={styles.commentText}>{this.props.productData.seller_comment}</Text></View>: null}
-                
+                  {this.props.productData.grade ?<View style={styles.row6}><Text style={styles.col1}>Q Grade</Text><Text style={styles.col2}>:</Text><Text style={styles.col3}>{this.props.productData.grade}</Text></View>: null}
+                  {this.props.productData.rating ? <View style={styles.row6}><Text style={styles.col1}>Rating</Text><Text style={styles.col2}>:</Text>
+                <View style={{flexDirection:'row',width:'50%'}}>
+  <Stars
+    default={this.props.productData.avg_rating}
+    count={5}
+    half={true}
+    disabled={true}
+    starSize={18}
+    fullStar={<Icon name={'star'} style={[styles.myStarStyle]}/>} 
+    emptyStar={<Icon name={'star-border'} style={[styles.myStarStyle, styles.myEmptyStarStyle]}/>}
+    halfStar={<Icon name={'star-half'} style={[styles.myStarStyle]}/>}
+    
+  />
+
+  <Text style={styles.col3}> {this.props.productData.avg_rating}</Text>
+</View>
+                </View> : null}
+                  {this.props.productData.seller_comment ?<View style={styles.row7}><Text style={styles.col1}>Description</Text><Text style={styles.commentText}>{this.props.productData.seller_comment}</Text></View>: null}
+               
+                  
                 </View>            
         </View>
       </View>

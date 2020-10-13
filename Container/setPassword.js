@@ -272,37 +272,17 @@ class SetPassword extends Component {
       },
     });
 
+    const htmlContent = `
+    <h1>This HTML snippet is now rendered with native components !</h1>
+    <h2>Enjoy a webview-free and blazing fast application</h2>
+    <img src="https://i.imgur.com/dHLmxfO.jpg?2" />
+    <em style="textAlign: center;">Look at how happy this native cat is</em>
+`;
+
+  
     return (
       <View style={{flex: 1.0}}>       
-        {this.state.webView ? (
-          <KeyboardAwareScrollView
-            resetScrollToCoords={{x: 0, y: 0}}
-            style={{
-              backgroundColor:'#ffff',
-              paddingTop: 10,
-              paddingBottom: 10,
-            }}
-            scrollEnabled={true}>
-            <View style={styles.webView}>
-              <View style={styles.webViewChild}>
-                <CloseButton {...this.props} onClose={this.close} />
-                <View>
-                  <Text style={styles.tc}>Terms & Conditions</Text>
-                  <Text style={styles.tcDetail}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                    ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    Duis aute irure dolor in reprehenderit in voluptate velit
-                    esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                    occaecat cupidatat non proident, sunt in culpa qui officia
-                    deserunt mollit anim id est laborum.
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </KeyboardAwareScrollView>
-        ) : (
+        
           <KeyboardAwareScrollView
           style={{backgroundColor:'#ffff'}} 
             resetScrollToCoords={{x: 0, y: 0}}
@@ -421,7 +401,7 @@ class SetPassword extends Component {
               />
               <TouchableNativeFeedback
                 onPress={() => {
-                  this.setState({webView: true});
+                  this.props.navigation.navigate('Web View')
                 }}>
                 <Text style={styles.viewall}>Terms & Conditions!</Text>
               </TouchableNativeFeedback>
@@ -490,7 +470,7 @@ class SetPassword extends Component {
               </Dialog.Container>
             </View>
           </KeyboardAwareScrollView>
-        )}
+       
       </View>
     );
   }

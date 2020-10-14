@@ -268,7 +268,7 @@ class AllOrigins extends Component {
           ) : (
             <View style={{paddingTop: 10}}>
               <FlatList
-                style={{height: this.state.height }}
+                style={{height: this.state.height / 1.8 }}
                 data={
                   !this.props.searchBarShow
                     ? this.state.originsData
@@ -285,7 +285,7 @@ class AllOrigins extends Component {
                 }}
                 renderItem={({item}) => {
                   return (
-                    <View style={{}}>
+                    
                       <TouchableOpacity
                         onPress={() => this.selectHandler(item.origin_Id)}>
                         <View style={styles.itemContainer}>
@@ -314,31 +314,14 @@ class AllOrigins extends Component {
                             </View>
                            
                             : null}  
-                           
-                            {/* <CheckBox
-                        checked={this.state.checked || item.checked}
-                        center                                     
-                        checkedColor={'#7ea100'}
-                        checkedIcon='dot-circle-o'                        
-                        onPress={() => this.selectOrigins(item.origin_Id)}
-                        textAlignVertical={'center'}
-                        containerStyle={{
-                          // paddingLeft: 0,
-                          // paddingRight: 0,
-                          paddingTop: 30,
-                          paddingBottom:30,                         
-                          // justifyContent: 'space-between',
-                      
                           
-                        }}
-                      /> */}
                           </ImageBackground>
                         </View>
                         <View style={styles.itemData}>
                           <Text style={styles.textData}>{item.name}</Text>
                         </View>
                       </TouchableOpacity>
-                    </View>
+                 
                   );
                 }}
               />

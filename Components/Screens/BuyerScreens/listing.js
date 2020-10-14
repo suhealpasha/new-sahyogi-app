@@ -298,7 +298,8 @@ class Listing extends Component {
       },
       loginButton: {
         alignItems: 'center',
-        width: '100%',
+        // width: '100%',
+        width:135,
         padding: 10,
         backgroundColor: '#7ea100',
         borderRadius: 50,

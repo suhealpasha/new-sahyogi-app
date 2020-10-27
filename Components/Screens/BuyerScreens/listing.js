@@ -52,12 +52,14 @@ class Listing extends Component {
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
-  async componentDidMount() {
+  async componentDidMount() { 
+ 
     await this.fetchProducts();
     if( this.props.route.params.sideDrawer){
       this.sorting('second')
     }
-    else if( this.props.route.params.nano){    
+    else if( this.props.route.params.nano){  
+      
     this.props.onOriginProductsFiltered([]);
     this.props.onVaritieyProductsFiltered([]);
     this.props.onNanoLotProductsFiltered(true);
@@ -65,7 +67,8 @@ class Listing extends Component {
     this.RBSheet.close();
     
     }
-    else if(this.props.route.params.micro){     
+    else if(this.props.route.params.micro){   
+  
     this.props.onOriginProductsFiltered([]);
     this.props.onVaritieyProductsFiltered([]);
     this.props.onNanoLotProductsFiltered(false);
@@ -78,8 +81,11 @@ class Listing extends Component {
       this.handleBackButtonClick,
     );
   }
+
+  
+
   fetchProducts = async () => {
-    this.setState({spinner: true});
+    this.setState({spinner: true,allProductsData:[]});
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     
     const data = {
@@ -94,8 +100,8 @@ class Listing extends Component {
         (!this.props.filterNanoLotData && !this.props.filterMicroLotData)
           ? null
           : this.props.filterNanoLotData
-          ? 'Nano'
-          : 'Micro',
+          ? 'nano'
+          : 'micro',
       verity_Id: this.props.filterVaritiesData.length
         ? String(this.props.filterVaritiesData)
         : null,
@@ -129,8 +135,7 @@ class Listing extends Component {
       });
   };
 
-  componentWillUnmount() {
-   
+  componentWillUnmount() {   
     BackHandler.removeEventListener(
       'hardwareBackPress',
       this.handleBackButtonClick,
@@ -145,8 +150,10 @@ class Listing extends Component {
     return true;
   }
 
-  UNSAFE_componentWillReceiveProps() {  
+  UNSAFE_componentWillReceiveProps(prevProps,prevState) {  
+    if(prevProps.clickedIcon !== null){
       this.RBSheet.open();    
+    }
   }
 
   sorting = args => {
@@ -229,6 +236,11 @@ class Listing extends Component {
     this.props.onMicroLotProductsFiltered(false);
     this.fetchProducts();
   };
+
+  goto = () =>{
+    // this.props.onClickedIcon()
+    this.props.navigation.navigate('All Regions')
+  }
 
   render() {
  
@@ -437,7 +449,7 @@ class Listing extends Component {
             
 
 <View style={{display:'flex',flexDirection:'row',justifyContent:'space-around',paddingTop:20,paddingBottom:20}}>
-                     <TouchableOpacity style={styles.loginButton} onPress = {()=>this.props.navigation.navigate('All Regions')} >
+                     <TouchableOpacity style={styles.loginButton} onPress = {this.goto} >
                   <Text style={styles.buttonText}>Regions / Origins</Text>
                        </TouchableOpacity>
                       {/* <TouchableOpacity style={styles.loginButton}  onPress={() => {this.props.filterFeaturedData ? this.onSeeAll('All Featured Crops') : this.onSeeAll('Products')}}>

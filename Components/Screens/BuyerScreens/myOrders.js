@@ -39,7 +39,8 @@ class MyOrders extends Component {
       comment: '',
       buyerRating: null,
       productId: null,
-      ratingId: null
+      ratingId: null,
+      defaultRating:1
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -205,7 +206,7 @@ class MyOrders extends Component {
           numColumns={1}
           // keyExtractor = {(items)=>{items.key}}
 
-          renderItem={({item}) => {
+          renderItem={({item}) => {            
             let ratingIcon = item.feedback ? (
               <View style={{flexDirection: 'row'}}>
                 <Text
@@ -221,21 +222,9 @@ class MyOrders extends Component {
                 </Text>
                 <TouchableOpacity
                 onPress={() => {
-                this.setState({dailogBoxOpen: true,productId:item.product_Id,ratingId:item.feedback.rating_Id})
+                this.setState({dailogBoxOpen: true,productId:item.product_Id,ratingId:item.feedback.rating_Id,defaultRating:item.feedback.rating})
                 }}>
-                {/* <Text style={styles.ratingStyle}>
-                  {'  '}
-                  {item.feedback.rating}{' '}
-                  <Icon
-                    name="star"
-                    size={12}
-                    style={{
-                      justifyContent: 'center',
-                      textAlignVertical: 'center',
-                    }}
-                  />
-                  {'  '}
-                </Text> */}
+                
                 <View style={{flexDirection: 'row'}}>
                         <Icon
                           name="star"
@@ -359,8 +348,10 @@ class MyOrders extends Component {
 
           <AirbnbRating
             count={5}
-            defaultRating={0}
+         
             size={25}
+            minValue = {1}
+            defaultRating={this.state.defaultRating}
             showRating={false}
             onFinishRating={this.ratingCompleted}
           />

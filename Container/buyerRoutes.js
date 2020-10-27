@@ -491,6 +491,7 @@ class Routes extends Component {
               <HomeScreen
                 {...props}
                 {...this.state}
+                // open={this.state.open}
                 featuredProductsData={this.state.featuredProductsData}
                 regionsData={this.state.regionsData}
                 latestProductsData={this.state.latestProductsData}
@@ -558,6 +559,7 @@ class Routes extends Component {
                 clickedIcon={this.state.clickedIcon}
                 functionalIcon={this.state.functionalIcon}
                 onToggleOpen = {this.toggleOpen}
+               
               />
             )}
           </Stack.Screen>
@@ -668,6 +670,7 @@ class Routes extends Component {
                 searchBarShow={this.state.searchBarShow}
                 regionsData={this.state.regionsData}
                 onToggleOpen = {this.toggleOpen}
+                onClickedIcon = {()=>{this.clickedIcon(null)}}
               />
             )}
           </Stack.Screen>
@@ -769,18 +772,7 @@ class Routes extends Component {
                   <Icon name="chevron-left" size={35} color="white" />
                 </TouchableWithoutFeedback>
               ),
-              // headerRight: () => (
-              //   <View style={{flexDirection: 'row'}}>
-              //     <TouchableWithoutFeedback
-              //       onPress={() => navigation.navigate('')}>
-              //       <Icon
-              //         name="search"
-              //         size={24}
-              //         style={{padding: 10, color: '#ffffff'}}
-              //       />
-              //     </TouchableWithoutFeedback>
-              //   </View>
-              // ),
+             
             })}
             initialParams={{filterOn: this.state.filterOn}}>
             {props => (

@@ -41,13 +41,11 @@ class AddAddress extends Component {
       userName: null,
       userNameError: false,
       userNameValidationError: false,
-      doorNumber: null,
-      doorNumberError: false,
+      address: null,
+      addressError: false,
       phoneNumber: null,
       phoneNumberError: false,
-      phoneNumberValidationError: false,
-      street: null,
-      streeError: false,
+      phoneNumberValidationError: false,     
       city: null,
       cityError: false,
       stateId:null,
@@ -170,7 +168,7 @@ class AddAddress extends Component {
 
   async UNSAFE_componentWillReceiveProps(prevProps,prevState) {
     if(prevProps.saveEditIconAddress  !== this.props.saveEditIconAddress){
-    let name, street, door_number, city, state, zip, contact_no;
+    let name,address, city, state, zip, contact_no;
     if (
       this.state.userName === null &&
       this.state.userNameValidationError === false
@@ -179,16 +177,12 @@ class AddAddress extends Component {
     } else {
       name = this.state.userName;
     }
-    if (this.state.doorNumber === null) {
-      door_number = this.state.addressData.door_number;
+    if (this.state.address === null) {
+      address = this.state.addressData.address;
     } else {
-      door_number = this.state.doorNumber;
+      address = this.state.address;
     }
-    if (this.state.street === null) {
-      street = this.state.addressData.address;
-    } else {
-      street = this.state.street;
-    }
+   
     if (this.state.city === null) {
       city = this.state.addressData.city;
     } else {
@@ -215,9 +209,8 @@ class AddAddress extends Component {
 
     const data = JSON.stringify({
       address_Id: this.state.addressData.address_Id,
-      name: name,
-      street: street,
-      door_number: door_number,
+      name: name,    
+      address: address,
       city: city,
       state_Id: state,
       zip: zip,
@@ -321,12 +314,11 @@ class AddAddress extends Component {
             />
             <Input
              spellCheck={false}
-             autoCorrect={false}
-             maxLength={4}
-              placeholder={this.state.addressData.door_number}
+             autoCorrect={false}             
+              placeholder={this.state.addressData.address}
               style={styles.inputStyle}
-              onChangeText={doorNumber =>
-                this.setState({doorNumber, doorNumberError: false})
+              onChangeText={address =>
+                this.setState({address, addressError: false})
               }
               // errorMessage={
               //   this.state.doorNumberError === true
@@ -334,19 +326,7 @@ class AddAddress extends Component {
               //     : false
               // }
             />
-            <Input
-             spellCheck={false}
-             autoCorrect={false}
-             maxLength={20}
-              placeholder={this.state.addressData.address}
-              style={styles.inputStyle}
-              onChangeText={street => this.setState({street})}
-              // errorMessage={
-              //   this.state.userNameError === true
-              //     ? 'Enter the User Name'
-              //     : false
-              // }
-            />
+           
             <Input
              spellCheck={false}
              autoCorrect={false}

@@ -31,6 +31,8 @@ import * as api from '../../../assets/api/api';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
 import Spinner from 'react-native-loading-spinner-overlay';
+import {Rating, AirbnbRating} from 'react-native-ratings';
+import Dialog from 'react-native-dialog';
 
 class ProductDescriptionTemplate extends Component {
   constructor(props) {
@@ -42,6 +44,11 @@ class ProductDescriptionTemplate extends Component {
       orderDetailsData: [],
       orderDetailsAddressData: null,
       thumbnailImages: [require('../../../assets/Images/coffeeFarms/img4.png')],
+      dailogBoxOpen: false,
+      productId: null,
+      ratingId: null,
+      comment: '',
+      buyerRating: null,
     };
   }
 
@@ -112,6 +119,50 @@ class ProductDescriptionTemplate extends Component {
   fetchProductDetails = (args, args1) => {
     this.props.onDisplayVarietyName(args1);
     this.props.navigation.navigate('Product Description', {productId: args});
+  };
+
+  ratingCompleted = async (rating) => { 
+    this.setState({buyerRating: rating});
+  };
+
+  giveRatings = async () => {
+    this.setState({dailogBoxOpen: false});
+    let data;
+    if(this.state.ratingId === null){
+      data = JSON.stringify({
+        rating: this.state.buyerRating,
+        comment: this.state.comment,
+        product_Id: this.state.productId,
+      });
+    }
+    else{
+      data = JSON.stringify({
+        rating_Id: this.state.ratingId,
+        rating: this.state.buyerRating,
+        comment: this.state.comment,
+        product_Id: this.state.productId,
+      });
+    }  
+    console.log(data)  
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    if(this.state.buyerRating){
+    axios
+      .post(api.buyerAddOrUpdateFeedbackAPI, data, {
+        headers: {
+          accept: 'application/json',
+          access_token: access_token,
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+      })
+      .then(res => {       
+        this.fetchOrder();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    }
+    
   };
 
   render() {
@@ -397,9 +448,7 @@ class ProductDescriptionTemplate extends Component {
       shipping = this.state.orderDetailsData.shipping_charge;
       totalAmount = this.state.orderDetailsData.total_amount;
       orderStatus = this.state.orderDetailsData.order_status;
-      // buyerRating = this.state.orderDetailsData.rating;
-      // buyerComment = this.state.orderDetailsData.comment;
-      // console.log("****************",buyerRating,buyerComment)
+      buyerRating = this.state.orderDetailsData.rating;     
       if (orderStatus === 'placed' || orderStatus === 'rejected') {
         currentPosition = 0;
       } else if (orderStatus === 'shipped') {
@@ -408,9 +457,7 @@ class ProductDescriptionTemplate extends Component {
         currentPosition = 2;
       }
       if (this.state.orderDetailsAddressData) {
-        buyerAddress =
-          this.state.orderDetailsAddressData.door_number +
-          ',' +
+        buyerAddress =          
           this.state.orderDetailsAddressData.address +
           ',' +
           this.state.orderDetailsAddressData.city +
@@ -422,8 +469,7 @@ class ProductDescriptionTemplate extends Component {
           this.state.orderDetailsAddressData.contact_no;
           addressName = this.state.orderDetailsAddressData.name;
       }
-   
-    
+          
     }
 
     const labels = ['Ordered', 'Shipped', 'Delivered'];
@@ -452,6 +498,62 @@ class ProductDescriptionTemplate extends Component {
       currentStepLabelColor: '#7ea100',
       labelFontFamily: 'GothamLight',
     };
+
+    let comm;
+    if(this.state.orderDetailsData.feedback){
+      comm = this.state.orderDetailsData.feedback.comment
+    }
+    let ratingIcon = this.state.orderDetailsData.feedback ? (
+      <View style={{flexDirection: 'row'}}>
+        <Text
+          style={styles.productDetailHeaderText}>
+          Your Ratings
+        </Text>
+        <TouchableOpacity
+        onPress={() => {
+        this.setState({dailogBoxOpen: true,productId:this.state.orderDetailsData.product_Id,ratingId:this.state.orderDetailsData.feedback.rating_Id})
+        }}
+        >
+        
+        <View style={{flexDirection: 'row'}}>
+                <Icon
+                  name="star"
+                  size={20}
+                  color="#ffbd4a"
+                  style={{
+                    justifyContent: 'center',
+                    textAlignVertical: 'center',
+                  }}
+                />
+                <Text style={styles.ratingStyle}>
+                  {this.state.orderDetailsData.feedback.rating}
+                </Text>
+              </View>
+        </TouchableOpacity>
+      </View>
+    ) : (
+      <TouchableOpacity
+        onPress={() => {
+          this.setState({
+            dailogBoxOpen: true,
+            productId: this.state.orderDetailsData.product_Id,
+          });
+        }}
+        >
+
+        <Text
+          style={{
+            fontFamily: 'GothamLight',
+            fontSize: 12,
+            textAlignVertical: 'center',
+            color: '#3e708f',
+            paddingRight: 10,
+            textAlign: 'left',
+          }}>
+          Give Your Ratings
+        </Text>
+      </TouchableOpacity>
+    );
 
     return (
       <View style={styles.parentContaier}>
@@ -495,8 +597,12 @@ class ProductDescriptionTemplate extends Component {
                       </Text>
                       <Text style={styles.productDetailHeaderText}>Origin</Text>
                       <Text style={styles.productDetailHeaderText}>Farm</Text>
-                   
-                      {this.state.orderDetailsData.comment !== ''  ? <Text style={styles.productDetailHeaderText}>Comments</Text> : null }
+                      {this.state.orderDetailsData.feedback ? 
+                      this.state.orderDetailsData.feedback.comment !== ""  ? <Text style={styles.productDetailHeaderText}>Comments</Text> : null
+                    :
+                    null  
+                    }
+                      { }
                     </View>
                     <View style={styles.productDetail}>
                       <Text style={styles.productDetailText}>
@@ -511,24 +617,14 @@ class ProductDescriptionTemplate extends Component {
                            
                   </View>                  
                   </View>
-                  <View style={{paddingLeft:5,paddingRight:5}}><Text style={styles.commentText}>{this.state.orderDetailsData.comment}</Text></View> 
-                  {/* <View style={{paddingBottom:10,flexDirection:'row'}}><Text style={styles.productDetailHeaderText}>Your Ratings</Text>
-                  <View style={{display:'flex',flexDirection:'row',alignItems:'flex-end',justifyContent:'flex-start'}}><Text style={styles.productDetailText}>: </Text><Text style={styles.ratingStyle}>
-                  {'  '}
-                  {this.state.orderDetailsData.rating}{' '}
-                  <Icon
-                          name="star"
-                          size={20}
-                          color="#ffbd4a"
-                          style={{
-                            justifyContent: 'center',
-                            textAlignVertical: 'center',
-                          }}
-                        />
-                  {'  '}
-                </Text>
-                </View>
-                  </View>  */}
+                  {this.state.orderDetailsData.feedback ?
+                  this.state.orderDetailsData.feedback.comment !== '' ?
+                  <View style={{paddingRight:5}}><Text style={styles.commentText}>{comm}</Text></View> 
+                  : null
+                  : null}
+                  
+                 
+                  {ratingIcon}
                   <View
                     style={{
                       flexDirection: 'row',
@@ -536,6 +632,7 @@ class ProductDescriptionTemplate extends Component {
                       borderBottomWidth: 0.25,
                       paddingBottom: 10,
                       borderColor: '#95A5A6',
+                      paddingTop:10
                     }}>
                     <View>
                       <Text style={styles.priceText}>
@@ -557,8 +654,9 @@ class ProductDescriptionTemplate extends Component {
                   </View>                
                 </View>
                 {orderStatus === 'placed' ||
+                orderStatus === 'accepted' ||
                 orderStatus === 'shipped' ||
-                orderStatus === 'deliverd' ? (
+                orderStatus === 'delivered' ? (
                   <View
                     style={{
                       paddingBottom: 10,
@@ -572,16 +670,19 @@ class ProductDescriptionTemplate extends Component {
                       labels={labels}
                       stepCount={3}
                     />
-                    {orderStatus === 'placed' ? (
+                    {orderStatus === 'placed' || orderStatus === 'accepted'  ? (
                       <View>
                       <ConfirmButton
                         buttonName="Cancel"
                         cancelOrder={()=>this.cancelOrder('cancelled')}
                       />
-                      <ConfirmButton
-                      buttonName="Return"
-                      cancelOrder={()=>this.cancelOrder('returned')}
-                    />
+                      {this.state.orderDetailsData.returnable ?
+                       <ConfirmButton
+                       buttonName="Return"
+                       cancelOrder={()=>this.cancelOrder('returned')}
+                     />
+                      : null}
+                     
                     </View>
                     ) : null}
                   </View>
@@ -677,6 +778,56 @@ class ProductDescriptionTemplate extends Component {
             </View>
           </View>
           </View>
+          <Dialog.Container
+          contentStyle={{
+            alignItems: 'center',
+            paddingBottom: 0,
+            paddingRight: 0,
+            paddingLeft: 0,
+          }}
+          visible={this.state.dailogBoxOpen}>
+          <Dialog.Title
+            style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
+            Your Rating
+          </Dialog.Title>
+
+          <AirbnbRating
+            count={5}
+            defaultRating={this.state.orderDetailsData.feedback ? this.state.orderDetailsData.feedback.rating: 0}
+            size={25}
+            minValue = {1}
+            showRating={false}
+            onFinishRating={this.ratingCompleted}
+          />
+          <Dialog.Button
+            style={{
+              paddingTop: 10,
+              paddingBottom: 10,
+              color: '#004561',
+              fontFamily: 'GothamBold',
+              paddingLeft: 0,
+              paddingRight: 0,
+              borderColor: 'grey',
+              width: 300,
+              borderTopWidth: 1,
+              textAlign: 'center',
+              justifyContent: 'center',
+            }}
+            label="Ok"
+            onPress={() => {
+              this.giveRatings();
+            }}
+          />
+          <Dialog.Input
+            placeholder="Comment"
+            underlineColorAndroid={'#95A5A6'}
+            multiline={true}
+            width={280}
+            onChangeText={comm => {
+              this.setState({comment: comm});
+            }}
+          />
+        </Dialog.Container>
         </ScrollView>
       </View>
       

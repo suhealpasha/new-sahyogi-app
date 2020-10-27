@@ -28,7 +28,7 @@ import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scrollview';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 let filteredData =[]
 class Varities extends Component {
@@ -215,7 +215,21 @@ class Varities extends Component {
             }}
           />
         </KeyboardAwareScrollView>   
-        <TouchableWithoutFeedback onPress={this.filterVarities}>
+        {/* <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  backgroundColor: '#f8f8f8',
+                 
+                  shadowColor: 'rgba(0,0,0, .4)', // IOS
+                  shadowOffset: { height: 1, width: 1 }, // IOS
+                  shadowOpacity: 1, // IOS
+                  shadowRadius: 1, //IOS
+                  backgroundColor: '#fff',
+                  elevation: 10, // Android
+                }}>
+        <TouchableWithoutFeedback onPress={this.filterVarities} >
           <Text
             style={{
               paddingBottom: 20,
@@ -231,6 +245,52 @@ class Varities extends Component {
             Apply
           </Text>
         </TouchableWithoutFeedback>
+        </View> */}
+
+<TouchableNativeFeedback onPress={this.filterVarities} style={{
+               shadowColor: 'rgba(0,0,0, .4)', // IOS
+               shadowOffset: { height: 1, width: 1 }, // IOS
+               shadowOpacity: 1, // IOS
+               shadowRadius: 1, //IOS
+               backgroundColor: '#fff',
+               elevation: 2, // Android
+        
+            }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  backgroundColor: '#f8f8f8',
+                 
+                  shadowColor: 'rgba(0,0,0, .4)', // IOS
+                  shadowOffset: { height: 1, width: 1 }, // IOS
+                  shadowOpacity: 1, // IOS
+                  shadowRadius: 1, //IOS
+                  backgroundColor: '#fff',
+                  elevation: 10, // Android
+                }}>
+                <Text
+                  style={{
+                    paddingTop: 15,
+                    paddingBottom: 15,
+                    textAlignVertical: 'center',
+                    color: '#004561',
+                    textAlign: 'center',
+                    fontSize: 14,
+                    fontFamily: 'GothamMedium',
+                    textAlignVertical: 'center',
+                  }}>
+                  Continue
+                </Text>
+                <Icon
+                  name="chevron-right"
+                  color={'#3e708f'}
+                  size={25}
+                  style={{textAlignVertical: 'center'}}
+                />
+              </View>
+            </TouchableNativeFeedback>
       </View>
     );
   }

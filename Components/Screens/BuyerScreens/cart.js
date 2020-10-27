@@ -395,8 +395,7 @@ class Cart extends Component {
       tax,
       shipping,
       totalAmount,
-      door,
-      street,
+      address,     
       mobile,
       city,
       state,
@@ -434,9 +433,8 @@ class Cart extends Component {
     Object.values(this.state.buyerCartData).map(i => {
       if (i) {
         addressFormating = true;
-        addressName = i.name;
-        door = i.door_number;
-        street = i.address;
+        addressName = i.name;      
+        address = i.address;
         city = i.city;
         state = i.state_name;
         zip = i.zip;
@@ -648,10 +646,9 @@ class Cart extends Component {
                           {addressName}
                         </Text>
                         <Text style={styles.orderPlacementContainerText}>
-                          {door}
-                          {addressFormating ? ',' : null}
-                          {street}
-                          {addressFormating ? ',' : null}
+                          {address}
+                          {addressFormating ? ',' : null}                         
+                         
                           {city}
                           {addressFormating ? ',\n' : null}
                           {state}

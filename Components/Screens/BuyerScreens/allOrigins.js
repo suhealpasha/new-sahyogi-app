@@ -161,6 +161,7 @@ class AllOrigins extends Component {
     this.props.onMicroLotProductsFiltered(false);
     this.props.onOriginProductsFiltered(checkList);
     this.props.navigation.navigate('Listing');
+    this.props.onClickedIcon()
   };
 
   selectHandler = args => {

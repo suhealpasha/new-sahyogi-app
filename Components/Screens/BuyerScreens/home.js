@@ -72,7 +72,7 @@ class App extends Component {
     this.props.onProductListingTitle('Products');
     this.props.navigation.navigate(args,{sideDrawer:true})
       }
-      else if(args2 === "Nano"){
+      else if(args2 === "Nano"){        
         this.props.onProductListingTitle('Products');
         this.props.navigation.navigate(args,{nano:true})
       }

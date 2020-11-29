@@ -294,17 +294,18 @@ class AllOrigins extends Component {
                             source={{
                               uri: item.url_thumbnail_image,
                             }}
-                            style={{
-                              aspectRatio: 2 / 2,
+                            // style={{
+                            //   aspectRatio: 2 / 2,
 
-                              borderRadius: 100,
-                            }}
+                            //   borderRadius: 100,
+                            // }}
+                            style={this.state.checked || item.checked ? {aspectRatio: 2 / 2,borderRadius: 100,borderWidth:5,borderColor:'#7ea100'} : {aspectRatio: 2 / 2,borderRadius: 100,}}
                             imageStyle={{
                               borderRadius: 100,
                             }}
                             resizeMode="cover">
                             {this.state.checked || item.checked ?
-                            <View style={{alignItems:'center',height:100,justifyContent:'center'}}>
+                            <View style={{opacity: 0, height: 0}}>
                              <RoundCheckbox
                             size={20}
                             checked={this.state.checked || item.checked}

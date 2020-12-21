@@ -94,8 +94,8 @@ class HomeScreen extends Component {
     this.props.navigation.navigate('Listing');
   };
 
-  functionHandler = () =>{
-    this.props.navigation.navigate('All Regions');
+  functionHandler = () =>{    
+      this.props.navigation.navigate('All Regions');
     if(this.props.open){
     this.props.onToggleOpen();
   }

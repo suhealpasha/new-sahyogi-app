@@ -39,7 +39,7 @@ import {
   AccordionList,
 } from 'accordion-collapse-react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon1 from 'react-native-vector-icons/MaterialIcons';
+import Icon1 from 'react-native-vector-icons/MaterialCommunityIcons';
 class ProductDescriptionTemplate extends Component {
   constructor(props) {
     super(props);
@@ -253,22 +253,37 @@ class ProductDescriptionTemplate extends Component {
             <Icon1
             name={
               this.state.productData.wishlist === false
-                ? 'favorite-border'
-                : 'favorite'
+                ? 'heart-circle'
+                : 'heart-circle'
             }
        
-            size={30}
-            color={this.state.productData.wishlist ? 'red' : '#7ea100'}
+            size={32}
+            color={this.state.productData.wishlist ? 'red' : 'white'}
               style={{
                 top: 150,
                 position: 'absolute',
                 zIndex: 1,
-                paddingRight:10
+                paddingRight:10,
+                
               }}
             />
             </TouchableNativeFeedback>
             <View style={{backgroundColor:'#7ea100'}}>
             <View style={styles.productImageContainer}>
+              {this.props.filterFeaturedData ?
+               <View style={{display:'flex',flexDirection:'row',backgroundColor:'#cc0038',width:'50%',padding:10,color:'white',top:36,left:0,zIndex:1,borderTopLeftRadius:30,borderBottomRightRadius:30}}>
+               <Icon
+             name="star"
+             size={16}
+             color="white"
+             style={{
+               justifyContent: 'center',
+               textAlignVertical: 'center',
+             }}
+           />
+                 <Text style={{color:'white',fontSize:14,fontFamily:'GothamMedium'}}>FEATURED</Text></View>
+              :null}
+           
               <SliderBox
              
                 images={
@@ -376,6 +391,7 @@ class ProductDescriptionTemplate extends Component {
 const mapStateToProps = state => {
   return {
     buyProduct: state.reducer.buyProduct,
+    filterFeaturedData: state.reducer.filterFeaturedData,
   };
 };
 const mapDispatchToProps = dispatch => {

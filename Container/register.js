@@ -157,7 +157,8 @@ class Register extends Component {
     ) {
       this.setState({spinner: true});
       let data = JSON.stringify({
-        email_id: this.state.emailId,
+        email_id:this.state.emailId,
+        mobile_no: this.state.mobileNumber,
       });
       await axios
         .post(api.otpAPI, data, {
@@ -168,7 +169,7 @@ class Register extends Component {
           },
         })
         .then(res => {
-          console.log(res.data.data)
+          console.log(res.data)
           if (res.status) {
             this.setState({spinner: false});
             this.props.onRegisterDetails(

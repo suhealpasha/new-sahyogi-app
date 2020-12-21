@@ -139,37 +139,9 @@ class Cart extends Component {
     this.props.navigation.navigate('Product Description', {productId: args});
   };
 
-  placeOrder = async (args, args1) => {
-    const data = JSON.stringify({
-      cart_id: args,
-      shipping_address_Id: args1,
-      invoice_address_Id: args1,
-    });
-   console.log(data)
-    this.setState({spinner: true});
-    const access_token = await AsyncStorage.getItem('isLoggedIn');
-    await axios
-      .post(api.buyerOrderAPI, data, {
-        headers: {
-          access_token: access_token,
-          accept: 'application/json',
-          'accept-language': 'en_US',
-          'content-type': 'application/x-www-form-urlencoded',
-        },
-      })
-      .then(res => {
-        if (res.status) {
-          this.setState({spinner: false});
-          this.props.onfetchBuyerCart();
-          this.props.navigation.navigate('Home');
-          this.props.onFetchBuyerOrders();
-          Toast.show('Orderd placed sucessfully!');
-        }
-      })
-      .catch(err => {
-        this.setState({spinner: false});
-        console.log(err);
-      });
+  placeOrder = async (args, args1,args2) => {
+    this.props.navigation.navigate('Checkout',{cartId: args,addressId:args1,totalAmount:args2});
+  
   };
 
   updateCart = async (args1, args2, args3, args4, args5) => {
@@ -719,14 +691,14 @@ class Cart extends Component {
                   onPress={() => {
                     this.scrollView.scrollToEnd();
                   }}>
-                  View price details
+                  Current Total
                 </Text>
               </View>
               <TouchableOpacity
 
                 // disabled={addressId ? false : true }
                 style={styles.buyButton}
-                onPress={() => {addressId ? this.placeOrder(cartId, addressId) : this.noAddress()}}
+                onPress={() => {addressId ? this.placeOrder(cartId, addressId,totalAmount) : this.noAddress()}}
                 underlayColor="#fff">
                 <Text style={styles.buyText}>Place order</Text>
               </TouchableOpacity>

@@ -1,5 +1,5 @@
-const URL = 'https://dollarbirdinc.com/db_dev/microffee_api/'
-// const URL = 'https://microffee.com/microffee_api/'
+ // const URL = 'https://dollarbirdinc.com/db_dev/microffee_api/'
+const URL = 'https://microffee.com/microffee_api/'
 
 //////////////////////// Common API's //////////////////////////
 
@@ -50,6 +50,7 @@ export const buyerAddOrUpdateFeedbackAPI = URL+'buyerAddOrUpdateFeedback';
 export const buyergetFeedbackAPI = URL+'getBuyerFeedback';
 export const buyerGetNotificationAPI = URL+'buyerNotification';
 export const buyerUpdateNotificationAPI = URL+'updateBuyerNotification';
+export const buyerStripeCheckoutAPI = URL+'stripeCheckout';
 
 //////////////////////// Seller API's //////////////////////////
 

@@ -52,7 +52,7 @@ import {SearchBar} from 'react-native-elements';
 import axios from 'axios';
 import * as api from '../assets/api/api';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import Checkout from "../Components/Screens/BuyerScreens/Checkout"
 
 const Stack = createStackNavigator();
 const uiTheme = {
@@ -269,7 +269,7 @@ class Routes extends Component {
       });
   };
 
-  fetchAllRegions = async () => {
+  fetchAllRegions = async () => {   
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     axios
       .get(api.regionsAPI, {
@@ -281,6 +281,7 @@ class Routes extends Component {
         },
       })
       .then(res => {
+        console.log(res.data.data)
         this.setState({allRegionsData: res.data.data});
       })
       .catch(err => {
@@ -1486,7 +1487,27 @@ class Routes extends Component {
           >
             {props => <OrderDetail {...props} {...this.state} onFetchBuyerOrders={this.fetchBuyerOrders} />}
           </Stack.Screen>
-         
+          <Stack.Screen
+            name="Checkout"
+           
+            options={({navigation, route}) => ({
+              animationEnabled: false,
+               title: 'Checkout',
+              headerStyle: {
+                backgroundColor: '#7ea100',
+               
+              },
+              headerTitleAlign: 'center',
+              headerTitleStyle:{ fontFamily:'GothamMedium',
+              fontSize:22},
+              headerTintColor: '#fff',
+            })}
+            
+          >
+{props => <Checkout {...props} buyerCartData={this.state.buyerCartData} cartCount ={this.state.cartCount} onfetchBuyerCart={this.fetchBuyerCart} onFetchBuyerOrders={this.fetchBuyerOrders}/>}
+            </Stack.Screen>
+
+
         </Stack.Navigator>
       </NavigationContainer>
     );

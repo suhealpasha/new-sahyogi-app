@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
   StyleSheet,
   FlatList,
@@ -18,26 +18,24 @@ import * as api from '../../assets/api/api';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-simple-toast';
 import * as actionTypes from '../../Store/action';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 class StickyButton extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-     
-    }
+    this.state = {};
   }
 
-  addToCart = async() => {    
-    this.props.onSpinner(true) 
-    const data = JSON.stringify({     
-     product_id:this.props.cartProductData[0],
-     unit_id:this.props.cartProductData[1],     
-     quantity:this.props.cartProductData[2],     
-     unit_price:this.props.cartProductData[3],
-     inventory_id:this.props.cartProductData[4]
+  addToCart = async () => {
+    this.props.onSpinner(true);
+    const data = JSON.stringify({
+      product_id: this.props.cartProductData[0],
+      unit_id: this.props.cartProductData[1],
+      quantity: this.props.cartProductData[2],
+      unit_price: this.props.cartProductData[3],
+      inventory_id: this.props.cartProductData[4],
     });
-    console.log(data)
+    console.log(data);
     const access_token = await AsyncStorage.getItem('isLoggedIn');
     await axios
       .post(api.buyerAddProductToCart, data, {
@@ -50,95 +48,114 @@ class StickyButton extends Component {
       })
       .then(res => {
         if (res.status) {
-          this.props.onSpinner(false) 
+          this.props.onSpinner(false);
           this.props.onfetchBuyerCart();
-          Toast.show('Added to the cart.')
+          Toast.show('Added to the cart.');
         }
       })
       .catch(err => {
-        this.props.onSpinner(false) 
+        this.props.onSpinner(false);
         console.log(err);
       });
-  }
+  };
 
- buyNow = async() =>{
-  await this.addToCart();
-  this.props.navigation.navigate('Cart')
-  }
+  buyNow = async () => {
+    await this.addToCart();
+    this.props.navigation.navigate('Cart');
+  };
 
-  cancelOrder = async () =>{
-    this.props.onSpinner(true) 
+  cancelOrder = async () => {
+    this.props.onSpinner(true);
     const access_token = await AsyncStorage.getItem('isLoggedIn');
-    console.log(access_token)
-       let data = JSON.stringify({
+    console.log(access_token);
+    let data = JSON.stringify({
       orderStatus: 'rejected',
-      order_Id: this.props.orderNumber,      
-    });      
- 
-    await axios
-      .post(api.sellerOrderorderStatusupdateAPI, data, {
-        headers: {
-          accept: "application/json",
-          "accept-language": "en_US",
-          "content-type": "application/x-www-form-urlencoded",
-          access_token: access_token,
-        },
-      })
-      .then((res) => {
-        this.props.onSpinner(false) 
-        this.props.onfetchOrder();
-        this.props.onBottomTabClicked('home')
-        Toast.show('Order Cancelled');
-        this.props.navigation.navigate('Home')            
-      })
-      .catch((err) => {
-        this.props.onSpinner(false) 
-        console.log(err);
-      });
-  }
+      order_Id: this.props.orderNumber,
+    });
 
-  proceedOrder = async () =>{
-    this.props.onSpinner(true) 
-    const access_token = await AsyncStorage.getItem('isLoggedIn');
-    console.log(access_token)
-       let data = JSON.stringify({
-      orderStatus:this.props.sellerAction,
-      order_Id: this.props.orderNumber,      
-    });      
     await axios
       .post(api.sellerOrderorderStatusupdateAPI, data, {
         headers: {
-          accept: "application/json",
-          "accept-language": "en_US",
-          "content-type": "application/x-www-form-urlencoded",
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
           access_token: access_token,
         },
       })
-      .then((res) => {
-        this.props.onSpinner(false) 
-        Toast.show('Order '+this.props.sellerAction+' successfully');
+      .then(res => {
+        this.props.onSpinner(false);
         this.props.onfetchOrder();
         this.props.onBottomTabClicked('home');
-        this.props.navigation.navigate('Home');            
+        Toast.show('Order Cancelled');
+        this.props.navigation.navigate('Home');
       })
-      .catch((err) => {
-        this.props.onSpinner(false) 
+      .catch(err => {
+        this.props.onSpinner(false);
         console.log(err);
       });
+  };
+
+  proceedOrder = async () => {
+    this.props.onSpinner(true);
+    const access_token = await AsyncStorage.getItem('isLoggedIn');
+    console.log(access_token);
+    let data = JSON.stringify({
+      orderStatus: this.props.sellerAction,
+      order_Id: this.props.orderNumber,
+    });
+    await axios
+      .post(api.sellerOrderorderStatusupdateAPI, data, {
+        headers: {
+          accept: 'application/json',
+          'accept-language': 'en_US',
+          'content-type': 'application/x-www-form-urlencoded',
+          access_token: access_token,
+        },
+      })
+      .then(res => {
+        this.props.onSpinner(false);
+        Toast.show('Order ' + this.props.sellerAction + ' successfully');
+        this.props.onfetchOrder();
+        this.props.onBottomTabClicked('home');
+        this.props.navigation.navigate('Home');
+      })
+      .catch(err => {
+        this.props.onSpinner(false);
+        console.log(err);
+      });
+  };
+
+  button1Press = () => {
+    if (this.props.buy === false) {
+      if (this.props.buyer) {
+        this.addToCart();
+      } else {
+        this.cancelOrder();
+      }
+    } else {
+      Toast.show('Select Unit');
+    }
+  };
+
+  button2Press = () =>{
+    if (this.props.buy === false) {
+      if (this.props.buyer) {
+        this.buyNow();
+      } else {
+        this.proceedOrder();
+      }
+    } else {
+      Toast.show('Select Unit');
+    } 
   }
 
-
   render() {
-
     const styles = StyleSheet.create({
-      parentContaier: {
-
-      },
+      parentContaier: {},
       container: {
         flexDirection: 'row',
         width: '100%',
         alignItems: 'center',
-
       },
 
       AddToCartButton: {
@@ -147,7 +164,7 @@ class StickyButton extends Component {
         width: '50%',
         paddingTop: 5,
         paddingBottom: 5,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
       },
       buyButton: {
         backgroundColor: '#004561',
@@ -155,7 +172,7 @@ class StickyButton extends Component {
         borderColor: '#95A5A6',
         width: '50%',
         paddingTop: 5,
-        paddingBottom: 5
+        paddingBottom: 5,
       },
       cartText: {
         color: '#004561',
@@ -163,7 +180,6 @@ class StickyButton extends Component {
         fontSize: 14,
         padding: 10,
         fontFamily: 'GothamMedium',
-
       },
       buyText: {
         color: '#fff',
@@ -175,7 +191,7 @@ class StickyButton extends Component {
       spinnerTextStyle: {
         color: '#7ea100',
       },
-    })
+    });
 
     return (
       <View style={styles.container}>
@@ -185,20 +201,23 @@ class StickyButton extends Component {
           textStyle={styles.spinnerTextStyle}
         />
         <TouchableOpacity
-          disabled={this.props.buy}
+          // disabled={this.props.buy}
           style={styles.AddToCartButton}
-          onPress={this.props.buyer ? this.addToCart : this.cancelOrder}
-          underlayColor='#fff'>
+          // onPress={this.props.buyer ? this.addToCart : this.cancelOrder}
+          onPress={this.button1Press}
+          underlayColor="#fff">
           <Text style={styles.cartText}>{this.props.cancel}</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          disabled={this.props.buy}
+          // disabled={this.props.buy}
           style={styles.buyButton}
-          onPress={this.props.buyer ? this.buyNow : this.proceedOrder}
-          underlayColor='#fff'>
+          // onPress={this.props.buyer ? this.buyNow : this.proceedOrder}
+          onPress={this.button2Press}
+          underlayColor="#fff">
           <Text style={styles.buyText}>{this.props.proceed}</Text>
         </TouchableOpacity>
-      </View>);
+      </View>
+    );
   }
 }
 
@@ -213,13 +232,12 @@ const mapDispatchToProps = dispatch => {
   return {
     onSpinner: value =>
       dispatch({type: actionTypes.SPINNER_SWITCH, payload: value}),
-      onBottomTabClicked: value =>
+    onBottomTabClicked: value =>
       dispatch({type: actionTypes.ACTIVE_ICON, payload: value}),
   };
 };
 
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)( StickyButton);
+)(StickyButton);

@@ -17,6 +17,8 @@
     "@react-navigation/material-top-tabs": "^5.0.5",
     "@react-navigation/native": "^5.0.5",
     "@react-navigation/stack": "^5.0.5",
+    "@stripe/react-stripe-js": "^1.1.2",
+    "@stripe/stripe-js": "^1.11.0",
     "@twotalltotems/react-native-otp-input": "^1.2.1",
     "accordion-collapse-react-native": "^0.3.2",
     "axios": "^0.19.2",
@@ -67,6 +69,7 @@
     "react-native-size-matters": "^0.3.0",
     "react-native-stars": "^1.2.2",
     "react-native-step-indicator": "0.0.11",
+    "react-native-stripe-api": "^0.1.0",
     "react-native-svg": "^11.0.1",
     "react-native-swiper": "^1.5.14",
     "react-native-tab-view": "^2.13.0",
@@ -80,6 +83,7 @@
     "redux": "^4.0.5",
     "rn-round-checkbox": "^1.0.0",
     "switch-button-react-native": "^1.0.3",
+    "tipsi-stripe": "^7.5.3",
     "validate.js": "^0.13.1"
   },
   "devDependencies": {

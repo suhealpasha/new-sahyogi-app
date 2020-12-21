@@ -60,8 +60,9 @@ class Otp extends Component {
   };
 
   resendOTP = async() =>{
-     let data = JSON.stringify({
+     let data = JSON.stringify({      
       email_id: this.props.email,
+      mobile_no:this.props.mobile_no,
       otp:this.props.otp
     })   
     await axios.post(api.otpAPI,data,
@@ -69,7 +70,7 @@ class Otp extends Component {
     'accept-language': 'en_US',
     'content-type': 'application/x-www-form-urlencoded'}} )
     .then(res =>{ 
-      console.log(res.data.data)        
+      console.log(res.data)        
       if(res.status){             
         this.props.onResendOTP(String(res.data.data.otp));        
       }
@@ -150,7 +151,7 @@ class Otp extends Component {
               pinCount={4}
               style={styles.otpStyles}
               code={this.props.otp} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
-              // onCodeChanged = {code => { this.setState({otp:code,otpError:false})}}
+              onCodeChanged = {code => { this.setState({otp:code,otpError:false})}}
               // autoFocusOnLoad
               codeInputFieldStyle={styles.underlineStyleBase}
               codeInputHighlightStyle={styles.underlineStyleHighLighted}              

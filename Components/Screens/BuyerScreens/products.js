@@ -42,6 +42,7 @@ class LatestProducts extends Component {
 
   
   functionHandler = (arg1,arg2) =>{
+    this.props.onFeaturedProductsFiltered(false);
     this.productDetails(arg1,arg2);
     // this.props.onToggleOpen();
   }
@@ -199,6 +200,8 @@ const mapDispatchToProps = dispatch => {
   return {
     onDisplayVarietyName: value =>
       dispatch({type: actionTypes.DISPLAY_VARIETY_NAME, payload: value}),
+      onFeaturedProductsFiltered: value =>
+      dispatch({type: actionTypes.FILTER_FEATURED_DATA, payload: value}),
   };
 };
 

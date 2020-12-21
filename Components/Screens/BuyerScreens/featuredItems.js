@@ -64,6 +64,7 @@ import {
   }
 
   functionHandler = (arg1,arg2) =>{
+    this.props.onFeaturedProductsFiltered(true);
     this.productDetails(arg1,arg2);
     // this.props.onToggleOpen();
   }
@@ -180,6 +181,17 @@ import {
                 }>
                 <View style={styles.itemContainer}>
                   <View style={styles.imageContainer}>
+                    <View style={{display:'flex',flexDirection:'row',backgroundColor:'#cc0038',width:'40%',color:'white'}}>
+                    <Icon
+                  name="star"
+                  size={16}
+                  color="white"
+                  style={{
+                    justifyContent: 'center',
+                    textAlignVertical: 'center',
+                  }}
+                />
+                      <Text style={{color:'white',fontSize:14,fontFamily:'GothamMedium'}}>FEATURED</Text></View>
                     <ImageBackground
                       source={{
                         uri: item.thumbnail_image,
@@ -229,6 +241,8 @@ const mapDispatchToProps = dispatch => {
   return {
     onDisplayVarietyName: value =>
       dispatch({type: actionTypes.DISPLAY_VARIETY_NAME, payload: value}),
+      onFeaturedProductsFiltered: value =>
+      dispatch({type: actionTypes.FILTER_FEATURED_DATA, payload: value}),
   };
 };
 

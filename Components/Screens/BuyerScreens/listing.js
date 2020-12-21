@@ -405,6 +405,20 @@ class Listing extends Component {
               }>
               <View style={styles.itemContainer}>
                 <View style={styles.imageContainer}>
+                  {this.props.filterFeaturedData ?
+                  <View style={{display:'flex',flexDirection:'row',backgroundColor:'#cc0038',width:'60%',color:'white'}}>
+                  <Icon
+                name="star"
+                size={16}
+                color="white"
+                style={{
+                  justifyContent: 'center',
+                  textAlignVertical: 'center',
+                }}
+              />
+                    <Text style={{color:'white',fontSize:14,fontFamily:'GothamMedium'}}>FEATURED</Text></View>
+                  : null}
+                
                   <ImageBackground
                     source={{
                       uri: item.thumbnail_image,

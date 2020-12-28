@@ -180,8 +180,7 @@ import {
                 this.functionHandler(item.product_Id, item.verityname)
                 }>
                 <View style={styles.itemContainer}>
-                  <View style={styles.imageContainer}>
-                    <View style={{display:'flex',flexDirection:'row',backgroundColor:'#cc0038',width:'40%',color:'white'}}>
+                   <View style={{display:'flex',top:5,zIndex:1,position:'absolute',flexDirection:'row',backgroundColor:'#cc0038',width:'40%',color:'white'}}>
                     <Icon
                   name="star"
                   size={16}
@@ -192,6 +191,8 @@ import {
                   }}
                 />
                       <Text style={{color:'white',fontSize:14,fontFamily:'GothamMedium'}}>FEATURED</Text></View>
+                  <View style={styles.imageContainer}>
+                   
                     <ImageBackground
                       source={{
                         uri: item.thumbnail_image,

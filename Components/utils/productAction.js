@@ -343,7 +343,7 @@ class ProductAction extends Component {
                     }
                   }}
                     style={{textAlign: 'center', fontFamily: 'GothamMedium'}}>
-                    Nano Lots
+                    Nano-Lots
                    
                   </Text>
                   <RadioButton
@@ -386,7 +386,7 @@ class ProductAction extends Component {
                       }
                     }}
                     >
-                    Micro Lots
+                    Micro-Lots
 
                   </Text>
                 </View>

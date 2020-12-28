@@ -404,20 +404,21 @@ class Listing extends Component {
                 )                          
               }>
               <View style={styles.itemContainer}>
-                <View style={styles.imageContainer}>
-                  {this.props.filterFeaturedData ?
-                  <View style={{display:'flex',flexDirection:'row',backgroundColor:'#cc0038',width:'60%',color:'white'}}>
+              {this.props.filterFeaturedData ?
+                  <View style={{display:'flex',top:5,position:'absolute',zIndex:1,flexDirection:'row',backgroundColor:'#cc0038',width:'55%',color:'white'}}>
                   <Icon
                 name="star"
-                size={16}
+                size={14}
                 color="white"
                 style={{
                   justifyContent: 'center',
                   textAlignVertical: 'center',
                 }}
               />
-                    <Text style={{color:'white',fontSize:14,fontFamily:'GothamMedium'}}>FEATURED</Text></View>
+                    <Text style={{color:'white',fontSize:12,fontFamily:'GothamMedium'}}>FEATURED</Text></View>
                   : null}
+                <View style={styles.imageContainer}>
+                 
                 
                   <ImageBackground
                     source={{
@@ -464,7 +465,7 @@ class Listing extends Component {
 
 <View style={{display:'flex',flexDirection:'row',justifyContent:'space-around',paddingTop:20,paddingBottom:20}}>
                      <TouchableOpacity style={styles.loginButton} onPress = {this.goto} >
-                  <Text style={styles.buttonText}>Regions / Origins</Text>
+                  <Text style={styles.buttonText}>Regions/Origins</Text>
                        </TouchableOpacity>
                       {/* <TouchableOpacity style={styles.loginButton}  onPress={() => {this.props.filterFeaturedData ? this.onSeeAll('All Featured Crops') : this.onSeeAll('Products')}}>
                    <Text style={styles.buttonText}>{this.props.filterFeaturedData ? "All Products" : "Featured Products"}</Text>

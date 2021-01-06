@@ -10,7 +10,8 @@ import {
   Alert,
   Dimensions,
   AsyncStorage,
-  TouchableOpacity
+  TouchableOpacity,
+  Switch
 } from 'react-native';
 import {Input, ThemeConsumer} from 'react-native-elements';
 
@@ -19,6 +20,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import NextButton from '../Components/utils/nextButton';
 import {NavigationActions} from 'react-navigation';
 import BackButton from '../Components/utils/backButton';
+import Icon from "react-native-vector-icons/Octicons"
 import Logo from '../Components/utils/logo';
 import * as actionTypes from '../Store/action';
 import {connect} from 'react-redux';
@@ -42,7 +44,8 @@ class Login extends Component {
       emailValidationError: false,
       invalidEmail:false,
       invalidPassword:false,
-      invalidEmailMessage:null
+      invalidEmailMessage:null,
+      hidePassword:true
     };
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
@@ -133,7 +136,13 @@ class Login extends Component {
       }
     }
   };
+  
   render() {
+
+    const EyeIcon =(
+      <Icon name="eye" onPress={() => {}} />
+    );
+
     const styles = StyleSheet.create({
       container: {
         flexDirection: 'column',
@@ -158,7 +167,7 @@ class Login extends Component {
       },
       signInFormContainer: {
         paddingTop:20,
-        width: '100%',
+        width: '90%',
         
       },
       inputStyle: {
@@ -190,7 +199,7 @@ class Login extends Component {
         height:55
       }
     });
-
+    
     return (
       <KeyboardAwareScrollView
         resetScrollToCoords={{x: 0, y: 0}}
@@ -234,11 +243,12 @@ class Login extends Component {
                   ? 'Invalid Email address'
                   : null }
             </HelperText>
-            
+            <View style={{display:'flex',flexDirection:'row'}}> 
+            <View style={{width:'100%'}}>
               <TextInput
-              secureTextEntry={true}
+              secureTextEntry={this.state.hidePassword ? true : false}
               label="Password"           
-              mode="flat"
+              mode="flat"              
               style={styles.inputFieldsStyle}              
               underlineColor="transparent"               
               theme={{colors: {text: 'black', primary: 'grey'} ,  fonts: { medium: 'Open Sans' }}}
@@ -254,7 +264,13 @@ class Login extends Component {
               }
               autoCapitalize="none"             
               value={this.state.password}
+              
             />
+            </View>
+            <View style={{justifyContent: 'center'}}>
+            {this.state.hidePassword ? <Icon name="eye-closed" size={20} onPress={()=>this.setState({hidePassword:false})} /> : <Icon name= "eye" size={20} onPress={()=>this.setState({hidePassword:true})}/>}
+            </View>
+            </View>
              <HelperText type="error" visible={this.state.passwordError === true  }>
              {this.state.passwordError === true ? 'Enter the Password' : false }
             </HelperText>

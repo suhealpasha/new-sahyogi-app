@@ -264,6 +264,19 @@ class AddAddress extends Component {
       spinnerTextStyle: {
         color: '#7ea100',
       },
+      loginButton: {
+        alignItems: 'center',
+        // width: '100%',
+        width:150,
+        padding: 10,
+        backgroundColor: '#7ea100',
+        borderRadius: 50,
+      },
+      buttonText: {
+        color: '#fff',
+        fontFamily: 'GothamMedium',
+        fontSize: 14,
+      },
     });
 
     let countriesList = [],stateList=[];    
@@ -418,6 +431,12 @@ class AddAddress extends Component {
               }
             />
           </View>
+          <View style={{alignContent:'center',alignItems:'center',padding:20}}> 
+          <TouchableOpacity style={styles.loginButton}  onPress={() =>this.props.saveAddress()}>
+                     <Text style={styles.buttonText}>Save Address</Text>
+                       </TouchableOpacity>
+          </View>
+          
         </View>
       </KeyboardAwareScrollView>
     );

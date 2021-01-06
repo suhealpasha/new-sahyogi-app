@@ -311,7 +311,7 @@ class Listing extends Component {
       loginButton: {
         alignItems: 'center',
         // width: '100%',
-        width:135,
+        width:140,
         padding: 10,
         backgroundColor: '#7ea100',
         borderRadius: 50,
@@ -319,7 +319,7 @@ class Listing extends Component {
       buttonText: {
         color: '#fff',
         fontFamily: 'GothamMedium',
-        fontSize: 12,
+        fontSize: 11,
       },
       imageContainer: {
         backgroundColor: 'grey',

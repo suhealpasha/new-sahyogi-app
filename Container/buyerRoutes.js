@@ -910,7 +910,7 @@ class Routes extends Component {
                     fontFamily: 'Gotham Black Regular',
                     fontSize:16
                   }}>
-                  Wishlist
+                  Wish List
                 </Text>
               ),
               headerTitleContainerStyle: {
@@ -1154,19 +1154,19 @@ class Routes extends Component {
                   <Icon name="chevron-left" size={35} color="white" />
                 </TouchableWithoutFeedback>
               ),
-              headerRight: () => (
-                <View style={{width: 300}}>
-                  <TouchableWithoutFeedback
-                    onPress={() => navigation.navigate('Add Address')}>
-                    <Icon
-                      style={{textAlign: 'right'}}
-                      name="add-circle-outline"
-                      color={'white'}
-                      size={24}
-                    />
-                  </TouchableWithoutFeedback>
-                </View>
-              ),
+              // headerRight: () => (
+              //   <View style={{width: 300}}>
+              //     <TouchableWithoutFeedback
+              //       onPress={() => navigation.navigate('Add Address')}>
+              //       <Icon
+              //         style={{textAlign: 'right'}}
+              //         name="add-circle-outline"
+              //         color={'white'}
+              //         size={24}
+              //       />
+              //     </TouchableWithoutFeedback>
+              //   </View>
+              // ),
             })}>
             {props => (
               <MyAddress
@@ -1206,19 +1206,19 @@ class Routes extends Component {
                   <Icon name="chevron-left" size={35} color="white" />
                 </TouchableWithoutFeedback>
               ),
-              headerRight: () => (
-                <TouchableWithoutFeedback
-                  onPress={() => this.clickedSaveAddress()}>
-                  <Icon2
-                    name="content-save-outline"
-                    size={24}
-                    style={{padding: 10, color: '#ffffff'}}
-                  />
-                </TouchableWithoutFeedback>
-              ),
+              // headerRight: () => (
+              //   <TouchableWithoutFeedback
+              //     onPress={() => this.clickedSaveAddress()}>
+              //     <Icon2
+              //       name="content-save-outline"
+              //       size={24}
+              //       style={{padding: 10, color: '#ffffff'}}
+              //     />
+              //   </TouchableWithoutFeedback>
+              // ),
             })}>
             {props => (
-              <AddAddress {...props} onFetchAddress={this.fetchAddress} saveIconAddress = {this.state.saveIconAddress} countriesData={this.state.countriesData} onfetchBuyerCart={this.fetchBuyerCart}/>
+              <AddAddress {...props} saveAddress = {this.clickedSaveAddress} onFetchAddress={this.fetchAddress} saveIconAddress = {this.state.saveIconAddress} countriesData={this.state.countriesData} onfetchBuyerCart={this.fetchBuyerCart}/>
             )}
           </Stack.Screen>
           <Stack.Screen
@@ -1249,16 +1249,16 @@ class Routes extends Component {
                   <Icon name="chevron-left" size={35} color="white" />
                 </TouchableWithoutFeedback>
               ),
-              headerRight: () => (
-                <TouchableWithoutFeedback
-                  onPress={() => this.clickedSaveEditAddress()}>
-                  <Icon2
-                    name="content-save-outline"
-                    size={24}
-                    style={{padding: 10, color: '#ffffff'}}
-                  />
-                </TouchableWithoutFeedback>
-              ),
+              // headerRight: () => (
+              //   <TouchableWithoutFeedback
+              //     onPress={() => this.clickedSaveEditAddress()}>
+              //     <Icon2
+              //       name="content-save-outline"
+              //       size={24}
+              //       style={{padding: 10, color: '#ffffff'}}
+              //     />
+              //   </TouchableWithoutFeedback>
+              // ),
             })}>
             {props => (
               <EditAddress
@@ -1267,6 +1267,7 @@ class Routes extends Component {
                 onFetchAddress={this.fetchAddress}
                 countriesData={this.state.countriesData}
                 onfetchBuyerCart={this.fetchBuyerCart}
+                saveAddress={this.clickedSaveEditAddress}
               />
             )}
           </Stack.Screen>

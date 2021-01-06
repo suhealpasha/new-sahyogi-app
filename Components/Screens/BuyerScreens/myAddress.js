@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
 } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons'
 import axios from 'axios';
 import * as actionTypes from '../../../Store/action';
 import {connect} from 'react-redux';
@@ -215,6 +216,23 @@ import * as api from '../../../assets/api/api';
             borderTopRightRadius: 30,
             borderTopLeftRadius: 30,
           }}>
+            <View style={{padding:10,flexDirection:'row',display:'flex'}}>
+            <Icon2  name='plus' size={20} color={'#043f4f'} onPress={()=>{this.editAddress(item.address_Id)}}/>
+            <TouchableOpacity
+               onPress={() => this.props.navigation.navigate('Add Address')}>
+                  
+                <Text
+                  style={{
+                    color: '#043f4f',
+                    fontFamily: 'GothamMedium',
+                    fontSize: 16,
+                   
+                    textAlignVertical: 'center',
+                  }}>
+                  Add a new address
+                </Text>
+              </TouchableOpacity>
+              </View>
         {addressExist ?   
         <FlatList
           data={this.state.addressData}
@@ -250,6 +268,7 @@ import * as api from '../../../assets/api/api';
   }
       </View>
       </View>
+      
     );
   }
 }

@@ -37,7 +37,12 @@ expMonthError:false,
 expYearError:false,
 cvcError:false,
 spinner:false,
-cardValidError:false
+cardValidError:false,
+cardNumberValidation:false,
+invalidYear:false,
+invalidMonth:false,
+invalidYearType:false,
+invalidCCV:false
     };
 
   }
@@ -46,7 +51,7 @@ cardValidError:false
  
   payment = async () =>{
     const access_token = await AsyncStorage.getItem('isLoggedIn');
-    if (this.state.number !== null && this.state.expMonth !== null &&   this.state.expYear !== null &&  this.state.cvc !== null ) {
+    if (this.state.number !== null && this.state.expMonth !== null &&   this.state.expYear !== null &&  this.state.cvc !== null && this.state.invalidMonth === false && this.state.invalidYear === false && this.state.invalidYearType === false && this.state.ccvValidation === false) {
     const apiKey = 'pk_test_rvTVsu63XIgc5QFowZEfoEPk00HGt34Sk7';
     const client = new Stripe(apiKey);
     this.setState({spinner: true});
@@ -145,8 +150,48 @@ cardValidError:false
     }
    }
   }
-  
 
+  inRange = (x, min, max) => {
+    return ((x-min)*(x-max) <= 0);
+}
+  
+  monthValidation = () =>{
+    
+    if(Number(this.state.expMonth) > 12)
+    {
+      this.setState({invalidMonth:true})
+    }
+    else if (Number(this.state.expMonth) < 1){
+      this.setState({invalidMonth:true})
+    }
+    else{
+      this.setState({invalidMonth:false})
+    }
+  }
+  
+  yearValidation = () =>{
+    if(this.state.expYear && this.state.expYear.length < 4){
+      this.setState({invalidYearType:true})
+      return
+    }  
+    console.log(this.state.expYear,Number(new Date().getFullYear()))
+    if(this.state.expYear < Number(new Date().getFullYear())){
+      this.setState({invalidYear:true})
+    }
+    else{
+      this.setState({invalidYear:false})
+    }
+  }
+  ccvValidation = ()  =>{
+   
+    if(this.state.cvc.length != 3){
+      
+      this.setState({ccvValidation:true})
+    }
+    else{
+      this.setState({ccvValidation:false})
+    }
+  }
   render() {
 
     const styles = StyleSheet.create({
@@ -175,11 +220,13 @@ cardValidError:false
               theme={{colors: {text: 'black', primary: 'grey'} ,  fonts: { medium: 'Open Sans' }}}
               spellCheck={false}
               autoCorrect={false}
+              maxLength={16}
               keyboardType = 'numeric'
               onChangeText={number =>
                 this.setState({
                   number,
-                  numberError:false
+                  numberError:false,
+                  cardValidError:false
                 })
               }
               
@@ -188,16 +235,18 @@ cardValidError:false
             />
 
             <HelperText type="error" visible={this.state.numberError === true || this.state.cardValidError }>
-             {this.state.numberError === true ? 'Enter the Credit Card Number' : this.state.cardValidError
+             {this.state.numberError === true ? 'Enter the credit card number' : this.state.cardValidError
                   ? 'Invalid Card'
                   : null}
+                   
             </HelperText>
 
             <TextInput
               type="number"
               label="Expiry Month"            
               mode="flat"
-              style={styles.inputFieldsStyle}              
+              style={styles.inputFieldsStyle}      
+              maxLength={2}        
               underlineColor="transparent"  
               under
               theme={{colors: {text: 'black', primary: 'grey'} ,  fonts: { medium: 'Open Sans' }}}
@@ -207,22 +256,27 @@ cardValidError:false
               onChangeText={expMonth =>
                 this.setState({
                   expMonth,
-                  expMonthError:false
+                  expMonthError:false,
+                  invalidMonth:false
                 })
               }
-              
+              onBlur={this.monthValidation}
               autoCapitalize="none"             
               value={this.state.expMonth}
             />
 
-          <HelperText type="error" visible={this.state.expMonthError === true  }>
-             {this.state.expMonthError === true ? 'Enter the expiry month' : false }
+          <HelperText type="error" visible={this.state.expMonthError === true || this.state.invalidMonth == true  }>
+             {this.state.expMonthError === true 
+             ? 'Enter the expiry month'
+              : this.state.invalidMonth 
+              ? 'Invalid Month' : null }
             </HelperText>
 
             <TextInput
               type="number"
               label="Expiry Year"            
               mode="flat"
+              maxLength={4}
               style={styles.inputFieldsStyle}              
               underlineColor="transparent"  
               under
@@ -233,20 +287,23 @@ cardValidError:false
               onChangeText={expYear =>
                 this.setState({
                   expYear,
-                  expYearError:false
+                  expYearError:false,
+                  invalidYear:false,
+                  invalidYearType:false
                 })
               }
-              
+              onBlur={this.yearValidation}
               autoCapitalize="none"             
               value={this.state.expYear}
             />
-             <HelperText type="error" visible={this.state.expYearError === true  }>
-             {this.state.expYearError === true ? 'Enter expiry year' : false }
+             <HelperText type="error" visible={this.state.expYearError === true || this.state.invalidYearType||this.state.invalidYear  }>
+             {this.state.expYearError === true ? 'Enter expiry year' : this.state.invalidYearType ? "Invalid year": this.state.invalidYear ? 'Card already expired' : false }
             </HelperText>
             <TextInput
               type="number"
               label="CCV"            
               mode="flat"
+              maxLength={3}
               style={styles.inputFieldsStyle}              
               underlineColor="transparent"  
               under
@@ -257,16 +314,17 @@ cardValidError:false
               onChangeText={cvc =>
                 this.setState({
                   cvc,
-                  cvcError:false
+                  cvcError:false,
+                  ccvValidation:false
                 })
               }
-              
+              onBlur={this.ccvValidation}
               autoCapitalize="none"             
               value={this.state.cvc}
             />
 
-        <HelperText type="error" visible={this.state.cvcError === true  }>
-             {this.state.cvcError === true ? 'Enter CVC' : false }
+        <HelperText type="error" visible={this.state.cvcError === true || this.state.ccvValidation }>
+             {this.state.cvcError === true ? 'Enter CVC' : this.state.ccvValidation ? "Invalid CCV" : false}
             </HelperText>
         <NextButton click={() => this.payment()} color="#7ea100" label="Make Payment"/>
       </View>

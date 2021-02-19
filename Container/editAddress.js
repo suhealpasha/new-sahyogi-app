@@ -81,7 +81,7 @@ class AddAddress extends Component {
       editAddressAPI = api.sellerAddressByIdAPI;
     }
     axios
-      .post(editAddressAPI, data, {
+      .post(api.buyerAddressByIdAPI, data, {
         headers: {
           accept: 'application/json',
           access_token: access_token,
@@ -90,6 +90,7 @@ class AddAddress extends Component {
         },
       })
       .then(res => {
+        console.log(res.data.data)
         this.setState({spinner: false, addressData: res.data.data});
       })
       .catch(err => {
@@ -133,10 +134,21 @@ class AddAddress extends Component {
     }
   }
 
-  onContrySelect = async (args) => {
-    this.setState({ defaultContryColor: 'black' ,countryId:args+1,countryError:false})
+  onContrySelect = async (args,args1) => {
+    let country;
+    this.state.countriesData.filter(i => {
+      if (i.country_name === args1) {
+        country = i.country_Id;
+      }
+    });
+    this.setState({
+      defaultContryColor: 'black',
+      countryId: country,
+      countryError: false,
+      statesData: [],
+    });
     const data = JSON.stringify({
-      country_Id: args + 1
+      country_Id: country,
     });
 
     const access_token = await AsyncStorage.getItem('isLoggedIn');
@@ -355,12 +367,14 @@ class AddAddress extends Component {
             />
              <ModalDropdown
               options={countriesList}
-              defaultValue="Country"
+              defaultValue={this.state.addressData.country_name}
               textStyle={{ color: this.state.defaultContryColor, fontSize: 18, fontWeight: '100', paddingLeft: 5, }}
               style={{ borderBottomColor: '#8c939a', borderBottomWidth: 1, marginLeft: 10, marginRight: 10, paddingBottom: 10, paddingTop: 10 }}
               dropdownStyle={{ width: this.state.width - 40}}
               dropdownTextStyle={{fontSize:18}}
-              onSelect={i => { this.onContrySelect(i) }}            
+              onSelect={(i, j) => {
+                this.onContrySelect(i, j);
+              }}           
             />
             <ModalDropdown
               options={stateList}

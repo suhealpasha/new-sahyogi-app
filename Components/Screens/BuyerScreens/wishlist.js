@@ -120,6 +120,7 @@ class Wishlist extends Component {
         },
       })
       .then(res => {
+        console.log(res)
         if (res.status) {
           this.setState({spinner: false});
           Toast.show('Removed from wishlist');
@@ -150,6 +151,7 @@ class Wishlist extends Component {
         },
       )
       .then(res => {
+        console.log(res)
         if (res.status) {
           this.setState({spinner: false});
           Toast.show('Removed all from wishlist');

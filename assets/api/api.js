@@ -1,4 +1,4 @@
- //const URL = 'https://dollarbirdinc.com/db_dev/microffee_api/'
+//const URL = 'https://dollarbirdinc.com/db_dev/microffee_api/'
 const URL = 'https://microffee.com/microffee_api/'
 
 //////////////////////// Common API's //////////////////////////

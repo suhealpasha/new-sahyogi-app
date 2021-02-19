@@ -65,9 +65,9 @@ invalidCCV:false
    
    let data = JSON.stringify({
     stripeToken: token.id,
-    amount:this.props.route.params.totalAmount
+    amount:this.props.route.params.totalAmount    
   })   
-  console.log(token.id)
+  console.log(">>>>>>Data",data)
   if(token.id !== undefined){
   await axios.post(api.buyerStripeCheckoutAPI,data,
   { headers:{
@@ -85,7 +85,7 @@ invalidCCV:false
       stripe_id:res.data.stripe_id,
       stripe_transaction_id:res.data.stripe_transaction_id
     });
-   console.log(data)
+  
     this.setState({spinner: true});
     
      axios

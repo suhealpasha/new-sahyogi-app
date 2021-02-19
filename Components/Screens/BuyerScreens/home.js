@@ -100,14 +100,14 @@ class App extends Component {
        </View>
        <View  style={styles.imageContainer}>
        <ImageBackground
-        source={require('../../../assets/Images/logos/newMicrofeeLogo.png')}
+        source={require('../../../assets/Images/logos/Microffee_png.png')}
                       style={{                 
-                        width: 80,
+                        width: 100,
                         height: 100, 
-                        resizeMode:'cover'                      
-                   
+                        resizeMode:'cover',                    
+                      aspectRatio:1/1  
                       }}
-           
+                      
                       resizeMode="stretch"
                     />
        </View>

@@ -203,7 +203,7 @@ class Varities extends Component {
                   <Text
                     title={item.name}
                     style={{
-                      fontFamily: 'GothamLight',
+                      fontFamily: 'GothamMedium',
                       fontWeight: 'normal',
                       textAlignVertical: 'center',
                     }}>

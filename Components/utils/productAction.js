@@ -467,7 +467,7 @@ class ProductAction extends Component {
               $ {''}
               {this.state.activeButton === ''
                 ? 0
-                : this.state.value * this.state.price} 
+                : (this.state.value * this.state.price).toFixed(2)} 
             </Text>
           </View>
           </View>

@@ -1,117 +1,65 @@
 import 'react-native-gesture-handler';
 import React, {Component, useState, useEffect} from 'react';
-import {BackHandler,StyleSheet,Text,View,Button,TouchableOpacity,TextInput,Dimensions,AsyncStorage,Image,Animated} from 'react-native';
+import {
+  BackHandler,
+  TouchableWithoutFeedback,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  TouchableOpacity,
+  TextInput,
+  Dimensions,
+  AsyncStorage,
+  Image,
+  Animated,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator, HeaderBackButton} from '@react-navigation/stack';
 import {COLOR, ThemeContext, getTheme} from 'react-native-material-ui';
-import SignIn from './signIn';
-import SignUp from './signUp';
-import Register from './register';
-import Otp from './otp';
-import SetPassword from './setPassword';
-import ForgotPassword from './forgotPassword';
-import SellerType from './sellerType';
-import SellerDetails from './sellerDetails';
-import WebView from './webView.js';
-import {HeaderBackground} from 'react-navigation-stack';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {createMaterialBottomTabNavigator} from '@react-navigation/material-bottom-tabs';
-import * as actionTypes from '../Store/action';
-import {connect} from 'react-redux';
-import KeyboardShift from '../Components/utils/keyboardShift';
-import {StatusBar} from 'react-native';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import * as api from '../assets/api/api';
-import axios from 'axios';
+import LoginPartner from './loginPartner';
 
+import Walkthrough from '../Components/Screens/Walkthrough/walkthrough';
+import SearchIcon from '../Components/utils/components/Icons/search';
+import FilterIcon from '../Components/utils/components/Icons/filter';
+import BackIcon from '../Components/utils/components/Icons/back';
+import SearchClear from 'react-native-vector-icons/AntDesign';
 const Stack = createStackNavigator();
-const uiTheme = {
-  palette: {
-    primaryColor: COLOR.blue500,
-  },
-  toolbar: {
-    container: {
-      height: 50,
-    },
-  },
-};
+
 class AuthRoutes extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      walkthrough: false,
       isLogout: false,
       isLoggedIn: null,
-      sellerHomeScreen: false,
       width: Dimensions.get('window').width,
-      home: false,
-      searchText: '',
-      filterOn: false,
-      sortOn: null,
-      searchIcon: true,
-      countriesData:[],
+      searchbar: false,
+     
     };
   }
 
-  componentDidMount(){
-    this.fetchCountries();
+  async componentDidMount() {
+    // const walkthrough_display = await AsyncStorage.getItem('sahyogiWalkthrough');
+    // if(walkthrough_display){this.setState({walkthrough:true})}
   }
 
-  fetchCountries = async () => {
-    const access_token = await AsyncStorage.getItem('isLoggedIn');
-    axios
-      .get(api.countriesAPI, {
-        headers: {
-          accept: 'application/json',
-          access_token: access_token,
-          'accept-language': 'en_US',
-          'content-type': 'application/x-www-form-urlencoded',
-        },
-      })
-      .then(res => {       
-        this.setState({countriesData: res.data.data});
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  goBack = async ({navigation}, path) => {
+    if (path === 'SearchCustomer') {
+      navigation.navigate('SearchCustomer');
+    } else if (path === 'LoginPartner') {
+      navigation.navigate('LoginPartner');
+    }
   };
 
-  goBack = ({navigation}, path) => {
-    navigation.goBack(null);
-    // this.setState({filterOn:false})
-    this.setState({home: true});
+  pressGetstarted = async () => {
+    await this.setState({walkthrough: false});
   };
 
-  changeTitleText = ({navigation}, param1, param2) => {
-    navigation.navigate(param1, {
-      searchText: param2,
-    });
+  clickedSearch = () => {
+    this.setState({searchbar: !this.state.searchbar});
   };
-
-  filterClicked = ({navigation}) => {
-    navigation.navigate('All Microlots', {
-      filterOn: !this.state.filterOn,
-    });
-  };
-
-  sortClicked = ({navigation}) => {
-    this.setState({sortOn: true});
-    navigation.navigate('All Microlots', {
-      sortOn: this.state.sortOn,
-    });
-  };
-
-  _logout = async ({navigation}) => {
-    await AsyncStorage.clear();
-    navigation.navigate('Home');
-  };
-
-  _logoutUserSession = () => {
-    console.log('Session Closed');
-    this.setState({isLogout: true});
-    this.props.testFunc();
-  };
-
-  render() {
+  render() {    
     const styles = StyleSheet.create({
       headerRightContainerStyle: {
         width: this.state.width - 20,
@@ -124,156 +72,45 @@ class AuthRoutes extends Component {
         paddingTop: Platform.OS === 'ios' ? 20 : 0,
       },
     });
+
     return (
       <NavigationContainer>
         <Stack.Navigator>
-         <Stack.Screen
-            name="Sign In"
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              header: () => null,
-            })}>
-            {props => <SignIn {...props} onSignIn = {this.props.onSignedIn} onSellerSignIn = {this.props.onSellerSignedIn}/>}
-          </Stack.Screen>
+          {this.props.walkthrough === false ? (
+            <Stack.Screen
+              name="Walkthrough"
+              options={({navigation, route}) => ({
+                animationEnabled: false,
+                header: () => null,
+              })}>
+              {props => (
+                <Walkthrough
+                  {...props}
+                  pressGetstarted={() => {
+                    this.props.pressGetstarted();
+                  }}
+                />
+              )}
+            </Stack.Screen>
+          ) : (
+            <Stack.Screen
+              name="LoginPartner"
+              options={{
+                animationEnabled: false,
+                headerStyle: {
+                  elevation: 0,
+                  shadowOpacity: 0,
+                  borderBottomWidth: 0,
+                },
 
-          <Stack.Screen
-            name="Sign Up"
-            component={SignUp}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              title: 'Register As',
-              headerStyle: {
-                backgroundColor: '#7ea100'
-              },
-              headerTitleStyle:{ fontFamily:'GothamMedium',
-              fontSize:22},
-              headerTitleAlign: 'center',
-              headerTintColor: '#fff',
-            })}
-            {...this.props}
-          />
-          <Stack.Screen
-            name="Seller Type"
-            component={SellerType}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              title: 'Who are you?',
-              headerStyle: {
-                backgroundColor: '#7ea100',
-               
-              },
-              headerTitleAlign: 'center',
-              headerTitleStyle:{ fontFamily:'GothamMedium',
-              fontSize:22},
-              headerTintColor: '#fff',
-            })}
-            {...this.props}
-          />
-          <Stack.Screen
-            name="Seller Details"          
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              title: 'Contact Details',
-              headerStyle: {
-                backgroundColor: '#7ea100',
-               
-              },
-              headerTitleAlign: 'center',
-              headerTitleStyle:{ fontFamily:'GothamMedium',
-              fontSize:22},
-              headerTintColor: '#fff',
-            })}
+                headerTitle: () => null,
+                headerLeft: () => null,
+              }}>
+              {props => <LoginPartner {...props} setLogin={()=>{this.props.setLogin()}}/>}
+            </Stack.Screen>
+          )}
+
           
-          >
-            {props => (
-              <SellerDetails {...props} countriesData = {this.state.countriesData} />
-            )}
-          </Stack.Screen>
-          <Stack.Screen
-            name="Register"
-            component={Register}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              title: 'Fill User Details',
-              headerStyle: {
-                backgroundColor: '#7ea100',
-               
-              },
-              headerTitleAlign: 'center',
-              headerTitleStyle:{ fontFamily:'GothamMedium',
-              fontSize:22},
-              headerTintColor: '#fff',
-            })}
-            {...this.props}
-          />
-          <Stack.Screen
-            name="OTP"
-            component={Otp}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-              title: 'OTP',
-              headerStyle: {
-                backgroundColor: '#7ea100',
-               
-              },
-              headerTitleAlign: 'center',
-              headerTitleStyle:{ fontFamily:'GothamMedium',
-              fontSize:22},
-              headerTintColor: '#fff',
-            })}
-            {...this.props}
-          />
-          <Stack.Screen
-            name="Set Password"
-            component={SetPassword}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-               title: 'Register Now',
-              headerStyle: {
-                backgroundColor: '#7ea100',
-               
-              },
-              headerTitleAlign: 'center',
-              headerTitleStyle:{ fontFamily:'GothamMedium',
-              fontSize:22},
-              headerTintColor: '#fff',
-            })}
-            {...this.props}
-          />
-          <Stack.Screen
-            name="Forgot Password"
-            component={ForgotPassword}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-               title: 'Forgot Password',
-              headerStyle: {
-                backgroundColor: '#7ea100',
-               
-              },
-              headerTitleAlign: 'center',
-              headerTitleStyle:{ fontFamily:'GothamMedium',
-              fontSize:22},
-              headerTintColor: '#fff',
-            })}
-            {...this.props}
-          />
-          <Stack.Screen
-            name="Web View"
-            component={WebView}
-            options={({navigation, route}) => ({
-              animationEnabled: false,
-               title: 'Terms & Conditions',
-              headerStyle: {
-                backgroundColor: '#7ea100',
-               
-              },
-              headerTitleAlign: 'center',
-              headerTitleStyle:{ fontFamily:'GothamMedium',
-              fontSize:22},
-              headerTintColor: '#fff',
-            })}
-            {...this.props}
-          />
         </Stack.Navigator>
       </NavigationContainer>
     );

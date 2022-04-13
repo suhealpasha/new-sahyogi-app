@@ -19,3 +19,8 @@ export const FILTER_VARITIES_DATA = 'FILTER_VARITIES_DATA';
 export const BUY_PRODUCT = 'BUY_PRODUCT';
 export const PRODUCT_CART_DETAILS = 'PRODUCT_CART_DETAILS';
 export const SPINNER_SWITCH = 'SPINNER_SWITCH';
+////////////////////////////////////////
+
+export const PROCEED_CLICKED = 'PROCEED_CLICKED';
+export const EDIT_CUSTOMER_INFO ='EDIT_CUSTOMER_INFO';
+export const ACTIVE_TAB ='ACTIVE_TAB';

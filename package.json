@@ -1,5 +1,5 @@
 {
-  "name": "Microfee",
+  "name": "Sahyogi",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@lomelidev/react-native-walkthrough": "^1.0.0",
     "@material-ui/core": "^4.9.3",
     "@material-ui/icons": "^4.9.1",
     "@react-native-community/masked-view": "^0.1.6",
@@ -30,15 +31,21 @@
     "react-native": "0.61.5",
     "react-native-actionsheet": "^2.4.2",
     "react-native-alert-prompt": "0.0.6",
+    "react-native-app-intro-slider": "^4.0.4",
+    "react-native-app-walkthrough": "^1.0.1",
     "react-native-bottom-drawer": "^1.0.2",
+    "react-native-check-box": "^2.1.7",
     "react-native-dashboard": "0.0.4",
+    "react-native-device-info": "^0.9.1",
     "react-native-dialog": "^5.6.0",
+    "react-native-double-tap": "^1.0.1",
     "react-native-drawer": "^2.5.1",
     "react-native-dropdown": "0.0.6",
     "react-native-easy-grid": "^0.2.2",
     "react-native-element": "^1.2.1",
     "react-native-elements": "^1.2.7",
     "react-native-fetch-blob": "^0.10.8",
+    "react-native-flatlist-slider": "^1.0.5",
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "^1.6.0",
     "react-native-htmlview": "^0.15.0",
@@ -48,6 +55,7 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.1",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
     "react-native-keyboard-aware-view": "0.0.14",
+    "react-native-linear-gradient": "^2.5.6",
     "react-native-loading-spinner-overlay": "^1.1.0",
     "react-native-material-cards": "^1.0.9",
     "react-native-material-dropdown": "^0.11.1",
@@ -62,17 +70,23 @@
     "react-native-reanimated": "^1.7.0",
     "react-native-safe-area-context": "^0.7.3",
     "react-native-screens": "^2.0.0-beta.4",
+    "react-native-screens-swiper": "^1.1.4",
+    "react-native-scrollable-tab-view": "^1.0.0",
+    "react-native-scrollable-tab-view-mask-bar": "^1.0.8",
+    "react-native-share": "^7.0.0",
     "react-native-side-drawer": "^1.2.8",
     "react-native-simple-dialogs": "^1.2.1",
     "react-native-simple-radio-button": "^2.7.4",
     "react-native-simple-toast": "^1.0.0",
     "react-native-size-matters": "^0.3.0",
+    "react-native-slider": "^0.11.0",
+    "react-native-snap-carousel": "^3.9.1",
     "react-native-stars": "^1.2.2",
     "react-native-step-indicator": "0.0.11",
     "react-native-stripe-api": "^0.1.0",
     "react-native-svg": "^11.0.1",
     "react-native-swiper": "^1.5.14",
-    "react-native-tab-view": "^2.13.0",
+    "react-native-tab-view": "^2.16.0",
     "react-native-table-component": "^1.2.1",
     "react-native-textinput-effects": "^0.6.1",
     "react-native-vector-icons": "^6.6.0",
@@ -98,5 +112,10 @@
   },
   "jest": {
     "preset": "react-native"
+  },
+  "rnpm": {
+    "assets": [
+      "./assets/fonts/"
+    ]
   }
 }

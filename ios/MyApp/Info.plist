@@ -84,6 +84,10 @@
 		<string>Roboto_medium.ttf</string>
 		<string>Roboto.ttf</string>
 		<string>rubicon-icon-font.ttf</string>
+		<string>AvenirNextLTPro-Bold.otf</string>
+		<string>AvenirNextLTPro-It.otf</string>
+		<string>AvenirNextLTPro-Regular.otf</string>
+		<string>AvenirNextFont.ttf</string>
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>YOUR_REASON_FOR_USING_USER_PHOTOS_HERE</string>

@@ -31,6 +31,11 @@ const initialState = {
   buyProduct: true,
   cartProductData: [],
   spinner: false,
+  ///////////////////
+  proceedButton:null,
+  editCustomerInfo:false,
+  bottomTab:'home',
+  bottomActiveTabWidth:100
 };
 
 const reducer = (state = initialState, action) => {
@@ -156,6 +161,29 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         spinner: action.payload,
+      };
+      case actionTypes.RESEND_OTP:
+      return {
+        ...state,
+        otp: action.payload,
+      };
+      ////////////////////////////////////
+      case actionTypes.PROCEED_CLICKED:  
+      console.log('herer',action.payload)    
+      return {
+        ...state,
+        proceedButton: action.payload,
+      };
+      case actionTypes.EDIT_CUSTOMER_INFO:      
+      return {
+        ...state,
+        editCustomerInfo: action.payload,
+      };
+      case actionTypes.ACTIVE_TAB:      
+      return {
+        ...state,
+        bottomTab: action.payload,
+        bottomActiveTabWidth:action.payload2
       };
     default:
       return state;
